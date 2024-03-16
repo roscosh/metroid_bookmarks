@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   web:
-    build: .
+    build: ./etc/docker/Dockerfile
     ports:
       - "3000:3000"
     volumes:
@@ -36,7 +36,7 @@ services:
     image: amacneil/dbmate
     command: -d "/usr/src/app/etc/schema" up
     volumes:
-      - .:/usr/src/app
+      - ./etc/schema:/usr/src/app/etc/schema
     links:
       - db
     depends_on:

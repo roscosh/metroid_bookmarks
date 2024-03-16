@@ -16,9 +16,9 @@ func newUsersService(sql *sql.UsersSQL) *UsersService {
 	return &UsersService{sql: sql}
 }
 
-func (s *UsersService) Create(name, username, password, role string) (*sql.User, error) {
-	token := generatePasswordHash(password)
-	user, err := s.sql.Create(name, username, token, role)
+func (s *UsersService) Create(userForm *sql.CreateUser) (*sql.User, error) {
+	userForm.Password = generatePasswordHash(userForm.Password)
+	user, err := s.sql.Create(userForm)
 	if err != nil {
 		prefixError := "Ошибка БД: "
 		var pgxErr *pgconn.PgError
@@ -27,7 +27,7 @@ func (s *UsersService) Create(name, username, password, role string) (*sql.User,
 		case errors.As(err, &pgxErr):
 			switch pgxErr.Code {
 			case "23505":
-				errMessage = fmt.Sprintf(`пользователь с логином "%s" уже существует!`, username)
+				errMessage = fmt.Sprintf(`пользователь с логином "%s" уже существует!`, user.Login)
 			}
 		}
 		if errMessage != "" {
@@ -74,7 +74,7 @@ func (s *UsersService) Edit(id int, form sql.EditUser) (*sql.User, error) {
 		case errors.As(err, &pgxErr):
 			switch pgxErr.Code {
 			case "23505":
-				errMessage = fmt.Sprintf(`пользователь с логином "%s" уже существует!`, *form.Username)
+				errMessage = fmt.Sprintf(`пользователь с логином "%s" уже существует!`, *form.Login)
 			}
 		}
 		if errMessage != "" {

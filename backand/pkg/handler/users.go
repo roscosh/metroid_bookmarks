@@ -41,9 +41,9 @@ type FormChangePassword struct {
 // @Tags users
 // @Accept json
 // @Produce json
-// @Param q query forms.GetUsers true "getAllUsers"
-// @Success 200 {object} responses.GetUsersResponse
-// @Failure 404 {object} responses.ErrorResponse
+// @Param q query FormGetUsers true "getAllUsers"
+// @Success 200 {object} ResponseGetUsers
+// @Failure 404 {object} ErrorResponse
 // @Router /users/get_all [get]
 func (h *Handler) getAllUsers(c *gin.Context) {
 	var form FormGetUsers
@@ -71,10 +71,10 @@ func (h *Handler) getAllUsers(c *gin.Context) {
 // @Tags users
 // @Accept json
 // @Produce json
-// @Param input body forms.CreateUser true "createUser"
-// @Success 200 {object} responses.CreateUser
-// @Failure 404 {object} responses.ErrorResponse
-// @Router /users/create [post]
+// @Param input body FormCreateUser true "createUser"
+// @Success 200 {object} ResponseCreateUser
+// @Failure 404 {object} ErrorResponse
+// @Router /users/ [post]
 func (h *Handler) createUser(c *gin.Context) {
 	var form FormCreateUser
 	err := c.ShouldBindWith(&form, binding.JSON)
@@ -82,7 +82,7 @@ func (h *Handler) createUser(c *gin.Context) {
 		h.Response404(c, err)
 		return
 	}
-	user, err := h.services.Users.Create(form.Name, form.Username, form.Password, form.Role)
+	user, err := h.services.Users.Create(form.CreateUser)
 	if err != nil {
 		h.Response404(c, err)
 		return
@@ -96,9 +96,9 @@ func (h *Handler) createUser(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param id path int true "User ID"
-// @Success 200 {object} responses.DeleteUser
-// @Failure 404 {object} responses.ErrorResponse
-// @Router /users/delete/{id} [delete]
+// @Success 200 {object} ResponseDeleteUser
+// @Failure 404 {object} ErrorResponse
+// @Router /users/{id} [delete]
 func (h *Handler) deleteUser(c *gin.Context) {
 	id, err := h.getPathID(c)
 	if err != nil {
@@ -119,10 +119,10 @@ func (h *Handler) deleteUser(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param id path int true "User ID"
-// @Param input body forms.EditUser true "editUser"
-// @Success 200 {object} responses.EditUser
-// @Failure 404 {object} responses.ErrorResponse
-// @Router /users/edit/{id} [put]
+// @Param input body FormEditUser true "editUser"
+// @Success 200 {object} ResponseEditUser
+// @Failure 404 {object} ErrorResponse
+// @Router /users/{id} [put]
 func (h *Handler) editUser(c *gin.Context) {
 	id, err := h.getPathID(c)
 	if err != nil {
@@ -150,9 +150,9 @@ func (h *Handler) editUser(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param id path int true "User ID"
-// @Param input body forms.ChangePassword true "changePassword"
-// @Success 200 {object} responses.ChangePasswordUser
-// @Failure 404 {object} responses.ErrorResponse
+// @Param input body FormChangePassword true "changePassword"
+// @Success 200 {object} ResponseChangePassword
+// @Failure 404 {object} ErrorResponse
 // @Router /users/change_password/{id} [put]
 func (h *Handler) changePassword(c *gin.Context) {
 	id, err := h.getPathID(c)

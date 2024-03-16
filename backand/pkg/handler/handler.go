@@ -36,9 +36,9 @@ func (h *Handler) InitRoutes() *gin.Engine {
 	users := api.Group("/users", h.authRequired)
 	{
 		users.GET("/get_all", h.getAllUsers)
-		users.POST("/create", h.adminRequired, h.createUser)
-		users.DELETE("/delete/:id", h.adminRequired, h.deleteUser)
-		users.PUT("/edit/:id", h.adminRequired, h.editUser)
+		users.POST("/", h.adminRequired, h.createUser)
+		users.DELETE("/:id", h.adminRequired, h.deleteUser)
+		users.PUT("/:id", h.adminRequired, h.editUser)
 		users.PUT("/change_password/:id", h.adminRequired, h.changePassword)
 	}
 	return router

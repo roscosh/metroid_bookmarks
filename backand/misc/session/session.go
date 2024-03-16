@@ -27,11 +27,7 @@ func (s *Session) IsAuthenticated() bool {
 }
 
 func (s *Session) IsAdmin() bool {
-	if s.Role == "admin" {
-		return true
-	} else {
-		return false
-	}
+	return s.User.IsAdmin
 }
 
 func (s *Session) SetSession(user *sql.User) {

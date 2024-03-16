@@ -20,9 +20,9 @@ func newAuthService(sql *sql.UsersSQL) *AuthService {
 	return &AuthService{sql: sql}
 }
 
-func (s *AuthService) Login(username string, password string, session *Session) (*Session, error) {
+func (s *AuthService) Login(login string, password string, session *Session) (*Session, error) {
 	token := generatePasswordHash(password)
-	user, err := s.sql.GetUserByCredentials(username, token)
+	user, err := s.sql.GetUserByCredentials(login, token)
 	if err != nil {
 		return nil, errors.New("Нет пользователя с таки логином/паролем!")
 	}

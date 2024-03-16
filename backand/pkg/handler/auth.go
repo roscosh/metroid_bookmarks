@@ -22,7 +22,7 @@ func NewErrorResponse(err error) *ErrorResponse {
 }
 
 type FormLogin struct {
-	Username string `json:"username" binding:"required"`
+	Login    string `json:"login" binding:"required"`
 	Password string `json:"password" binding:"required,min=8,max=32"`
 }
 
@@ -35,10 +35,7 @@ type ResponseLogout struct {
 }
 
 type FormCreateUser struct {
-	Name     string `json:"name"      binding:"required"`
-	Username string `json:"username"  binding:"required"`
-	Password string `json:"password"  binding:"required,min=8,max=32"`
-	Role     string `json:"role"      binding:"required"`
+	*sql.CreateUser
 }
 
 type ResponseCreateUser struct {
@@ -49,8 +46,8 @@ type ResponseCreateUser struct {
 // @Security HeaderAuth
 // @Tags auth
 // @Accept json
-// @Success 200 {object} responses.Me
-// @Failure 401,404 {object} responses.ErrorResponse
+// @Success 200 {object} ResponseMe
+// @Failure 401,404 {object} ErrorResponse
 // @Router /auth/me [get]
 func (h *Handler) me(c *gin.Context) {
 	//Depends
@@ -64,9 +61,9 @@ func (h *Handler) me(c *gin.Context) {
 // @Tags auth
 // @Accept json
 // @Produce json
-// @Param input body forms.Login true "login"
-// @Success 200 {object} responses.Login
-// @Failure 401,404 {object} responses.ErrorResponse
+// @Param input body FormLogin true "login"
+// @Success 200 {object} ResponseLogin
+// @Failure 401,404 {object} ErrorResponse
 // @Router /auth/login [post]
 func (h *Handler) login(c *gin.Context) {
 	//Depends
@@ -83,7 +80,7 @@ func (h *Handler) login(c *gin.Context) {
 		h.Response404(c, err)
 		return
 	}
-	sessionObj, err = h.services.Authorization.Login(form.Username, form.Password, sessionObj)
+	sessionObj, err = h.services.Authorization.Login(form.Login, form.Password, sessionObj)
 	if err != nil {
 		h.Response404(c, err)
 		return
@@ -96,8 +93,8 @@ func (h *Handler) login(c *gin.Context) {
 // @Security HeaderAuth
 // @Tags auth
 // @Accept json
-// @Success 200 {object} responses.Logout
-// @Failure 401,404 {object} responses.ErrorResponse
+// @Success 200 {object} ResponseLogout
+// @Failure 401,404 {object} ErrorResponse
 // @Router /auth/logout [post]
 func (h *Handler) logout(c *gin.Context) {
 	//Depends
@@ -113,9 +110,9 @@ func (h *Handler) logout(c *gin.Context) {
 // @Tags auth
 // @Accept json
 // @Produce json
-// @Param input body forms.CreateUser true "signUp"
-// @Success 200 {object} responses.CreateUser
-// @Failure 404 {object} responses.ErrorResponse
+// @Param input body FormCreateUser true "signUp"
+// @Success 200 {object} ResponseCreateUser
+// @Failure 404 {object} ErrorResponse
 // @Router /auth/sign_up [post]
 func (h *Handler) signUp(c *gin.Context) {
 	var form FormCreateUser
@@ -124,7 +121,7 @@ func (h *Handler) signUp(c *gin.Context) {
 		h.Response404(c, err)
 		return
 	}
-	user, err := h.services.Users.Create(form.Name, form.Username, form.Password, form.Role)
+	user, err := h.services.Users.Create(form.CreateUser)
 	if err != nil {
 		h.Response404(c, err)
 		return
