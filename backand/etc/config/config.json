@@ -1,0 +1,9 @@
+{
+  "debug": true,
+  "db": {
+    "dsn": "postgres://postgres:postgres@db:5432/postgres?sslmode=disable"
+  },
+  "redis": {
+    "dsn": "redis://redis"
+  }
+}
