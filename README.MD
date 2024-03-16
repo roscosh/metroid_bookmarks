@@ -1,3 +1,3 @@
 # METROID BOOKMARKS
 
-![alt text](repository_files/metroid-svgrepo-com.svg)
+<img alt="text" height="100" src="repository_files/metroid-svgrepo-com.svg" width="100"/>
