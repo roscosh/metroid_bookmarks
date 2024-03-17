@@ -2,11 +2,14 @@ version: '3.8'
 
 services:
   web:
-    build: ./etc/docker/Dockerfile
+    build:
+      context: .
+      dockerfile: ./etc/docker/Dockerfile
     ports:
       - "3000:3000"
     volumes:
       - .:/usr/src/app
+      -  /usr/src/app/data
     command: air ./cmd/main.go -b 0.0.0.0
     links:
       - redis
@@ -16,6 +19,8 @@ services:
         condition: service_healthy
       redis:
         condition: service_started
+    environment:
+      - DB_CONFIG=etc/config/config.json
   db:
     image: postgres:alpine
     environment:

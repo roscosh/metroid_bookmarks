@@ -27,8 +27,7 @@ var (
 
 func GetConfig() *Config {
 	once.Do(func() {
-		//todo брать из переменной окружения
-		jsonFile, err := os.Open("etc/config/config.json")
+		jsonFile, err := os.Open(os.Getenv("DB_CONFIG"))
 		if err != nil {
 			panic("No config file!")
 		}

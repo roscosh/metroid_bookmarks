@@ -38,7 +38,6 @@ func main() {
 	}
 	newRedis := redis.NewRedis(redisClient)
 	newService := service.NewService(SQL, newRedis)
-	handlers := handler.NewHandler(newService, config)
 
 	if config.Debug {
 		gin.SetMode(gin.DebugMode)
@@ -47,7 +46,7 @@ func main() {
 	}
 	srv := new(misc.Server)
 	go func() {
-		if err = srv.Run(handlers.InitRoutes()); err != nil {
+		if err = srv.Run(handler.InitRoutes(newService, config)); err != nil {
 			logger.Errorf("error occured while running http server: %s", err.Error())
 		}
 	}()
