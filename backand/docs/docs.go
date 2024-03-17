@@ -39,7 +39,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/handler.FormLogin"
+                            "$ref": "#/definitions/auth.formLogin"
                         }
                     }
                 ],
@@ -47,19 +47,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/handler.ResponseLogin"
+                            "$ref": "#/definitions/auth.responseLogin"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/handler.ErrorResponse"
+                            "$ref": "#/definitions/baseApi.ErrorResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/handler.ErrorResponse"
+                            "$ref": "#/definitions/baseApi.ErrorResponse"
                         }
                     }
                 }
@@ -83,19 +83,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/handler.ResponseLogout"
+                            "$ref": "#/definitions/auth.responseLogout"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/handler.ErrorResponse"
+                            "$ref": "#/definitions/baseApi.ErrorResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/handler.ErrorResponse"
+                            "$ref": "#/definitions/baseApi.ErrorResponse"
                         }
                     }
                 }
@@ -119,19 +119,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/handler.ResponseMe"
+                            "$ref": "#/definitions/auth.responseMe"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/handler.ErrorResponse"
+                            "$ref": "#/definitions/baseApi.ErrorResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/handler.ErrorResponse"
+                            "$ref": "#/definitions/baseApi.ErrorResponse"
                         }
                     }
                 }
@@ -161,7 +161,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/handler.FormCreateUser"
+                            "$ref": "#/definitions/users.FormCreateUser"
                         }
                     }
                 ],
@@ -169,13 +169,13 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/handler.ResponseCreateUser"
+                            "$ref": "#/definitions/users.ResponseCreateUser"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/handler.ErrorResponse"
+                            "$ref": "#/definitions/baseApi.ErrorResponse"
                         }
                     }
                 }
@@ -205,7 +205,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/handler.FormCreateUser"
+                            "$ref": "#/definitions/users.FormCreateUser"
                         }
                     }
                 ],
@@ -213,13 +213,13 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/handler.ResponseCreateUser"
+                            "$ref": "#/definitions/users.ResponseCreateUser"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/handler.ErrorResponse"
+                            "$ref": "#/definitions/baseApi.ErrorResponse"
                         }
                     }
                 }
@@ -256,7 +256,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/handler.FormChangePassword"
+                            "$ref": "#/definitions/users.formChangePassword"
                         }
                     }
                 ],
@@ -264,53 +264,13 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/handler.ResponseChangePassword"
+                            "$ref": "#/definitions/users.responseChangePassword"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/handler.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/users/get_all": {
-            "get": {
-                "security": [
-                    {
-                        "HeaderAuth": []
-                    }
-                ],
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "users"
-                ],
-                "summary": "getAllUsers",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "name": "search",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/handler.ResponseGetUsers"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/handler.ErrorResponse"
+                            "$ref": "#/definitions/baseApi.ErrorResponse"
                         }
                     }
                 }
@@ -347,7 +307,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/handler.FormEditUser"
+                            "$ref": "#/definitions/users.formEditUser"
                         }
                     }
                 ],
@@ -355,13 +315,13 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/handler.ResponseEditUser"
+                            "$ref": "#/definitions/users.responseEditUser"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/handler.ErrorResponse"
+                            "$ref": "#/definitions/baseApi.ErrorResponse"
                         }
                     }
                 }
@@ -395,13 +355,13 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/handler.ResponseDeleteUser"
+                            "$ref": "#/definitions/users.responseDeleteUser"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/handler.ErrorResponse"
+                            "$ref": "#/definitions/baseApi.ErrorResponse"
                         }
                     }
                 }
@@ -409,20 +369,16 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "handler.ErrorResponse": {
-            "type": "object",
-            "properties": {
-                "error": {
-                    "type": "string"
-                }
-            }
-        },
-        "handler.FormChangePassword": {
+        "auth.formLogin": {
             "type": "object",
             "required": [
+                "login",
                 "password"
             ],
             "properties": {
+                "login": {
+                    "type": "string"
+                },
                 "password": {
                     "type": "string",
                     "maxLength": 32,
@@ -430,7 +386,101 @@ const docTemplate = `{
                 }
             }
         },
-        "handler.FormCreateUser": {
+        "auth.responseLogin": {
+            "type": "object",
+            "properties": {
+                "expires": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "is_admin": {
+                    "type": "boolean"
+                },
+                "login": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "token": {
+                    "type": "string"
+                }
+            }
+        },
+        "auth.responseLogout": {
+            "type": "object",
+            "properties": {
+                "expires": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "is_admin": {
+                    "type": "boolean"
+                },
+                "login": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "token": {
+                    "type": "string"
+                }
+            }
+        },
+        "auth.responseMe": {
+            "type": "object",
+            "properties": {
+                "expires": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "is_admin": {
+                    "type": "boolean"
+                },
+                "login": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "token": {
+                    "type": "string"
+                }
+            }
+        },
+        "baseApi.ErrorResponse": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string"
+                }
+            }
+        },
+        "sql.User": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "is_admin": {
+                    "type": "boolean"
+                },
+                "login": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "users.FormCreateUser": {
             "type": "object",
             "required": [
                 "is_admin",
@@ -455,9 +505,12 @@ const docTemplate = `{
                 }
             }
         },
-        "handler.FormEditUser": {
+        "users.ResponseCreateUser": {
             "type": "object",
             "properties": {
+                "id": {
+                    "type": "integer"
+                },
                 "is_admin": {
                     "type": "boolean"
                 },
@@ -469,16 +522,12 @@ const docTemplate = `{
                 }
             }
         },
-        "handler.FormLogin": {
+        "users.formChangePassword": {
             "type": "object",
             "required": [
-                "login",
                 "password"
             ],
             "properties": {
-                "login": {
-                    "type": "string"
-                },
                 "password": {
                     "type": "string",
                     "maxLength": 32,
@@ -486,7 +535,21 @@ const docTemplate = `{
                 }
             }
         },
-        "handler.ResponseChangePassword": {
+        "users.formEditUser": {
+            "type": "object",
+            "properties": {
+                "is_admin": {
+                    "type": "boolean"
+                },
+                "login": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "users.responseChangePassword": {
             "type": "object",
             "properties": {
                 "id": {
@@ -503,7 +566,7 @@ const docTemplate = `{
                 }
             }
         },
-        "handler.ResponseCreateUser": {
+        "users.responseDeleteUser": {
             "type": "object",
             "properties": {
                 "id": {
@@ -520,7 +583,7 @@ const docTemplate = `{
                 }
             }
         },
-        "handler.ResponseDeleteUser": {
+        "users.responseEditUser": {
             "type": "object",
             "properties": {
                 "id": {
@@ -537,24 +600,7 @@ const docTemplate = `{
                 }
             }
         },
-        "handler.ResponseEditUser": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "integer"
-                },
-                "is_admin": {
-                    "type": "boolean"
-                },
-                "login": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                }
-            }
-        },
-        "handler.ResponseGetUsers": {
+        "users.responseGetUsers": {
             "type": "object",
             "properties": {
                 "data": {
@@ -565,92 +611,6 @@ const docTemplate = `{
                 },
                 "total": {
                     "type": "integer"
-                }
-            }
-        },
-        "handler.ResponseLogin": {
-            "type": "object",
-            "properties": {
-                "expires": {
-                    "type": "integer"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "is_admin": {
-                    "type": "boolean"
-                },
-                "login": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "token": {
-                    "type": "string"
-                }
-            }
-        },
-        "handler.ResponseLogout": {
-            "type": "object",
-            "properties": {
-                "expires": {
-                    "type": "integer"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "is_admin": {
-                    "type": "boolean"
-                },
-                "login": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "token": {
-                    "type": "string"
-                }
-            }
-        },
-        "handler.ResponseMe": {
-            "type": "object",
-            "properties": {
-                "expires": {
-                    "type": "integer"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "is_admin": {
-                    "type": "boolean"
-                },
-                "login": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "token": {
-                    "type": "string"
-                }
-            }
-        },
-        "sql.User": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "integer"
-                },
-                "is_admin": {
-                    "type": "boolean"
-                },
-                "login": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
                 }
             }
         }

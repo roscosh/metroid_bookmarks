@@ -4,7 +4,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"metroid_bookmarks/pkg/handler/api/base_api"
-	"metroid_bookmarks/pkg/handler/api/v1/auth"
 	"net/http"
 )
 
@@ -13,11 +12,11 @@ import (
 // @Tags users
 // @Accept json
 // @Produce json
-// @Param q query FormGetUsers true "getAllUsers"
-// @Success 200 {object} ResponseGetUsers
-// @Failure 404 {object} ErrorResponse
+// @Param q query formGetUsers true "getAllUsers"
+// @Success 200 {object} responseGetUsers
+// @Failure 404 {object} baseApi.ErrorResponse
 func (h *UsersRouter) getAllUsers(c *gin.Context) {
-	var form FormGetUsers
+	var form formGetUsers
 	err := c.ShouldBindWith(&form, binding.Query)
 	if err != nil {
 		baseApi.Response404(c, err)
@@ -30,7 +29,7 @@ func (h *UsersRouter) getAllUsers(c *gin.Context) {
 	}
 	c.JSON(
 		http.StatusOK,
-		ResponseGetUsers{
+		responseGetUsers{
 			Data:  users,
 			Total: total,
 		},
@@ -44,10 +43,10 @@ func (h *UsersRouter) getAllUsers(c *gin.Context) {
 // @Produce json
 // @Param input body FormCreateUser true "createUser"
 // @Success 200 {object} ResponseCreateUser
-// @Failure 404 {object} ErrorResponse
+// @Failure 404 {object} baseApi.ErrorResponse
 // @Router /users/ [post]
 func (h *UsersRouter) createUser(c *gin.Context) {
-	var form auth.FormCreateUser
+	var form FormCreateUser
 	err := c.ShouldBindWith(&form, binding.JSON)
 	if err != nil {
 		baseApi.Response404(c, err)
@@ -58,7 +57,7 @@ func (h *UsersRouter) createUser(c *gin.Context) {
 		baseApi.Response404(c, err)
 		return
 	}
-	c.JSON(http.StatusOK, auth.ResponseCreateUser{User: user})
+	c.JSON(http.StatusOK, ResponseCreateUser{User: user})
 }
 
 // @Summary deleteUser
@@ -67,8 +66,8 @@ func (h *UsersRouter) createUser(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param id path int true "User ID"
-// @Success 200 {object} ResponseDeleteUser
-// @Failure 404 {object} ErrorResponse
+// @Success 200 {object} responseDeleteUser
+// @Failure 404 {object} baseApi.ErrorResponse
 // @Router /users/{id} [delete]
 func (h *UsersRouter) deleteUser(c *gin.Context) {
 	id, err := baseApi.GetPathID(c)
@@ -81,7 +80,7 @@ func (h *UsersRouter) deleteUser(c *gin.Context) {
 		baseApi.Response404(c, err)
 		return
 	}
-	c.JSON(http.StatusOK, ResponseDeleteUser{User: user})
+	c.JSON(http.StatusOK, responseDeleteUser{User: user})
 }
 
 // @Summary editUser
@@ -90,9 +89,9 @@ func (h *UsersRouter) deleteUser(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param id path int true "User ID"
-// @Param input body FormEditUser true "editUser"
-// @Success 200 {object} ResponseEditUser
-// @Failure 404 {object} ErrorResponse
+// @Param input body formEditUser true "editUser"
+// @Success 200 {object} responseEditUser
+// @Failure 404 {object} baseApi.ErrorResponse
 // @Router /users/{id} [put]
 func (h *UsersRouter) editUser(c *gin.Context) {
 	id, err := baseApi.GetPathID(c)
@@ -101,7 +100,7 @@ func (h *UsersRouter) editUser(c *gin.Context) {
 		return
 	}
 
-	var form FormEditUser
+	var form formEditUser
 	err = c.ShouldBindWith(&form, binding.JSON)
 	if err != nil {
 		baseApi.Response404(c, err)
@@ -112,7 +111,7 @@ func (h *UsersRouter) editUser(c *gin.Context) {
 		baseApi.Response404(c, err)
 		return
 	}
-	c.JSON(http.StatusOK, ResponseEditUser{User: user})
+	c.JSON(http.StatusOK, responseEditUser{User: user})
 }
 
 // @Summary changePassword
@@ -121,9 +120,9 @@ func (h *UsersRouter) editUser(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param id path int true "User ID"
-// @Param input body FormChangePassword true "changePassword"
-// @Success 200 {object} ResponseChangePassword
-// @Failure 404 {object} ErrorResponse
+// @Param input body formChangePassword true "changePassword"
+// @Success 200 {object} responseChangePassword
+// @Failure 404 {object} baseApi.ErrorResponse
 // @Router /users/change_password/{id} [put]
 func (h *UsersRouter) changePassword(c *gin.Context) {
 	id, err := baseApi.GetPathID(c)
@@ -131,7 +130,7 @@ func (h *UsersRouter) changePassword(c *gin.Context) {
 		baseApi.Response404(c, err)
 		return
 	}
-	var form FormChangePassword
+	var form formChangePassword
 	err = c.ShouldBindWith(&form, binding.JSON)
 	if err != nil {
 		baseApi.Response404(c, err)
@@ -142,5 +141,5 @@ func (h *UsersRouter) changePassword(c *gin.Context) {
 		baseApi.Response404(c, err)
 		return
 	}
-	c.JSON(http.StatusOK, ResponseChangePassword{User: user})
+	c.JSON(http.StatusOK, responseChangePassword{User: user})
 }
