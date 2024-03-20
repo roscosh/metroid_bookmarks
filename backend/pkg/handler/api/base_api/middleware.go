@@ -22,7 +22,7 @@ func NewHandler(service *service.MiddlewareService, config *misc.Config) *Handle
 }
 
 func (h *Handler) GetSession(c *gin.Context) {
-	token := c.GetHeader(session.HeadersSessionName)
+	token, _ := c.Cookie(session.CookieSessionName)
 	sessionObj, err := h.service.GetExistSession(token)
 	if err != nil {
 		sessionObj, err = h.service.CreateSession()
@@ -33,8 +33,8 @@ func (h *Handler) GetSession(c *gin.Context) {
 		}
 	}
 	c.Set(UserCtx, sessionObj)
-	c.Header(session.HeadersSessionName, sessionObj.Token)
 
+	SetCookie(c, sessionObj)
 	c.Next()
 
 	h.service.UpdateSession(sessionObj)

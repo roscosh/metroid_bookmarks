@@ -15,14 +15,11 @@ import (
 
 var logger = misc.GetLogger()
 
-// @title Cups Management API
+// @title Template Web API
 // @version 1.0
-// @description API Server for Cups Management Application
+// @description Template API Server for Web App
 // @host localhost:3000
 // @BasePath /api/v1
-// @securityDefinitions.apikey HeaderAuth
-// @in header
-// @name X-Session
 func main() {
 	config := misc.GetConfig()
 
@@ -51,13 +48,13 @@ func main() {
 		}
 	}()
 
-	logger.Info("Cups management started.")
+	logger.Info("Template Web API started.")
 
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGTERM, syscall.SIGINT)
 	<-quit
 
-	logger.Info("Cups management shutting down.")
+	logger.Info("Template Web API shutting down.")
 
 	if err = srv.Shutdown(context.Background()); err != nil {
 		logger.Errorf("error occured on server shutting down: %s\n", err.Error())

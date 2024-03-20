@@ -8,7 +8,6 @@ import (
 )
 
 // @Summary getAllUsers
-// @Security HeaderAuth
 // @Tags users
 // @Accept json
 // @Produce json
@@ -37,7 +36,6 @@ func (h *UsersRouter) getAllUsers(c *gin.Context) {
 }
 
 // @Summary createUser
-// @Security HeaderAuth
 // @Tags users
 // @Accept json
 // @Produce json
@@ -61,7 +59,6 @@ func (h *UsersRouter) createUser(c *gin.Context) {
 }
 
 // @Summary deleteUser
-// @Security HeaderAuth
 // @Tags users
 // @Accept json
 // @Produce json
@@ -84,7 +81,6 @@ func (h *UsersRouter) deleteUser(c *gin.Context) {
 }
 
 // @Summary editUser
-// @Security HeaderAuth
 // @Tags users
 // @Accept json
 // @Produce json
@@ -115,7 +111,6 @@ func (h *UsersRouter) editUser(c *gin.Context) {
 }
 
 // @Summary changePassword
-// @Security HeaderAuth
 // @Tags users
 // @Accept json
 // @Produce json

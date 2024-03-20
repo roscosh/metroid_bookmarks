@@ -5,6 +5,8 @@ import (
 	"metroid_bookmarks/pkg/service"
 )
 
+var logger = misc.GetLogger()
+
 type BaseAPIRouter struct {
 	Middleware *Handler
 	Config     *misc.Config

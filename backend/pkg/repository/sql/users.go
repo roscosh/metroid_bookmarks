@@ -12,13 +12,13 @@ type UsersSQL struct {
 	*postgresPool
 }
 
-//type UserId struct {
-//
-//}
+type baseUser struct {
+	ID   int    `json:"id"       db:"id"`
+	Name string `json:"name"     db:"name"`
+}
 
 type User struct {
-	ID      int    `json:"id"       db:"id"`
-	Name    string `json:"name"     db:"name"`
+	baseUser
 	Login   string `json:"login"    db:"login"`
 	IsAdmin bool   `json:"is_admin" db:"is_admin"`
 }
@@ -45,7 +45,7 @@ func NewUsersSQL(pool *postgresPool) *UsersSQL {
 }
 
 func (s *UsersSQL) GetUserByID(userID int) (*User, error) {
-	query := fmt.Sprintf("SELECT  id, name, login, is_admin FROM %s WHERE id = $1", usersTable)
+	query := fmt.Sprintf("SELECT %s FROM %s WHERE id = $1", getDbTags(User{}), usersTable)
 	rows, err := s.pool.Query(s.ctx, query, userID)
 	user, err := pgx.CollectOneRow(rows, pgx.RowToStructByName[User])
 	return &user, err

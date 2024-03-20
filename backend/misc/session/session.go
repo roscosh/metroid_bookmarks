@@ -9,7 +9,7 @@ import (
 const (
 	AnonymousExpires     = 3600
 	AuthenticatedExpires = 2592000
-	HeadersSessionName   = "X-Session"
+	CookieSessionName    = "X-Session"
 )
 
 type Session struct {

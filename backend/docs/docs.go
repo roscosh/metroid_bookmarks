@@ -17,11 +17,6 @@ const docTemplate = `{
     "paths": {
         "/auth/login": {
             "post": {
-                "security": [
-                    {
-                        "HeaderAuth": []
-                    }
-                ],
                 "consumes": [
                     "application/json"
                 ],
@@ -67,11 +62,6 @@ const docTemplate = `{
         },
         "/auth/logout": {
             "post": {
-                "security": [
-                    {
-                        "HeaderAuth": []
-                    }
-                ],
                 "consumes": [
                     "application/json"
                 ],
@@ -103,11 +93,6 @@ const docTemplate = `{
         },
         "/auth/me": {
             "get": {
-                "security": [
-                    {
-                        "HeaderAuth": []
-                    }
-                ],
                 "consumes": [
                     "application/json"
                 ],
@@ -139,11 +124,6 @@ const docTemplate = `{
         },
         "/auth/sign_up": {
             "post": {
-                "security": [
-                    {
-                        "HeaderAuth": []
-                    }
-                ],
                 "consumes": [
                     "application/json"
                 ],
@@ -183,11 +163,6 @@ const docTemplate = `{
         },
         "/users/": {
             "post": {
-                "security": [
-                    {
-                        "HeaderAuth": []
-                    }
-                ],
                 "consumes": [
                     "application/json"
                 ],
@@ -227,11 +202,6 @@ const docTemplate = `{
         },
         "/users/change_password/{id}": {
             "put": {
-                "security": [
-                    {
-                        "HeaderAuth": []
-                    }
-                ],
                 "consumes": [
                     "application/json"
                 ],
@@ -278,11 +248,6 @@ const docTemplate = `{
         },
         "/users/{id}": {
             "put": {
-                "security": [
-                    {
-                        "HeaderAuth": []
-                    }
-                ],
                 "consumes": [
                     "application/json"
                 ],
@@ -327,11 +292,6 @@ const docTemplate = `{
                 }
             },
             "delete": {
-                "security": [
-                    {
-                        "HeaderAuth": []
-                    }
-                ],
                 "consumes": [
                     "application/json"
                 ],
@@ -614,13 +574,6 @@ const docTemplate = `{
                 }
             }
         }
-    },
-    "securityDefinitions": {
-        "HeaderAuth": {
-            "type": "apiKey",
-            "name": "X-Session",
-            "in": "header"
-        }
     }
 }`
 
@@ -630,8 +583,8 @@ var SwaggerInfo = &swag.Spec{
 	Host:             "localhost:3000",
 	BasePath:         "/api/v1",
 	Schemes:          []string{},
-	Title:            "Cups Management API",
-	Description:      "API Server for Cups Management Application",
+	Title:            "Template Web API",
+	Description:      "Template API Server for Web App",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",

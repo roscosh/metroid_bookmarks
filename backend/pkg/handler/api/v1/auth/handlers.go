@@ -11,7 +11,6 @@ import (
 )
 
 // @Summary me
-// @Security HeaderAuth
 // @Tags auth
 // @Accept json
 // @Success 200 {object} responseMe
@@ -25,7 +24,6 @@ func (h *AuthRouter) me(c *gin.Context) {
 }
 
 // @Summary login
-// @Security HeaderAuth
 // @Tags auth
 // @Accept json
 // @Produce json
@@ -53,12 +51,11 @@ func (h *AuthRouter) login(c *gin.Context) {
 		baseApi.Response404(c, err)
 		return
 	}
-	c.Header(session.HeadersSessionName, sessionObj.Token)
+	baseApi.SetCookie(c, sessionObj)
 	c.JSON(http.StatusOK, responseLogin{Session: sessionObj})
 }
 
 // @Summary logout
-// @Security HeaderAuth
 // @Tags auth
 // @Accept json
 // @Success 200 {object} responseLogout
@@ -69,12 +66,11 @@ func (h *AuthRouter) logout(c *gin.Context) {
 	sessionObj := c.MustGet(baseApi.UserCtx).(*session.Session)
 
 	sessionObj = h.authService.Logout(sessionObj)
-	c.Header(session.HeadersSessionName, sessionObj.Token)
+	baseApi.SetCookie(c, sessionObj)
 	c.JSON(http.StatusOK, responseLogout{Session: sessionObj})
 }
 
 // @Summary signUp (только для разработки)
-// @Security HeaderAuth
 // @Tags auth
 // @Accept json
 // @Produce json
