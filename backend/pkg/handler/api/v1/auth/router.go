@@ -26,7 +26,9 @@ func NewAuthRouter(
 
 func (h *AuthRouter) RegisterRoutes(router *gin.RouterGroup) {
 	router.GET("/me", h.me)
-	router.POST("/sign_up", h.signUp) //ТОЛЬКО ДЛЯ ТЕСТОВ, на продакшене использовать /users/create
+	if h.Config.Debug {
+		router.POST("/sign_up", h.signUp) //ТОЛЬКО ДЛЯ ТЕСТОВ, на продакшене использовать /users/create
+	}
 	router.POST("/login", h.login)
 	router.POST("/logout", h.Middleware.AuthRequired, h.logout)
 }

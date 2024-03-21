@@ -14,6 +14,7 @@ import (
 // @Param q query formGetUsers true "getAllUsers"
 // @Success 200 {object} responseGetUsers
 // @Failure 404 {object} baseApi.ErrorResponse
+// @Router /users/get_all [get]
 func (h *UsersRouter) getAllUsers(c *gin.Context) {
 	var form formGetUsers
 	err := c.ShouldBindWith(&form, binding.Query)

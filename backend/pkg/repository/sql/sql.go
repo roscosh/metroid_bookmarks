@@ -5,7 +5,7 @@ type SQL struct {
 }
 
 func (s *SQL) Close() {
-	s.Users.pool.Close()
+	s.Users.baseSQL.pool.Close()
 }
 
 func NewSQL(dsn string) (*SQL, error) {
