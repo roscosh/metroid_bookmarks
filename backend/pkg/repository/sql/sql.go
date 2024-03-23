@@ -55,33 +55,6 @@ func deleteById[T any](baseSQL *baseSQL, table string, pk int) (*T, error) {
 	return &structObj, err
 }
 
-func getDbTags(structObj interface{}) string {
-	structType := reflect.TypeOf(structObj)
-	var dbTagArray []string
-
-	var traverseFields func(reflect.Type)
-
-	traverseFields = func(t reflect.Type) {
-		for i := 0; i < t.NumField(); i++ {
-			field := t.Field(i)
-
-			// Если поле встраивается из другой структуры
-			if field.Anonymous {
-				traverseFields(field.Type)
-				continue
-			}
-
-			// Иначе получаем тэги и добавляем их к списку
-			dbTag := field.Tag.Get("db")
-			dbTagArray = append(dbTagArray, dbTag)
-		}
-	}
-
-	traverseFields(structType)
-
-	return strings.Join(dbTagArray, ", ")
-}
-
 func insert[T any](baseSQL *baseSQL, table string, createStruct interface{}) (*T, error) {
 	var returningStruct T
 	query, args, err := getInsertQuery(table, createStruct, returningStruct)
@@ -176,4 +149,31 @@ func total(baseSQL *baseSQL, table string) (int, error) {
 	query := fmt.Sprintf("SELECT COUNT(*) FROM %s ", table)
 	var count int
 	return count, baseSQL.queryRow(query).Scan(&count)
+}
+
+func getDbTags(structObj interface{}) string {
+	structType := reflect.TypeOf(structObj)
+	var dbTagArray []string
+
+	var traverseFields func(reflect.Type)
+
+	traverseFields = func(t reflect.Type) {
+		for i := 0; i < t.NumField(); i++ {
+			field := t.Field(i)
+
+			// Если поле встраивается из другой структуры
+			if field.Anonymous {
+				traverseFields(field.Type)
+				continue
+			}
+
+			// Иначе получаем тэги и добавляем их к списку
+			dbTag := field.Tag.Get("db")
+			dbTagArray = append(dbTagArray, dbTag)
+		}
+	}
+
+	traverseFields(structType)
+
+	return strings.Join(dbTagArray, ", ")
 }

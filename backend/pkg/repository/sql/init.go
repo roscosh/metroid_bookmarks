@@ -7,6 +7,7 @@ var logger = misc.GetLogger()
 type SQL struct {
 	Users *UsersSQL
 	Areas *AreasSQL
+	Rooms *RoomsSQL
 }
 
 func (s *SQL) Close() {
@@ -21,5 +22,6 @@ func NewSQL(dsn string) (*SQL, error) {
 	return &SQL{
 		Users: NewUsersSQL(pool),
 		Areas: NewAreasSQL(pool),
+		Rooms: NewRoomsSQL(pool),
 	}, nil
 }
