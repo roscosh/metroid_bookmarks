@@ -15,11 +15,11 @@ func InitRoutes(service *service.Service, config *misc.Config) *gin.Engine {
 	router := gin.New()
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
-	baseAPIRouter := baseApi.NewBaseAPIRouter(service, config)
+	baseAPIRouter := baseApi.NewRouter(service, config)
 
 	apiGroup := router.Group("/api/")
-	apiRouter := api.NewApiRouter(baseAPIRouter, service)
-	apiRouter.RegisterRoutes(apiGroup)
+	apiRouter := api.NewRouter(baseAPIRouter, service)
+	apiRouter.RegisterHandlers(apiGroup)
 
 	return router
 }

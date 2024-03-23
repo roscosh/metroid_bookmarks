@@ -12,16 +12,16 @@ const (
 	UserCtx = "userId"
 )
 
-type Handler struct {
+type Middleware struct {
 	service *service.MiddlewareService
 	config  *misc.Config
 }
 
-func NewHandler(service *service.MiddlewareService, config *misc.Config) *Handler {
-	return &Handler{service: service, config: config}
+func NewMiddleware(service *service.MiddlewareService, config *misc.Config) *Middleware {
+	return &Middleware{service: service, config: config}
 }
 
-func (h *Handler) GetSession(c *gin.Context) {
+func (h *Middleware) GetSession(c *gin.Context) {
 	token, _ := c.Cookie(session.CookieSessionName)
 	sessionObj, err := h.service.GetExistSession(token)
 	if err != nil {
@@ -40,7 +40,7 @@ func (h *Handler) GetSession(c *gin.Context) {
 	h.service.UpdateSession(sessionObj)
 }
 
-func (h *Handler) AdminRequired(c *gin.Context) {
+func (h *Middleware) AdminRequired(c *gin.Context) {
 	sessionObj := c.MustGet(UserCtx).(*session.Session)
 
 	if !sessionObj.IsAdmin() {
@@ -50,7 +50,7 @@ func (h *Handler) AdminRequired(c *gin.Context) {
 	}
 }
 
-func (h *Handler) AuthRequired(c *gin.Context) {
+func (h *Middleware) AuthRequired(c *gin.Context) {
 	sessionObj := c.MustGet(UserCtx).(*session.Session)
 
 	if !sessionObj.IsAuthenticated() {

@@ -9,31 +9,31 @@ import (
 	"metroid_bookmarks/pkg/service"
 )
 
-type V1Router struct {
-	*baseApi.BaseAPIRouter
+type router struct {
+	*baseApi.Router
 	service *service.Service
 }
 
-func NewV1Router(
-	baseAPIHandler *baseApi.BaseAPIRouter,
+func NewRouter(
+	baseAPIRouter *baseApi.Router,
 	service *service.Service,
-) *V1Router {
-	return &V1Router{
-		BaseAPIRouter: baseAPIHandler,
-		service:       service,
+) baseApi.ApiRouter {
+	return &router{
+		Router:  baseAPIRouter,
+		service: service,
 	}
 }
 
-func (h *V1Router) RegisterRoutes(router *gin.RouterGroup) {
+func (h *router) RegisterHandlers(router *gin.RouterGroup) {
 	authGroup := router.Group("/auth")
-	authRouter := auth.NewRouter(h.BaseAPIRouter, h.service.Authorization)
-	authRouter.RegisterRoutes(authGroup)
+	authRouter := auth.NewRouter(h.Router, h.service.Authorization)
+	authRouter.RegisterHandlers(authGroup)
 
 	usersGroup := router.Group("/users", h.Middleware.AdminRequired)
-	usersRouter := users.NewRouter(h.BaseAPIRouter, h.service.Users)
-	usersRouter.RegisterRoutes(usersGroup)
+	usersRouter := users.NewRouter(h.Router, h.service.Users)
+	usersRouter.RegisterHandlers(usersGroup)
 
 	areasGroup := router.Group("/areas", h.Middleware.AuthRequired)
-	areasRouter := areas.NewRouter(h.BaseAPIRouter, h.service.Areas)
-	areasRouter.RegisterRoutes(areasGroup)
+	areasRouter := areas.NewRouter(h.Router, h.service.Areas)
+	areasRouter.RegisterHandlers(areasGroup)
 }

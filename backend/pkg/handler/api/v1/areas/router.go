@@ -7,15 +7,21 @@ import (
 )
 
 type router struct {
-	*baseApi.BaseAPIRouter
+	*baseApi.Router
 	service *service.AreasService
 }
 
-func NewRouter(baseAPIRouter *baseApi.BaseAPIRouter, service *service.AreasService) *router {
-	return &router{BaseAPIRouter: baseAPIRouter, service: service}
+func NewRouter(
+	baseAPIRouter *baseApi.Router,
+	service *service.AreasService,
+) baseApi.ApiRouter {
+	return &router{
+		Router:  baseAPIRouter,
+		service: service,
+	}
 }
 
-func (h *router) RegisterRoutes(router *gin.RouterGroup) {
+func (h *router) RegisterHandlers(router *gin.RouterGroup) {
 	router.POST("/", h.Middleware.AdminRequired, h.create)
 	router.DELETE("/:id", h.Middleware.AdminRequired, h.delete)
 	router.PUT("/:id", h.Middleware.AdminRequired, h.edit)

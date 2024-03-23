@@ -4,7 +4,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"metroid_bookmarks/pkg/handler/api/base_api"
-	"net/http"
 )
 
 // @Summary create
@@ -27,7 +26,7 @@ func (h *router) create(c *gin.Context) {
 		baseApi.Response404(c, err)
 		return
 	}
-	c.JSON(http.StatusOK, createResponse{Area: area})
+	baseApi.Response200(c, createResponse{Area: area})
 }
 
 // @Summary edit
@@ -56,7 +55,7 @@ func (h *router) edit(c *gin.Context) {
 		baseApi.Response404(c, err)
 		return
 	}
-	c.JSON(http.StatusOK, editResponse{Area: area})
+	baseApi.Response200(c, editResponse{Area: area})
 }
 
 // @Summary delete
@@ -78,7 +77,7 @@ func (h *router) delete(c *gin.Context) {
 		baseApi.Response404(c, err)
 		return
 	}
-	c.JSON(http.StatusOK, deleteResponse{Area: area})
+	baseApi.Response200(c, deleteResponse{Area: area})
 }
 
 // @Summary getAll
@@ -94,5 +93,5 @@ func (h *router) getAll(c *gin.Context) {
 		baseApi.Response404(c, err)
 		return
 	}
-	c.JSON(http.StatusOK, getAllResponse{Data: area, Total: total})
+	baseApi.Response200(c, getAllResponse{Data: area, Total: total})
 }

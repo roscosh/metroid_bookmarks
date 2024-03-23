@@ -6,7 +6,6 @@ import (
 	"github.com/gin-gonic/gin/binding"
 	"metroid_bookmarks/misc/session"
 	"metroid_bookmarks/pkg/handler/api/base_api"
-	"net/http"
 )
 
 // @Summary login
@@ -19,7 +18,6 @@ import (
 // @Router /auth/login [post]
 func (h *router) login(c *gin.Context) {
 	sessionObj := c.MustGet(baseApi.UserCtx).(*session.Session)
-
 	if sessionObj.IsAuthenticated() {
 		baseApi.Response401(c, errors.New("You are already authorized!"))
 		return
@@ -37,7 +35,7 @@ func (h *router) login(c *gin.Context) {
 		return
 	}
 	baseApi.SetCookie(c, sessionObj)
-	c.JSON(http.StatusOK, loginResponse{Session: sessionObj})
+	baseApi.Response200(c, loginResponse{Session: sessionObj})
 }
 
 // @Summary logout
@@ -52,7 +50,7 @@ func (h *router) logout(c *gin.Context) {
 
 	sessionObj = h.service.Logout(sessionObj)
 	baseApi.SetCookie(c, sessionObj)
-	c.JSON(http.StatusOK, logoutResponse{Session: sessionObj})
+	baseApi.Response200(c, logoutResponse{Session: sessionObj})
 }
 
 // @Summary me
@@ -65,7 +63,7 @@ func (h *router) me(c *gin.Context) {
 	//Depends
 	sessionObj := c.MustGet(baseApi.UserCtx).(*session.Session)
 
-	c.JSON(http.StatusOK, meResponse{Session: sessionObj})
+	baseApi.Response200(c, meResponse{Session: sessionObj})
 }
 
 // @Summary signUp (только для разработки)
@@ -88,5 +86,5 @@ func (h *router) signUp(c *gin.Context) {
 		baseApi.Response404(c, err)
 		return
 	}
-	c.JSON(http.StatusOK, signUpResponse{User: user})
+	baseApi.Response200(c, signUpResponse{User: user})
 }

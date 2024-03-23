@@ -4,7 +4,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"metroid_bookmarks/pkg/handler/api/base_api"
-	"net/http"
 )
 
 // @Summary changePassword
@@ -33,7 +32,7 @@ func (h *router) changePassword(c *gin.Context) {
 		baseApi.Response404(c, err)
 		return
 	}
-	c.JSON(http.StatusOK, changePasswordResponse{User: user})
+	baseApi.Response200(c, changePasswordResponse{User: user})
 }
 
 // @Summary delete
@@ -55,7 +54,7 @@ func (h *router) delete(c *gin.Context) {
 		baseApi.Response404(c, err)
 		return
 	}
-	c.JSON(http.StatusOK, deleteResponse{User: user})
+	baseApi.Response200(c, deleteResponse{User: user})
 }
 
 // @Summary edit
@@ -85,7 +84,7 @@ func (h *router) edit(c *gin.Context) {
 		baseApi.Response404(c, err)
 		return
 	}
-	c.JSON(http.StatusOK, editResponse{User: user})
+	baseApi.Response200(c, editResponse{User: user})
 }
 
 // @Summary getAll
@@ -108,11 +107,5 @@ func (h *router) getAll(c *gin.Context) {
 		baseApi.Response404(c, err)
 		return
 	}
-	c.JSON(
-		http.StatusOK,
-		getAllResponse{
-			Data:  users,
-			Total: total,
-		},
-	)
+	baseApi.Response200(c, getAllResponse{Data: users, Total: total})
 }

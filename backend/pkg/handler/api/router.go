@@ -7,23 +7,23 @@ import (
 	"metroid_bookmarks/pkg/service"
 )
 
-type ApiRouter struct {
-	*baseApi.BaseAPIRouter
+type router struct {
+	*baseApi.Router
 	service *service.Service
 }
 
-func NewApiRouter(
-	baseAPIHandler *baseApi.BaseAPIRouter,
+func NewRouter(
+	baseAPIRouter *baseApi.Router,
 	service *service.Service,
-) *ApiRouter {
-	return &ApiRouter{
-		BaseAPIRouter: baseAPIHandler,
-		service:       service,
+) baseApi.ApiRouter {
+	return &router{
+		Router:  baseAPIRouter,
+		service: service,
 	}
 }
 
-func (h *ApiRouter) RegisterRoutes(router *gin.RouterGroup) {
+func (h *router) RegisterHandlers(router *gin.RouterGroup) {
 	v1Group := router.Group("/v1", h.Middleware.GetSession)
-	v1Router := v1.NewV1Router(h.BaseAPIRouter, h.service)
-	v1Router.RegisterRoutes(v1Group)
+	v1Router := v1.NewRouter(h.Router, h.service)
+	v1Router.RegisterHandlers(v1Group)
 }

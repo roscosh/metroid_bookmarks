@@ -7,21 +7,21 @@ import (
 )
 
 type router struct {
-	*baseApi.BaseAPIRouter
+	*baseApi.Router
 	service *service.AuthService
 }
 
 func NewRouter(
-	baseAPIHandler *baseApi.BaseAPIRouter,
+	baseAPIRouter *baseApi.Router,
 	service *service.AuthService,
-) *router {
+) baseApi.ApiRouter {
 	return &router{
-		BaseAPIRouter: baseAPIHandler,
-		service:       service,
+		Router:  baseAPIRouter,
+		service: service,
 	}
 }
 
-func (h *router) RegisterRoutes(router *gin.RouterGroup) {
+func (h *router) RegisterHandlers(router *gin.RouterGroup) {
 	router.GET("/me", h.me)
 	router.POST("/sign_up", h.signUp)
 	router.POST("/login", h.login)

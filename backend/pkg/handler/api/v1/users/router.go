@@ -7,21 +7,21 @@ import (
 )
 
 type router struct {
-	*baseApi.BaseAPIRouter
+	*baseApi.Router
 	service *service.UsersService
 }
 
 func NewRouter(
-	baseAPIHandler *baseApi.BaseAPIRouter,
+	baseAPIRouter *baseApi.Router,
 	usersService *service.UsersService,
-) *router {
+) baseApi.ApiRouter {
 	return &router{
-		BaseAPIRouter: baseAPIHandler,
-		service:       usersService,
+		Router:  baseAPIRouter,
+		service: usersService,
 	}
 }
 
-func (h *router) RegisterRoutes(router *gin.RouterGroup) {
+func (h *router) RegisterHandlers(router *gin.RouterGroup) {
 	router.GET("/get_all", h.getAll)
 	router.DELETE("/:id", h.delete)
 	router.PUT("/:id", h.edit)
