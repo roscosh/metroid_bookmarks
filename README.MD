@@ -44,3 +44,33 @@ cd backend
 sudo docker compose exec web go install github.com/swaggo/swag/cmd/swag@latest
 sudo docker compose exec web swag init -g cmd/main.go
 ```
+
+## PRODUCTION
+
+### 1. Обновление Backend
+
+1. Сменить тестовые параметры на реальные в [config.json](backend/etc/config/config.json). Параметр "debug" равен false.
+
+2. Удалить проксирование портов службы web в [docker-compose.yml](backend/docker-compose.yml#L7):
+
+3. Выполнить команду обновления контейнеров:
+
+ ```bash
+ docker compose up
+ ```
+
+### 2. Обновление Frontend
+
+1. Скопировать директорию [deploy](server_files/deploy) в репозиторий icups-management:
+
+```bash
+cp -r server_files/deploy/ /frontend/deploy
+```
+
+2. Создать и запустить контейнер фронтенда:
+
+```bash
+cd frontend
+sudo docker build -t icups -f ./.deploy/docker/Dockerfile .
+sudo docker run -p 80:80 --name icups --network backend_default icups
+``

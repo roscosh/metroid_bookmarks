@@ -6,26 +6,24 @@ import (
 	"metroid_bookmarks/pkg/service"
 )
 
-type UsersRouter struct {
+type router struct {
 	*baseApi.BaseAPIRouter
-	usersService *service.UsersService
+	service *service.UsersService
 }
 
-func NewUsersRouter(
+func NewRouter(
 	baseAPIHandler *baseApi.BaseAPIRouter,
 	usersService *service.UsersService,
-) *UsersRouter {
-	return &UsersRouter{
+) *router {
+	return &router{
 		BaseAPIRouter: baseAPIHandler,
-		usersService:  usersService,
+		service:       usersService,
 	}
 }
 
-func (h *UsersRouter) RegisterRoutes(router *gin.RouterGroup) {
-	router.GET("/get_all", h.getAllUsers)
-	router.POST("/", h.Middleware.AdminRequired, h.createUser)
-	router.DELETE("/:id", h.Middleware.AdminRequired, h.deleteUser)
-	router.PUT("/:id", h.Middleware.AdminRequired, h.editUser)
-	router.PUT("/change_password/:id", h.Middleware.AdminRequired, h.changePassword)
-
+func (h *router) RegisterRoutes(router *gin.RouterGroup) {
+	router.GET("/get_all", h.getAll)
+	router.DELETE("/:id", h.delete)
+	router.PUT("/:id", h.edit)
+	router.PUT("/change_password/:id", h.changePassword)
 }

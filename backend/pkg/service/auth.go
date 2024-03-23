@@ -26,13 +26,24 @@ func (s *AuthService) Login(login string, password string, session *Session) (*S
 	if err != nil {
 		return nil, errors.New("Нет пользователя с таки логином/паролем!")
 	}
-	session.SetSession(user)
+	session.SetUser(user)
 	return session, nil
 }
 
 func (s *AuthService) Logout(session *Session) *Session {
-	session.ResetSession()
+	session.ResetUser()
 	return session
+}
+
+func (s *AuthService) SignUp(createForm *sql.CreateUser) (*sql.User, error) {
+	createForm.Password = generatePasswordHash(createForm.Password)
+	user, err := s.sql.Create(createForm)
+	if err != nil {
+		logger.Error(err.Error())
+		err = createPgError(err)
+		return nil, err
+	}
+	return user, nil
 }
 
 func generatePasswordHash(password string) string {

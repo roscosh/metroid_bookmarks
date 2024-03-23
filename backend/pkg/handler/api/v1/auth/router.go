@@ -6,29 +6,24 @@ import (
 	"metroid_bookmarks/pkg/service"
 )
 
-type AuthRouter struct {
+type router struct {
 	*baseApi.BaseAPIRouter
-	authService  *service.AuthService
-	usersService *service.UsersService
+	service *service.AuthService
 }
 
-func NewAuthRouter(
+func NewRouter(
 	baseAPIHandler *baseApi.BaseAPIRouter,
-	authService *service.AuthService,
-	usersService *service.UsersService,
-) *AuthRouter {
-	return &AuthRouter{
+	service *service.AuthService,
+) *router {
+	return &router{
 		BaseAPIRouter: baseAPIHandler,
-		authService:   authService,
-		usersService:  usersService,
+		service:       service,
 	}
 }
 
-func (h *AuthRouter) RegisterRoutes(router *gin.RouterGroup) {
+func (h *router) RegisterRoutes(router *gin.RouterGroup) {
 	router.GET("/me", h.me)
-	if h.Config.Debug {
-		router.POST("/sign_up", h.signUp) //ТОЛЬКО ДЛЯ ТЕСТОВ, на продакшене использовать /users/create
-	}
+	router.POST("/sign_up", h.signUp)
 	router.POST("/login", h.login)
 	router.POST("/logout", h.Middleware.AuthRequired, h.logout)
 }

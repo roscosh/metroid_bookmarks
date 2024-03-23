@@ -30,12 +30,12 @@ func (s *Session) IsAdmin() bool {
 	return s.User.IsAdmin
 }
 
-func (s *Session) SetSession(user *sql.User) {
+func (s *Session) SetUser(user *sql.User) {
 	s.User = *user
 	s.Expires = AuthenticatedExpires
 }
 
-func (s *Session) ResetSession() {
+func (s *Session) ResetUser() {
 	s.User = sql.User{}
 	s.Expires = AnonymousExpires
 }

@@ -2,39 +2,31 @@ package users
 
 import "metroid_bookmarks/pkg/repository/sql"
 
-type formGetUsers struct {
-	Search string `form:"search"`
-}
-
-type responseGetUsers struct {
-	Data  []sql.User `json:"data"`
-	Total int        `json:"total"`
-}
-
-type responseDeleteUser struct {
+type changePasswordResponse struct {
 	*sql.User
 }
 
-type formEditUser struct {
-	sql.EditUser
-}
-
-type responseEditUser struct {
-	*sql.User
-}
-
-type responseChangePassword struct {
-	*sql.User
-}
-
-type formChangePassword struct {
+type changePasswordForm struct {
 	sql.ChangePassword
 }
 
-type FormCreateUser struct {
-	*sql.CreateUser
+type deleteResponse struct {
+	*sql.User
 }
 
-type ResponseCreateUser struct {
+type editForm struct {
+	*sql.EditUser
+}
+
+type editResponse struct {
 	*sql.User
+}
+
+type getAllForm struct {
+	Search string `form:"search"`
+}
+
+type getAllResponse struct {
+	Data  []sql.User `json:"data"`
+	Total int        `json:"total"`
 }

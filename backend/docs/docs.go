@@ -15,6 +15,154 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/areas/": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "areas"
+                ],
+                "summary": "create",
+                "parameters": [
+                    {
+                        "description": "create",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/areas.createForm"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/areas.createResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/baseApi.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/areas/get_all": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "areas"
+                ],
+                "summary": "getAll",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/areas.getAllResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/baseApi.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/areas/{id}": {
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "areas"
+                ],
+                "summary": "edit",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "edit",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/areas.editForm"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/areas.editResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/baseApi.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "areas"
+                ],
+                "summary": "delete",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/areas.deleteResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/baseApi.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/auth/login": {
             "post": {
                 "consumes": [
@@ -141,7 +289,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/users.FormCreateUser"
+                            "$ref": "#/definitions/auth.FormSignUp"
                         }
                     }
                 ],
@@ -149,46 +297,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/users.ResponseCreateUser"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/baseApi.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/users/": {
-            "post": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "users"
-                ],
-                "summary": "createUser",
-                "parameters": [
-                    {
-                        "description": "createUser",
-                        "name": "input",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/users.FormCreateUser"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/users.ResponseCreateUser"
+                            "$ref": "#/definitions/auth.signUpResponse"
                         }
                     },
                     "404": {
@@ -215,7 +324,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "User ID",
+                        "description": "ID",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -226,7 +335,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/users.formChangePassword"
+                            "$ref": "#/definitions/users.changePasswordForm"
                         }
                     }
                 ],
@@ -234,7 +343,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/users.responseChangePassword"
+                            "$ref": "#/definitions/users.changePasswordResponse"
                         }
                     },
                     "404": {
@@ -257,7 +366,7 @@ const docTemplate = `{
                 "tags": [
                     "users"
                 ],
-                "summary": "getAllUsers",
+                "summary": "getAll",
                 "parameters": [
                     {
                         "type": "string",
@@ -269,7 +378,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/users.responseGetUsers"
+                            "$ref": "#/definitions/users.getAllResponse"
                         }
                     },
                     "404": {
@@ -292,22 +401,22 @@ const docTemplate = `{
                 "tags": [
                     "users"
                 ],
-                "summary": "editUser",
+                "summary": "edit",
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "User ID",
+                        "description": "ID",
                         "name": "id",
                         "in": "path",
                         "required": true
                     },
                     {
-                        "description": "editUser",
+                        "description": "edit",
                         "name": "input",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/users.formEditUser"
+                            "$ref": "#/definitions/users.editForm"
                         }
                     }
                 ],
@@ -315,7 +424,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/users.responseEditUser"
+                            "$ref": "#/definitions/users.editResponse"
                         }
                     },
                     "404": {
@@ -336,11 +445,11 @@ const docTemplate = `{
                 "tags": [
                     "users"
                 ],
-                "summary": "deleteUser",
+                "summary": "delete",
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "User ID",
+                        "description": "ID",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -350,7 +459,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/users.responseDeleteUser"
+                            "$ref": "#/definitions/users.deleteResponse"
                         }
                     },
                     "404": {
@@ -364,6 +473,109 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "areas.createForm": {
+            "type": "object",
+            "required": [
+                "name_en",
+                "name_ru"
+            ],
+            "properties": {
+                "name_en": {
+                    "type": "string"
+                },
+                "name_ru": {
+                    "type": "string"
+                }
+            }
+        },
+        "areas.createResponse": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name_en": {
+                    "type": "string"
+                },
+                "name_ru": {
+                    "type": "string"
+                }
+            }
+        },
+        "areas.deleteResponse": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name_en": {
+                    "type": "string"
+                },
+                "name_ru": {
+                    "type": "string"
+                }
+            }
+        },
+        "areas.editForm": {
+            "type": "object",
+            "properties": {
+                "name_en": {
+                    "type": "string"
+                },
+                "name_ru": {
+                    "type": "string"
+                }
+            }
+        },
+        "areas.editResponse": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name_en": {
+                    "type": "string"
+                },
+                "name_ru": {
+                    "type": "string"
+                }
+            }
+        },
+        "areas.getAllResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/sql.Area"
+                    }
+                },
+                "total": {
+                    "type": "integer"
+                }
+            }
+        },
+        "auth.FormSignUp": {
+            "type": "object",
+            "required": [
+                "login",
+                "name",
+                "password"
+            ],
+            "properties": {
+                "login": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string",
+                    "maxLength": 32,
+                    "minLength": 8
+                }
+            }
+        },
         "auth.formLogin": {
             "type": "object",
             "required": [
@@ -450,10 +662,41 @@ const docTemplate = `{
                 }
             }
         },
+        "auth.signUpResponse": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "is_admin": {
+                    "type": "boolean"
+                },
+                "login": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
         "baseApi.ErrorResponse": {
             "type": "object",
             "properties": {
                 "error": {
+                    "type": "string"
+                }
+            }
+        },
+        "sql.Area": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name_en": {
+                    "type": "string"
+                },
+                "name_ru": {
                     "type": "string"
                 }
             }
@@ -475,49 +718,7 @@ const docTemplate = `{
                 }
             }
         },
-        "users.FormCreateUser": {
-            "type": "object",
-            "required": [
-                "is_admin",
-                "login",
-                "name",
-                "password"
-            ],
-            "properties": {
-                "is_admin": {
-                    "type": "boolean"
-                },
-                "login": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "password": {
-                    "type": "string",
-                    "maxLength": 32,
-                    "minLength": 8
-                }
-            }
-        },
-        "users.ResponseCreateUser": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "integer"
-                },
-                "is_admin": {
-                    "type": "boolean"
-                },
-                "login": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                }
-            }
-        },
-        "users.formChangePassword": {
+        "users.changePasswordForm": {
             "type": "object",
             "required": [
                 "password"
@@ -530,21 +731,7 @@ const docTemplate = `{
                 }
             }
         },
-        "users.formEditUser": {
-            "type": "object",
-            "properties": {
-                "is_admin": {
-                    "type": "boolean"
-                },
-                "login": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                }
-            }
-        },
-        "users.responseChangePassword": {
+        "users.changePasswordResponse": {
             "type": "object",
             "properties": {
                 "id": {
@@ -561,7 +748,7 @@ const docTemplate = `{
                 }
             }
         },
-        "users.responseDeleteUser": {
+        "users.deleteResponse": {
             "type": "object",
             "properties": {
                 "id": {
@@ -578,7 +765,21 @@ const docTemplate = `{
                 }
             }
         },
-        "users.responseEditUser": {
+        "users.editForm": {
+            "type": "object",
+            "properties": {
+                "is_admin": {
+                    "type": "boolean"
+                },
+                "login": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "users.editResponse": {
             "type": "object",
             "properties": {
                 "id": {
@@ -595,7 +796,7 @@ const docTemplate = `{
                 }
             }
         },
-        "users.responseGetUsers": {
+        "users.getAllResponse": {
             "type": "object",
             "properties": {
                 "data": {

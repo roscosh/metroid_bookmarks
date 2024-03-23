@@ -6,33 +6,18 @@ import (
 	"github.com/gin-gonic/gin/binding"
 	"metroid_bookmarks/misc/session"
 	"metroid_bookmarks/pkg/handler/api/base_api"
-	"metroid_bookmarks/pkg/handler/api/v1/users"
 	"net/http"
 )
-
-// @Summary me
-// @Tags auth
-// @Accept json
-// @Success 200 {object} responseMe
-// @Failure 401,404 {object} baseApi.ErrorResponse
-// @Router /auth/me [get]
-func (h *AuthRouter) me(c *gin.Context) {
-	//Depends
-	sessionObj := c.MustGet(baseApi.UserCtx).(*session.Session)
-
-	c.JSON(http.StatusOK, responseMe{Session: sessionObj})
-}
 
 // @Summary login
 // @Tags auth
 // @Accept json
 // @Produce json
-// @Param input body formLogin true "login"
-// @Success 200 {object} responseLogin
+// @Param input body loginForm true "login"
+// @Success 200 {object} loginResponse
 // @Failure 401,404 {object} baseApi.ErrorResponse
 // @Router /auth/login [post]
-func (h *AuthRouter) login(c *gin.Context) {
-	//Depends
+func (h *router) login(c *gin.Context) {
 	sessionObj := c.MustGet(baseApi.UserCtx).(*session.Session)
 
 	if sessionObj.IsAuthenticated() {
@@ -40,55 +25,68 @@ func (h *AuthRouter) login(c *gin.Context) {
 		return
 	}
 
-	var form formLogin
+	var form loginForm
 	err := c.ShouldBindWith(&form, binding.JSON)
 	if err != nil {
 		baseApi.Response404(c, err)
 		return
 	}
-	sessionObj, err = h.authService.Login(form.Login, form.Password, sessionObj)
+	sessionObj, err = h.service.Login(form.Login, form.Password, sessionObj)
 	if err != nil {
 		baseApi.Response404(c, err)
 		return
 	}
 	baseApi.SetCookie(c, sessionObj)
-	c.JSON(http.StatusOK, responseLogin{Session: sessionObj})
+	c.JSON(http.StatusOK, loginResponse{Session: sessionObj})
 }
 
 // @Summary logout
 // @Tags auth
 // @Accept json
-// @Success 200 {object} responseLogout
+// @Success 200 {object} logoutResponse
 // @Failure 401,404 {object} baseApi.ErrorResponse
 // @Router /auth/logout [post]
-func (h *AuthRouter) logout(c *gin.Context) {
+func (h *router) logout(c *gin.Context) {
 	//Depends
 	sessionObj := c.MustGet(baseApi.UserCtx).(*session.Session)
 
-	sessionObj = h.authService.Logout(sessionObj)
+	sessionObj = h.service.Logout(sessionObj)
 	baseApi.SetCookie(c, sessionObj)
-	c.JSON(http.StatusOK, responseLogout{Session: sessionObj})
+	c.JSON(http.StatusOK, logoutResponse{Session: sessionObj})
+}
+
+// @Summary me
+// @Tags auth
+// @Accept json
+// @Success 200 {object} meResponse
+// @Failure 401,404 {object} baseApi.ErrorResponse
+// @Router /auth/me [get]
+func (h *router) me(c *gin.Context) {
+	//Depends
+	sessionObj := c.MustGet(baseApi.UserCtx).(*session.Session)
+
+	c.JSON(http.StatusOK, meResponse{Session: sessionObj})
 }
 
 // @Summary signUp (только для разработки)
 // @Tags auth
 // @Accept json
 // @Produce json
-// @Param input body  users.FormCreateUser true "signUp"
-// @Success 200 {object}  users.ResponseCreateUser
+// @Param input body signUpForm true "signUp"
+// @Success 200 {object}  signUpResponse
 // @Failure 404 {object} baseApi.ErrorResponse
 // @Router /auth/sign_up [post]
-func (h *AuthRouter) signUp(c *gin.Context) {
-	var form users.FormCreateUser
+func (h *router) signUp(c *gin.Context) {
+	var form signUpForm
 	err := c.ShouldBindWith(&form, binding.JSON)
 	if err != nil {
 		baseApi.Response404(c, err)
 		return
 	}
-	user, err := h.usersService.Create(form.CreateUser)
+	user, err := h.service.SignUp(form.CreateUser)
 	if err != nil {
 		baseApi.Response404(c, err)
 		return
 	}
-	c.JSON(http.StatusOK, users.ResponseCreateUser{User: user})
+	c.JSON(http.StatusOK, signUpResponse{User: user})
 }
