@@ -1,20 +1,19 @@
-package api
+package bookmarks
 
 import (
 	"github.com/gin-gonic/gin"
-	"metroid_bookmarks/pkg/handler/api/base_api"
-	"metroid_bookmarks/pkg/handler/api/v1"
+	baseApi "metroid_bookmarks/pkg/handler/api/base_api"
 	"metroid_bookmarks/pkg/service"
 )
 
 type router struct {
 	*baseApi.Router
-	service *service.Service
+	service *service.BookmarksService
 }
 
 func NewRouter(
 	baseAPIRouter *baseApi.Router,
-	service *service.Service,
+	service *service.BookmarksService,
 ) baseApi.ApiRouter {
 	return &router{
 		Router:  baseAPIRouter,
@@ -23,7 +22,8 @@ func NewRouter(
 }
 
 func (h *router) RegisterHandlers(router *gin.RouterGroup) {
-	v1Group := router.Group("/v1", h.Middleware.SessionRequired)
-	v1Router := v1.NewRouter(h.Router, h.service)
-	v1Router.RegisterHandlers(v1Group)
+	router.POST("/", h.create)
+	router.DELETE("/:id", h.delete)
+	router.PUT("/:id", h.edit)
+	router.GET("/get_all", h.getAll)
 }

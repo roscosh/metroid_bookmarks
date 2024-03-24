@@ -15,6 +15,7 @@ type Service struct {
 	Areas         *AreasService
 	Rooms         *RoomsService
 	Skills        *SkillsService
+	Bookmarks     *BookmarksService
 }
 
 func NewService(sql *sql.SQL, redis *redis.Redis) *Service {
@@ -25,5 +26,6 @@ func NewService(sql *sql.SQL, redis *redis.Redis) *Service {
 		Areas:         newAreasService(sql.Areas),
 		Rooms:         newRoomsService(sql.Rooms),
 		Skills:        newSkillsService(sql.Skills),
+		Bookmarks:     newBookmarksService(sql.Bookmarks),
 	}
 }

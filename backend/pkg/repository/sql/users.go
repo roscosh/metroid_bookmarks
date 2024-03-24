@@ -30,13 +30,13 @@ type CreateUser struct {
 }
 
 type EditUser struct {
-	Name    *string `json:"name"     db:"name"`
-	Login   *string `json:"login"    db:"login"`
-	IsAdmin *bool   `json:"is_admin" db:"is_admin"`
+	Name     *string `db:"name"`
+	Login    *string `db:"login"`
+	IsAdmin  *bool   `db:"is_admin"`
+	Password *string `db:"password"`
 }
 
 type ChangePassword struct {
-	Password *string `json:"password" db:"password" binding:"required,min=8,max=32"`
 }
 
 func (s *UsersSQL) GetUserByID(id int) (*User, error) {
@@ -73,10 +73,6 @@ func (s *UsersSQL) Search(search string) ([]User, error) {
 	query := fmt.Sprintf("%s ORDER BY id DESC", tableString)
 	rows, _ := s.baseSQL.query(query)
 	return pgx.CollectRows(rows, pgx.RowToStructByName[User])
-}
-
-func (s *UsersSQL) ChangePassword(id int, form ChangePassword) (*User, error) {
-	return update[User](s.baseSQL, usersTable, id, form)
 }
 
 func (s *UsersSQL) Total() (int, error) {

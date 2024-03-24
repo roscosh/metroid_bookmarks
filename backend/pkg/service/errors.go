@@ -9,19 +9,15 @@ import (
 )
 
 func createPgError(err error) error {
-	var pgxErr *pgconn.PgError
+	var pgErr *pgconn.PgError
 	var errMessage string
 	switch {
-	case errors.As(err, &pgxErr):
-		switch pgxErr.Code {
+	case errors.As(err, &pgErr):
+		switch pgErr.Code {
 		case "23505":
-			re := regexp.MustCompile(`Key \((\w+)\)=\(([^)]+)\)`)
-			match := re.FindStringSubmatch(pgxErr.Detail)
-			if len(match) >= 3 {
-				field := match[1]
-				value := match[2]
-				errMessage = fmt.Sprintf(`Field "%s" with value "%s" already exists!`, field, value)
-			}
+			errMessage = parsePgErr23505(pgErr)
+		case "23503":
+			errMessage = parsePgErr23503(pgErr)
 		}
 	}
 	if errMessage != "" {
@@ -31,21 +27,17 @@ func createPgError(err error) error {
 }
 
 func editPgError(err error, id int) error {
-	var pgxErr *pgconn.PgError
+	var pgErr *pgconn.PgError
 	var errMessage string
 	switch {
 	case errors.Is(err, pgx.ErrNoRows):
 		errMessage = fmt.Sprintf(`No row with id="%v"!`, id)
-	case errors.As(err, &pgxErr):
-		switch pgxErr.Code {
+	case errors.As(err, &pgErr):
+		switch pgErr.Code {
 		case "23505":
-			re := regexp.MustCompile(`Key \((\w+)\)=\(([^)]+)\)`)
-			match := re.FindStringSubmatch(pgxErr.Detail)
-			if len(match) >= 3 {
-				field := match[1]
-				value := match[2]
-				errMessage = fmt.Sprintf(`Field "%s" with value "%s" already exists!`, field, value)
-			}
+			errMessage = parsePgErr23505(pgErr)
+		case "23503":
+			errMessage = parsePgErr23503(pgErr)
 		}
 	}
 	if errMessage != "" {
@@ -61,4 +53,26 @@ func deletePgError(err error, id int) error {
 		return errors.New(errMessage)
 	}
 	return err
+}
+
+func parsePgErr23505(pgErr *pgconn.PgError) string {
+	re := regexp.MustCompile(`Key \((\w+)\)=\(([^)]+)\)`)
+	match := re.FindStringSubmatch(pgErr.Detail)
+	if len(match) >= 3 {
+		field := match[1]
+		value := match[2]
+		return fmt.Sprintf(`Field "%s" with value "%s" already exists!`, field, value)
+	}
+	return ""
+}
+
+func parsePgErr23503(pgErr *pgconn.PgError) string {
+	re := regexp.MustCompile(`Key \((\w+)\)=\(([^)]+)\)`)
+	match := re.FindStringSubmatch(pgErr.Detail)
+	if len(match) >= 3 {
+		field := match[1]
+		value := match[2]
+		return fmt.Sprintf(`Field "%s" with value "%s" don't exists!`, field, value)
+	}
+	return ""
 }

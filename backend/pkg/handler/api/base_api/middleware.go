@@ -21,7 +21,7 @@ func NewMiddleware(service *service.MiddlewareService, config *misc.Config) *Mid
 	return &Middleware{service: service, config: config}
 }
 
-func (h *Middleware) GetSession(c *gin.Context) {
+func (h *Middleware) SessionRequired(c *gin.Context) {
 	token, _ := c.Cookie(session.CookieSessionName)
 	sessionObj, err := h.service.GetExistSession(token)
 	if err != nil {
@@ -41,7 +41,7 @@ func (h *Middleware) GetSession(c *gin.Context) {
 }
 
 func (h *Middleware) AdminRequired(c *gin.Context) {
-	sessionObj := c.MustGet(UserCtx).(*session.Session)
+	sessionObj := GetSession(c)
 
 	if !sessionObj.IsAdmin() {
 		Response403(c, errors.New("Нужны права администратора для этого запроса!"))
@@ -51,7 +51,7 @@ func (h *Middleware) AdminRequired(c *gin.Context) {
 }
 
 func (h *Middleware) AuthRequired(c *gin.Context) {
-	sessionObj := c.MustGet(UserCtx).(*session.Session)
+	sessionObj := GetSession(c)
 
 	if !sessionObj.IsAuthenticated() {
 		Response401(c, errors.New("Нужно залогиниться для этого запроса!"))

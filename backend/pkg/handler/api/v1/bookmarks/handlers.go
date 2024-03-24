@@ -1,4 +1,4 @@
-package users
+package bookmarks
 
 import (
 	"github.com/gin-gonic/gin"
@@ -7,71 +7,77 @@ import (
 	"metroid_bookmarks/pkg/repository/sql"
 )
 
-// @Summary changePassword
-// @Tags users
+// @Summary create
+// @Tags bookmarks
 // @Accept json
 // @Produce json
-// @Param id path int true "ID"
-// @Param input body changePasswordForm true "changePassword"
-// @Success 200 {object} changePasswordResponse
+// @Param input body createForm true "create"
+// @Success 200 {object} createResponse
 // @Failure 404 {object} baseApi.ErrorResponse
-// @Router /users/change_password/{id} [put]
-func (h *router) changePassword(c *gin.Context) {
-	id, err := baseApi.GetPathID(c)
+// @router /bookmarks/ [post]
+func (h *router) create(c *gin.Context) {
+	session := baseApi.GetSession(c)
+	var form createForm
+	err := c.ShouldBindWith(&form, binding.JSON)
 	if err != nil {
 		baseApi.Response404(c, err)
 		return
 	}
-	var form changePasswordForm
-	err = c.ShouldBindWith(&form, binding.JSON)
+	if err != nil {
+		baseApi.Response403(c, err)
+		return
+	}
+	sqlForm := &sql.CreateBookmark{
+		UserId:  session.ID,
+		AreaId:  form.AreaId,
+		SkillId: form.SkillId,
+		RoomId:  form.RoomId,
+	}
+	bookmark, err := h.service.Create(sqlForm)
 	if err != nil {
 		baseApi.Response404(c, err)
 		return
 	}
-	user, err := h.service.ChangePassword(id, form.Password)
-	if err != nil {
-		baseApi.Response404(c, err)
-		return
-	}
-	baseApi.Response200(c, changePasswordResponse{User: user})
+	baseApi.Response200(c, createResponse{bookmark})
 }
 
 // @Summary delete
-// @Tags users
+// @Tags bookmarks
 // @Accept json
 // @Produce json
 // @Param id path int true "ID"
 // @Success 200 {object} deleteResponse
 // @Failure 404 {object} baseApi.ErrorResponse
-// @Router /users/{id} [delete]
+// @Router /bookmarks/{id} [delete]
 func (h *router) delete(c *gin.Context) {
+	session := baseApi.GetSession(c)
 	id, err := baseApi.GetPathID(c)
 	if err != nil {
 		baseApi.Response404(c, err)
 		return
 	}
-	user, err := h.service.Delete(id)
+	bookmark, err := h.service.Delete(id, session.ID)
 	if err != nil {
 		baseApi.Response404(c, err)
 		return
 	}
-	baseApi.Response200(c, deleteResponse{User: user})
+	baseApi.Response200(c, deleteResponse{bookmark})
 }
 
 // @Summary edit
-// @Tags users
+// @Tags bookmarks
 // @Accept json
 // @Produce json
 // @Param id path int true "ID"
 // @Param input body editForm true "edit"
-// @Success 200 {object} editResponse
+// @Success 200 {object}  editResponse
 // @Failure 404 {object} baseApi.ErrorResponse
-// @Router /users/{id} [put]
+// @router /bookmarks/{id} [put]
 func (h *router) edit(c *gin.Context) {
+	session := baseApi.GetSession(c)
 	id, err := baseApi.GetPathID(c)
 	if err != nil {
 		baseApi.Response404(c, err)
-		return
 	}
 
 	var form editForm
@@ -80,39 +86,34 @@ func (h *router) edit(c *gin.Context) {
 		baseApi.Response404(c, err)
 		return
 	}
-	var sqlForm = sql.EditUser{
-		Name:    form.Name,
-		Login:   form.Login,
-		IsAdmin: form.IsAdmin,
-	}
-
-	user, err := h.service.Edit(id, &sqlForm)
+	bookmark, err := h.service.Edit(id, session.ID, form.EditBookmark)
 	if err != nil {
 		baseApi.Response404(c, err)
 		return
 	}
-	baseApi.Response200(c, editResponse{User: user})
+	baseApi.Response200(c, editResponse{bookmark})
 }
 
 // @Summary getAll
-// @Tags users
+// @Tags bookmarks
 // @Accept json
 // @Produce json
 // @Param q query getAllForm true "getAll"
-// @Success 200 {object} getAllResponse
+// @Success 200 {object}  getAllResponse
 // @Failure 404 {object} baseApi.ErrorResponse
-// @Router /users/get_all [get]
+// @router /bookmarks/get_all [get]
 func (h *router) getAll(c *gin.Context) {
+	session := baseApi.GetSession(c)
 	var form getAllForm
 	err := c.ShouldBindWith(&form, binding.Query)
 	if err != nil {
 		baseApi.Response404(c, err)
 		return
 	}
-	users, total, err := h.service.GetAll(form.Search)
+	bookmarks, total, err := h.service.GetAll(form.Limit, form.Page, session.ID, form.Completed, form.OrderById)
 	if err != nil {
 		baseApi.Response404(c, err)
 		return
 	}
-	baseApi.Response200(c, getAllResponse{Data: users, Total: total})
+	baseApi.Response200(c, getAllResponse{Data: bookmarks, Total: total})
 }

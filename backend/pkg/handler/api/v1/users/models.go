@@ -7,7 +7,7 @@ type changePasswordResponse struct {
 }
 
 type changePasswordForm struct {
-	sql.ChangePassword
+	Password string `json:"password" binding:"required,min=8,max=32"`
 }
 
 type deleteResponse struct {
@@ -15,7 +15,9 @@ type deleteResponse struct {
 }
 
 type editForm struct {
-	*sql.EditUser
+	Name    *string `json:"name"`
+	Login   *string `json:"login"`
+	IsAdmin *bool   `json:"is_admin"`
 }
 
 type editResponse struct {

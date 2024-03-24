@@ -5,10 +5,11 @@ import "metroid_bookmarks/misc"
 var logger = misc.GetLogger()
 
 type SQL struct {
-	Users  *UsersSQL
-	Areas  *AreasSQL
-	Rooms  *RoomsSQL
-	Skills *SkillsSQL
+	Users     *UsersSQL
+	Areas     *AreasSQL
+	Rooms     *RoomsSQL
+	Skills    *SkillsSQL
+	Bookmarks *BookmarksSQL
 }
 
 func (s *SQL) Close() {
@@ -21,9 +22,10 @@ func NewSQL(dsn string) (*SQL, error) {
 		return nil, err
 	}
 	return &SQL{
-		Users:  NewUsersSQL(pool),
-		Areas:  NewAreasSQL(pool),
-		Rooms:  NewRoomsSQL(pool),
-		Skills: NewSkillsSQL(pool),
+		Users:     NewUsersSQL(pool),
+		Areas:     NewAreasSQL(pool),
+		Rooms:     NewRoomsSQL(pool),
+		Skills:    NewSkillsSQL(pool),
+		Bookmarks: NewBookmarksSQL(pool),
 	}, nil
 }

@@ -16,6 +16,10 @@ func GetPathID(c *gin.Context) (int, error) {
 	return id, err
 }
 
+func GetSession(c *gin.Context) *session.Session {
+	return c.MustGet(UserCtx).(*session.Session)
+}
+
 func SetCookie(c *gin.Context, sessionObj *session.Session) {
 	c.SetCookie(session.CookieSessionName, sessionObj.Token, sessionObj.Expires, "", "", false, false)
 }

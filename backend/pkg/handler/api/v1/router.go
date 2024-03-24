@@ -5,6 +5,7 @@ import (
 	"metroid_bookmarks/pkg/handler/api/base_api"
 	"metroid_bookmarks/pkg/handler/api/v1/areas"
 	"metroid_bookmarks/pkg/handler/api/v1/auth"
+	"metroid_bookmarks/pkg/handler/api/v1/bookmarks"
 	"metroid_bookmarks/pkg/handler/api/v1/rooms"
 	"metroid_bookmarks/pkg/handler/api/v1/skills"
 	"metroid_bookmarks/pkg/handler/api/v1/users"
@@ -46,4 +47,8 @@ func (h *router) RegisterHandlers(router *gin.RouterGroup) {
 	skillsGroup := router.Group("/skills", h.Middleware.AuthRequired)
 	skillsRouter := skills.NewRouter(h.Router, h.service.Skills)
 	skillsRouter.RegisterHandlers(skillsGroup)
+
+	bookmarksGroup := router.Group("/bookmarks", h.Middleware.AuthRequired)
+	bookmarksRouter := bookmarks.NewRouter(h.Router, h.service.Bookmarks)
+	bookmarksRouter.RegisterHandlers(bookmarksGroup)
 }

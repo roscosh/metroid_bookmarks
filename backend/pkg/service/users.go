@@ -13,10 +13,10 @@ func newUsersService(sql *sql.UsersSQL) *UsersService {
 	return &UsersService{sql: sql}
 }
 
-func (s *UsersService) ChangePassword(id int, changePasswordform sql.ChangePassword) (*sql.User, error) {
-	token := generatePasswordHash(*changePasswordform.Password)
-	changePasswordform.Password = &token
-	user, err := s.sql.ChangePassword(id, changePasswordform)
+func (s *UsersService) ChangePassword(id int, password string) (*sql.User, error) {
+	token := generatePasswordHash(password)
+	editForm := sql.EditUser{Password: &token}
+	user, err := s.sql.Edit(id, &editForm)
 	if err != nil {
 		logger.Error(err.Error())
 		err = editPgError(err, id)

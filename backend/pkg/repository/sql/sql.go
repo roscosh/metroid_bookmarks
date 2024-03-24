@@ -1,6 +1,11 @@
 package sql
 
+/*
+#include <stdlib.h>
+*/
+
 import (
+	"C"
 	"context"
 	"errors"
 	"fmt"
@@ -55,6 +60,14 @@ func deleteById[T any](baseSQL *baseSQL, table string, pk int) (*T, error) {
 	return &structObj, err
 }
 
+func deleteWhere[T any](baseSQL *baseSQL, table string, whereStatement string, args ...any) (*T, error) {
+	var structObj T
+	query := fmt.Sprintf(`DELETE FROM %s WHERE %s RETURNING %s`, table, whereStatement, getDbTags(structObj))
+	rows, err := baseSQL.query(query, args...)
+	structObj, err = pgx.CollectOneRow(rows, pgx.RowToStructByName[T])
+	return &structObj, err
+}
+
 func insert[T any](baseSQL *baseSQL, table string, createStruct interface{}) (*T, error) {
 	var returningStruct T
 	query, args, err := getInsertQuery(table, createStruct, returningStruct)
@@ -68,13 +81,30 @@ func insert[T any](baseSQL *baseSQL, table string, createStruct interface{}) (*T
 
 func update[T any](baseSQL *baseSQL, table string, pk int, editStruct interface{}) (*T, error) {
 	var returningStruct T
-	query, args, err := getUpdateQuery(table, pk, editStruct, returningStruct)
+	query, args, err := getUpdateQuery(table, editStruct, returningStruct, "id=$1", pk)
 	if err != nil {
 		return nil, err
 	}
 	rows, err := baseSQL.query(query, args...)
 	returningStruct, err = pgx.CollectOneRow(rows, pgx.RowToStructByName[T])
 	return &returningStruct, err
+}
+
+func updateWhere[T any](baseSQL *baseSQL, table string, editStruct interface{}, where string, args ...any) (*T, error) {
+	var returningStruct T
+	query, args, err := getUpdateQuery(table, editStruct, returningStruct, where, args...)
+	if err != nil {
+		return nil, err
+	}
+	rows, err := baseSQL.query(query, args...)
+	returningStruct, err = pgx.CollectOneRow(rows, pgx.RowToStructByName[T])
+	return &returningStruct, err
+}
+
+func total(baseSQL *baseSQL, table string) (int, error) {
+	query := fmt.Sprintf("SELECT COUNT(*) FROM %s ", table)
+	var count int
+	return count, baseSQL.queryRow(query).Scan(&count)
 }
 
 func getInsertQuery(table string, createInterface interface{}, returningInterface interface{}) (string, []interface{}, error) {
@@ -111,20 +141,21 @@ func getInsertQuery(table string, createInterface interface{}, returningInterfac
 	return query, valuesArray, nil
 }
 
-func getUpdateQuery(table string, pk int, setInterface interface{}, returningInterface interface{}) (string, []interface{}, error) {
+func getUpdateQuery(table string, setInterface interface{}, returningInterface interface{}, where string, args ...any) (string, []interface{}, error) {
+	queryArray := make([]string, 0, 3)
+
 	// Получаем тип структуры
 	userType := reflect.TypeOf(setInterface)
 	// Получаем значение структуры
 	userValue := reflect.ValueOf(setInterface)
-	var values []interface{}
 	var fields []string
-	var placeholder = 1
+	var placeholder = 1 + len(args)
 	for i := 0; i < userType.NumField(); i++ {
 		value := userValue.Field(i)
 		if value.IsNil() {
 			continue
 		}
-		values = append(values, value.Interface())
+		args = append(args, value.Interface())
 		// Получаем название поля
 		fieldName := userType.Field(i).Tag.Get("db")
 		// Добавляем позиционный индекс
@@ -137,18 +168,22 @@ func getUpdateQuery(table string, pk int, setInterface interface{}, returningInt
 		return "", nil, errors.New("empty setInterface")
 	}
 	set := strings.Join(fields, ", ")
-	values = append(values, pk)
 
-	returning := getDbTags(returningInterface)
+	updateQuery := fmt.Sprintf("UPDATE %s SET %s", table, set)
+	queryArray = append(queryArray, updateQuery)
 
-	query := fmt.Sprintf("UPDATE %s SET %s  WHERE id = $%v RETURNING %s", table, set, placeholder, returning)
-	return query, values, nil
-}
+	if where != "" {
+		queryArray = append(queryArray, fmt.Sprintf("WHERE %s", where))
+	}
 
-func total(baseSQL *baseSQL, table string) (int, error) {
-	query := fmt.Sprintf("SELECT COUNT(*) FROM %s ", table)
-	var count int
-	return count, baseSQL.queryRow(query).Scan(&count)
+	if returningInterface != nil {
+		returning := getDbTags(returningInterface)
+		if returning != "" {
+			queryArray = append(queryArray, fmt.Sprintf("RETURNING %s", returning))
+		}
+	}
+	query := strings.Join(queryArray, " ")
+	return query, args, nil
 }
 
 func getDbTags(structObj interface{}) string {
@@ -169,7 +204,10 @@ func getDbTags(structObj interface{}) string {
 
 			// Иначе получаем тэги и добавляем их к списку
 			dbTag := field.Tag.Get("db")
-			dbTagArray = append(dbTagArray, dbTag)
+			if dbTag != "" {
+				dbTagArray = append(dbTagArray, dbTag)
+			}
+
 		}
 	}
 

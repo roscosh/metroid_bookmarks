@@ -4,7 +4,6 @@ import (
 	"errors"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
-	"metroid_bookmarks/misc/session"
 	"metroid_bookmarks/pkg/handler/api/base_api"
 )
 
@@ -17,8 +16,9 @@ import (
 // @Failure 401,404 {object} baseApi.ErrorResponse
 // @Router /auth/login [post]
 func (h *router) login(c *gin.Context) {
-	sessionObj := c.MustGet(baseApi.UserCtx).(*session.Session)
-	if sessionObj.IsAuthenticated() {
+	session := baseApi.GetSession(c)
+
+	if session.IsAuthenticated() {
 		baseApi.Response401(c, errors.New("You are already authorized!"))
 		return
 	}
@@ -29,13 +29,13 @@ func (h *router) login(c *gin.Context) {
 		baseApi.Response404(c, err)
 		return
 	}
-	sessionObj, err = h.service.Login(form.Login, form.Password, sessionObj)
+	session, err = h.service.Login(form.Login, form.Password, session)
 	if err != nil {
 		baseApi.Response404(c, err)
 		return
 	}
-	baseApi.SetCookie(c, sessionObj)
-	baseApi.Response200(c, loginResponse{Session: sessionObj})
+	baseApi.SetCookie(c, session)
+	baseApi.Response200(c, loginResponse{Session: session})
 }
 
 // @Summary logout
@@ -45,12 +45,11 @@ func (h *router) login(c *gin.Context) {
 // @Failure 401,404 {object} baseApi.ErrorResponse
 // @Router /auth/logout [post]
 func (h *router) logout(c *gin.Context) {
-	//Depends
-	sessionObj := c.MustGet(baseApi.UserCtx).(*session.Session)
+	session := baseApi.GetSession(c)
 
-	sessionObj = h.service.Logout(sessionObj)
-	baseApi.SetCookie(c, sessionObj)
-	baseApi.Response200(c, logoutResponse{Session: sessionObj})
+	session = h.service.Logout(session)
+	baseApi.SetCookie(c, session)
+	baseApi.Response200(c, logoutResponse{Session: session})
 }
 
 // @Summary me
@@ -60,10 +59,9 @@ func (h *router) logout(c *gin.Context) {
 // @Failure 401,404 {object} baseApi.ErrorResponse
 // @Router /auth/me [get]
 func (h *router) me(c *gin.Context) {
-	//Depends
-	sessionObj := c.MustGet(baseApi.UserCtx).(*session.Session)
+	session := baseApi.GetSession(c)
 
-	baseApi.Response200(c, meResponse{Session: sessionObj})
+	baseApi.Response200(c, meResponse{Session: session})
 }
 
 // @Summary signUp (только для разработки)
