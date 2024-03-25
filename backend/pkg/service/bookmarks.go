@@ -6,15 +6,16 @@ import (
 )
 
 type BookmarksService struct {
-	sql *sql.BookmarksSQL
+	sqlBookmarks *sql.BookmarksSQL
+	sqlPhotos    *sql.PhotosSQL
 }
 
-func newBookmarksService(sql *sql.BookmarksSQL) *BookmarksService {
-	return &BookmarksService{sql: sql}
+func newBookmarksService(sqlBookmarks *sql.BookmarksSQL, sqlPhotos *sql.PhotosSQL) *BookmarksService {
+	return &BookmarksService{sqlBookmarks: sqlBookmarks, sqlPhotos: sqlPhotos}
 }
 
 func (s *BookmarksService) Create(createForm *sql.CreateBookmark) (*sql.BookmarkPreview, error) {
-	bookmark, err := s.sql.Create(createForm)
+	bookmark, err := s.sqlBookmarks.Create(createForm)
 	if err != nil {
 		logger.Error(err.Error())
 		err = createPgError(err)
@@ -24,7 +25,7 @@ func (s *BookmarksService) Create(createForm *sql.CreateBookmark) (*sql.Bookmark
 }
 
 func (s *BookmarksService) Delete(id int, userId int) (*sql.BookmarkPreview, error) {
-	bookmark, err := s.sql.Delete(id, userId)
+	bookmark, err := s.sqlBookmarks.Delete(id, userId)
 	if err != nil {
 		logger.Error(err.Error())
 		err = deletePgError(err, id)
@@ -37,7 +38,7 @@ func (s *BookmarksService) Edit(id int, userId int, editForm *sql.EditBookmark) 
 	if (editForm == &sql.EditBookmark{}) {
 		return nil, errors.New("Необходимо заполнить хотя бы один параметр в форме!")
 	}
-	bookmark, err := s.sql.Edit(id, userId, editForm)
+	bookmark, err := s.sqlBookmarks.Edit(id, userId, editForm)
 	if err != nil {
 		logger.Error(err.Error())
 		err = editPgError(err, id)
@@ -48,12 +49,13 @@ func (s *BookmarksService) Edit(id int, userId int, editForm *sql.EditBookmark) 
 
 func (s *BookmarksService) GetAll(limit int, page int, userId int, completed *bool, orderById *bool) ([]sql.Bookmark, int, error) {
 	offset := (page - 1) * limit
-	data, err := s.sql.GetAll(limit, offset, userId, completed, orderById)
+	data, err := s.sqlBookmarks.GetAll(limit, offset, userId, completed, orderById)
 	if err != nil {
 		logger.Error(err.Error())
 		return nil, 0, err
 	}
-	total, err := s.sql.Total(userId, completed)
+
+	total, err := s.sqlBookmarks.Total(userId, completed)
 	if err != nil {
 		logger.Error(err.Error())
 		return nil, 0, err

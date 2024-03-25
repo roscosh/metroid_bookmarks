@@ -15,6 +15,7 @@ type Bookmark struct {
 	Area      Area      `json:"area"`
 	Room      Room      `json:"room"`
 	Skill     Skill     `json:"skill"`
+	Photos    []Photo   `json:"photos"`
 }
 
 type BookmarkPreview struct {
@@ -72,11 +73,14 @@ func (s *BookmarksSQL) GetAll(limit, offset, userId int, completed *bool, orderB
 			b.id, b.ctime, b.completed,
             a.id, a.name_ru, a.name_en,
             r.id, r.name_ru, r.name_en,
-            s.id, s.name_ru, s.name_en
+            s.id, s.name_ru, s.name_en,
+			array_agg(p.id) AS photo_ids,
+            array_agg(p.path) AS photo_paths
         FROM bookmarks b
         JOIN areas a ON b.area_id = a.id
         JOIN rooms r ON b.room_id = r.id
         JOIN skills s ON b.skill_id = s.id
+		LEFT JOIN photos p ON b.id = p.bookmark_id
 	`
 	queryArray = append(queryArray, baseQuery)
 
@@ -96,6 +100,9 @@ func (s *BookmarksSQL) GetAll(limit, offset, userId int, completed *bool, orderB
 		where := "WHERE " + strings.Join(whereArray, " AND ")
 		queryArray = append(queryArray, where)
 	}
+	groupBy := `GROUP BY b.id, b.ctime, b.completed, a.id, a.name_ru, a.name_en, r.id, r.name_ru, r.name_en,  s.id, s.name_ru, s.name_en`
+	queryArray = append(queryArray, groupBy)
+
 	if orderById != nil {
 		var order string
 		if *orderById {
@@ -116,6 +123,7 @@ func (s *BookmarksSQL) GetAll(limit, offset, userId int, completed *bool, orderB
 	}
 
 	query := strings.Join(queryArray, " ")
+
 	rows, err := s.baseSQL.query(query, args...)
 	if err != nil {
 		return nil, err
@@ -124,14 +132,22 @@ func (s *BookmarksSQL) GetAll(limit, offset, userId int, completed *bool, orderB
 
 	for rows.Next() {
 		var bookmark Bookmark
+		var photoIds []*int32
+		var photoPaths []*string
 		err = rows.Scan(
 			&bookmark.Id, &bookmark.Ctime, &bookmark.Completed,
 			&bookmark.Area.Id, &bookmark.Area.NameRu, &bookmark.Area.NameEn,
 			&bookmark.Room.Id, &bookmark.Room.NameRu, &bookmark.Room.NameEn,
 			&bookmark.Skill.Id, &bookmark.Skill.NameRu, &bookmark.Skill.NameEn,
+			&photoIds, &photoPaths,
 		)
 		if err != nil {
 			return nil, err
+		}
+		for i, _ := range photoIds {
+			if photoIds[i] != nil {
+				bookmark.Photos = append(bookmark.Photos, Photo{int(*photoIds[i]), *photoPaths[i]})
+			}
 		}
 		bookmarks = append(bookmarks, bookmark)
 	}

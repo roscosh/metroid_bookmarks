@@ -5,5 +5,8 @@
   },
   "redis": {
     "dsn": "redis://redis"
+  },
+  "photos_path": {
+    "dsn": "redis://redis"
   }
 }

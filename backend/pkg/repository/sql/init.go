@@ -10,6 +10,7 @@ type SQL struct {
 	Rooms     *RoomsSQL
 	Skills    *SkillsSQL
 	Bookmarks *BookmarksSQL
+	Photos    *PhotosSQL
 }
 
 func (s *SQL) Close() {
@@ -27,5 +28,6 @@ func NewSQL(dsn string) (*SQL, error) {
 		Rooms:     NewRoomsSQL(pool),
 		Skills:    NewSkillsSQL(pool),
 		Bookmarks: NewBookmarksSQL(pool),
+		Photos:    NewPhotosSQL(pool),
 	}, nil
 }

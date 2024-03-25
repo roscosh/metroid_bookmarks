@@ -481,6 +481,82 @@ const docTemplate = `{
                 }
             }
         },
+        "/photos/": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "photos"
+                ],
+                "summary": "create",
+                "parameters": [
+                    {
+                        "description": "create",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/photos.createForm"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/photos.createResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/baseApi.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/photos/{id}": {
+            "delete": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "photos"
+                ],
+                "summary": "delete",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/photos.deleteResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/baseApi.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/rooms/": {
             "post": {
                 "consumes": [
@@ -1283,6 +1359,49 @@ const docTemplate = `{
                 }
             }
         },
+        "photos.createForm": {
+            "type": "object",
+            "required": [
+                "bookmark_id",
+                "path"
+            ],
+            "properties": {
+                "bookmark_id": {
+                    "type": "integer"
+                },
+                "path": {
+                    "type": "string"
+                }
+            }
+        },
+        "photos.createResponse": {
+            "type": "object",
+            "properties": {
+                "bookmark_id": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "path": {
+                    "type": "string"
+                }
+            }
+        },
+        "photos.deleteResponse": {
+            "type": "object",
+            "properties": {
+                "bookmark_id": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "path": {
+                    "type": "string"
+                }
+            }
+        },
         "rooms.createForm": {
             "type": "object",
             "required": [
@@ -1476,11 +1595,28 @@ const docTemplate = `{
                 "id": {
                     "type": "integer"
                 },
+                "photos": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/sql.Photo"
+                    }
+                },
                 "room": {
                     "$ref": "#/definitions/sql.Room"
                 },
                 "skill": {
                     "$ref": "#/definitions/sql.Skill"
+                }
+            }
+        },
+        "sql.Photo": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "path": {
+                    "type": "string"
                 }
             }
         },

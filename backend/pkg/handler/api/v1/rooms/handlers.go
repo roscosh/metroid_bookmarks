@@ -21,12 +21,12 @@ func (h *router) create(c *gin.Context) {
 		baseApi.Response404(c, err)
 		return
 	}
-	area, err := h.service.Create(form.CreateRoom)
+	room, err := h.service.Create(form.CreateRoom)
 	if err != nil {
 		baseApi.Response404(c, err)
 		return
 	}
-	baseApi.Response200(c, createResponse{Room: area})
+	baseApi.Response200(c, createResponse{Room: room})
 }
 
 // @Summary edit
@@ -50,12 +50,12 @@ func (h *router) edit(c *gin.Context) {
 		baseApi.Response404(c, err)
 		return
 	}
-	area, err := h.service.Edit(id, form.EditRoom)
+	room, err := h.service.Edit(id, form.EditRoom)
 	if err != nil {
 		baseApi.Response404(c, err)
 		return
 	}
-	baseApi.Response200(c, editResponse{Room: area})
+	baseApi.Response200(c, editResponse{Room: room})
 }
 
 // @Summary delete
@@ -72,12 +72,12 @@ func (h *router) delete(c *gin.Context) {
 		baseApi.Response404(c, err)
 		return
 	}
-	area, err := h.service.Delete(id)
+	room, err := h.service.Delete(id)
 	if err != nil {
 		baseApi.Response404(c, err)
 		return
 	}
-	baseApi.Response200(c, deleteResponse{Room: area})
+	baseApi.Response200(c, deleteResponse{Room: room})
 }
 
 // @Summary getAll
@@ -88,10 +88,10 @@ func (h *router) delete(c *gin.Context) {
 // @Failure 404 {object} baseApi.ErrorResponse
 // @router /rooms/get_all [get]
 func (h *router) getAll(c *gin.Context) {
-	area, total, err := h.service.GetAll()
+	room, total, err := h.service.GetAll()
 	if err != nil {
 		baseApi.Response404(c, err)
 		return
 	}
-	baseApi.Response200(c, getAllResponse{Data: area, Total: total})
+	baseApi.Response200(c, getAllResponse{Data: room, Total: total})
 }
