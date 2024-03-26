@@ -3,7 +3,7 @@ package photos
 import "metroid_bookmarks/pkg/repository/sql"
 
 type createForm struct {
-	*sql.CreatePhoto
+	BookmarkId int `form:"bookmark_id" binding:"required"`
 }
 
 type createResponse struct {

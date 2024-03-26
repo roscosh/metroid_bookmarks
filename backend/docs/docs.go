@@ -495,13 +495,17 @@ const docTemplate = `{
                 "summary": "create",
                 "parameters": [
                     {
-                        "description": "create",
-                        "name": "input",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/photos.createForm"
-                        }
+                        "type": "integer",
+                        "name": "bookmark_id",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "photo",
+                        "name": "photo",
+                        "in": "formData",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -1356,21 +1360,6 @@ const docTemplate = `{
                 },
                 "total": {
                     "type": "integer"
-                }
-            }
-        },
-        "photos.createForm": {
-            "type": "object",
-            "required": [
-                "bookmark_id",
-                "path"
-            ],
-            "properties": {
-                "bookmark_id": {
-                    "type": "integer"
-                },
-                "path": {
-                    "type": "string"
                 }
             }
         },

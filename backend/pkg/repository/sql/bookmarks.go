@@ -158,6 +158,10 @@ func (s *BookmarksSQL) GetAll(limit, offset, userId int, completed *bool, orderB
 	return bookmarks, nil
 }
 
+func (s *BookmarksSQL) GetByID(id int) (*BookmarkPreview, error) {
+	return selectById[BookmarkPreview](s.baseSQL, bookmarksTable, id)
+}
+
 func (s *BookmarksSQL) Total(userId int, completed *bool) (int, error) {
 	var count int
 	var queryArray []string

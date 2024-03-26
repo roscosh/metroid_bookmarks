@@ -55,6 +55,15 @@ func deletePgError(err error, id int) error {
 	return err
 }
 
+func selectPgError(err error, id int) error {
+	var errMessage string
+	if errors.Is(err, pgx.ErrNoRows) {
+		errMessage = fmt.Sprintf(`No row with id="%v"!`, id)
+		return errors.New(errMessage)
+	}
+	return err
+}
+
 func parsePgErr23505(pgErr *pgconn.PgError) string {
 	re := regexp.MustCompile(`Key \((\w+)\)=\(([^)]+)\)`)
 	match := re.FindStringSubmatch(pgErr.Detail)

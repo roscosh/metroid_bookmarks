@@ -7,16 +7,20 @@ type Photo struct {
 	Path string `json:"path" db:"path"`
 }
 
-type PhotoPreview struct {
-	Id         int    `json:"id"      db:"id"`
-	BookmarkId int    `json:"bookmark_id" db:"bookmark_id"`
-	Path       string `json:"path" db:"path"`
+type PhotoWithUser struct {
+	Id   int    `json:"id"   db:"id"`
+	Name string `json:"name" db:"name"`
 }
 
-// todo переделать, не должно быть path
+type PhotoPreview struct {
+	Id         int    `json:"id"          db:"id"`
+	BookmarkId int    `json:"bookmark_id" db:"bookmark_id"`
+	Name       string `json:"name" db:"name"`
+}
+
 type CreatePhoto struct {
-	BookmarkId int    `json:"bookmark_id" db:"bookmark_id" binding:"required"`
-	Path       string `json:"path" db:"path" binding:"required"`
+	BookmarkId int    `db:"bookmark_id"`
+	Name       string `db:"name"`
 }
 
 type PhotosSQL struct {
@@ -25,14 +29,6 @@ type PhotosSQL struct {
 
 func NewPhotosSQL(baseSQL *baseSQL) *PhotosSQL {
 	return &PhotosSQL{baseSQL: baseSQL}
-}
-
-func (s *PhotosSQL) GetByID(id int) (*Photo, error) {
-	return selectById[Photo](s.baseSQL, photosTable, id)
-}
-
-func (s *PhotosSQL) GetAll() ([]Photo, error) {
-	return selectAll[Photo](s.baseSQL, photosTable)
 }
 
 func (s *PhotosSQL) Create(createForm *CreatePhoto) (*PhotoPreview, error) {

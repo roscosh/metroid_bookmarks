@@ -62,3 +62,12 @@ func (s *BookmarksService) GetAll(limit int, page int, userId int, completed *bo
 	}
 	return data, total, nil
 }
+
+func (s *BookmarksService) GetByID(id int) (*sql.BookmarkPreview, error) {
+	bookmark, err := s.sqlBookmarks.GetByID(id)
+	if err != nil {
+		logger.Error(err.Error())
+		err = selectPgError(err, id)
+	}
+	return bookmark, err
+}

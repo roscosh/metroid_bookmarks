@@ -54,7 +54,7 @@ func (h *router) RegisterHandlers(router *gin.RouterGroup) {
 	bookmarksRouter.RegisterHandlers(bookmarksGroup)
 
 	photosGroup := router.Group("/photos", h.Middleware.AuthRequired)
-	photosRouter := photos.NewRouter(h.Router, h.service.Photos)
+	photosRouter := photos.NewRouter(h.Router, h.service.Photos, h.service.Bookmarks)
 	photosRouter.RegisterHandlers(photosGroup)
 
 }

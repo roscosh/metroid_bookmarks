@@ -9,7 +9,8 @@ import (
 )
 
 const (
-	UserCtx = "userId"
+	userCtx = "userId"
+	photo   = "photo"
 )
 
 type Middleware struct {
@@ -32,7 +33,7 @@ func (h *Middleware) SessionRequired(c *gin.Context) {
 			return
 		}
 	}
-	c.Set(UserCtx, sessionObj)
+	c.Set(userCtx, sessionObj)
 
 	SetCookie(c, sessionObj)
 	c.Next()

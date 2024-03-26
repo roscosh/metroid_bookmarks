@@ -8,20 +8,23 @@ import (
 
 type router struct {
 	*baseApi.Router
-	service *service.PhotosService
+	photosService    *service.PhotosService
+	bookmarksService *service.BookmarksService
 }
 
 func NewRouter(
 	baseAPIRouter *baseApi.Router,
-	service *service.PhotosService,
+	photosService *service.PhotosService,
+	bookmarksService *service.BookmarksService,
 ) baseApi.ApiRouter {
 	return &router{
-		Router:  baseAPIRouter,
-		service: service,
+		Router:           baseAPIRouter,
+		photosService:    photosService,
+		bookmarksService: bookmarksService,
 	}
 }
 
 func (h *router) RegisterHandlers(router *gin.RouterGroup) {
-	router.POST("/", h.create)
+	router.POST("/", h.Middleware.AuthRequired, h.create)
 	router.DELETE("/:id", h.delete)
 }

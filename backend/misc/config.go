@@ -8,9 +8,10 @@ import (
 )
 
 type Config struct {
-	Db    Db    `json:"db"`
-	Redis Redis `json:"redis"`
-	Debug bool  `json:"debug"`
+	Db         Db     `json:"db"`
+	Redis      Redis  `json:"redis"`
+	Debug      bool   `json:"debug"`
+	PhotosPath string `json:"photos_path"`
 }
 
 type Db struct {

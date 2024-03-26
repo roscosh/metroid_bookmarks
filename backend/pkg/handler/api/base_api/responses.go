@@ -1,6 +1,7 @@
 package baseApi
 
 import (
+	"errors"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -11,6 +12,10 @@ type ErrorResponse struct {
 
 func NewErrorResponse(err error) *ErrorResponse {
 	return &ErrorResponse{Error: err.Error()}
+}
+
+func AccessDenied(c *gin.Context) {
+	Response403(c, errors.New("отказ в доступе"))
 }
 
 func Response200(c *gin.Context, obj interface{}) {
