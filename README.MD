@@ -8,7 +8,7 @@
 
 1. Указать тестовые параметры БД и прочего в [config.json](backend/etc/config/config.json). Параметр "debug"
    оставить в значении true.
-2. Создать контейнеры:
+2. Создать контейнеры бекенда:
 
 ```bash
 cd backend
@@ -39,9 +39,11 @@ swag init -g cmd/main.go
 ```
 
 _Если использовать Docker, то команды выше исполняются так:_
+
 ```bash
 cd backend
 sudo docker compose exec web go install github.com/swaggo/swag/cmd/swag@latest
+sudo docker compose exec web swag init -g cmd/main.go
 ```
 
 ## PRODUCTION
@@ -50,7 +52,7 @@ sudo docker compose exec web go install github.com/swaggo/swag/cmd/swag@latest
 
 1. Сменить тестовые параметры на реальные в [config.json](backend/etc/config/config.json). Параметр "debug" равен false.
 
-2. Удалить проксирование портов службы web в [docker-compose.yml](backend/docker-compose.yml#L7):
+2. Удалить проксирование портов службы web в [docker-compose.yml](backend/docker-compose.yml#L7.
 
 3. Выполнить команду обновления контейнеров:
 
@@ -60,7 +62,7 @@ sudo docker compose exec web go install github.com/swaggo/swag/cmd/swag@latest
 
 ### 2. Обновление Frontend
 
-1. Скопировать директорию [deploy](server_files/deploy) в репозиторий icups-management:
+1. Скопировать директорию [deploy](server_files/deploy) в репозиторий фронтенд приложения:
 
 ```bash
 cp -r server_files/deploy/ /frontend/deploy
@@ -70,6 +72,6 @@ cp -r server_files/deploy/ /frontend/deploy
 
 ```bash
 cd frontend
-sudo docker build -t icups -f ./.deploy/docker/Dockerfile .
-sudo docker run -p 80:80 --name icups --network backend_default icups
-``
+sudo docker build -t front -f ./.deploy/docker/Dockerfile .
+sudo docker run -p 80:80 --name front --network backend_default front
+```
