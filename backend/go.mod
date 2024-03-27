@@ -6,7 +6,6 @@ require (
 	github.com/gin-gonic/gin v1.9.1
 	github.com/gomodule/redigo v1.9.2
 	github.com/jackc/pgx/v5 v5.5.5
-	github.com/mitchellh/mapstructure v1.5.0
 	github.com/sirupsen/logrus v1.9.3
 	github.com/swaggo/files v1.0.1
 	github.com/swaggo/gin-swagger v1.6.0
