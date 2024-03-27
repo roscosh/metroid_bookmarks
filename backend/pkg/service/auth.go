@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	salt = "cups_managment_relabs"
+	salt = "i3490tg4gj94jg0934jg"
 )
 
 type AuthService struct {
@@ -22,7 +22,7 @@ func newAuthService(sql *sql.UsersSQL) *AuthService {
 
 func (s *AuthService) Login(login string, password string, session *Session) (*Session, error) {
 	token := generatePasswordHash(password)
-	user, err := s.sql.GetUserByCredentials(login, token)
+	user, err := s.sql.GetByCredentials(login, token)
 	if err != nil {
 		return nil, errors.New("Нет пользователя с таки логином/паролем!")
 	}

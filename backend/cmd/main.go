@@ -22,13 +22,17 @@ var logger = misc.GetLogger()
 // @BasePath /api/v1
 func main() {
 	config := misc.GetConfig()
-
-	SQL, err := sql.NewSQL(config.Db.Dsn)
+	pool, err := sql.NewDbPool(config.Db.Dsn)
+	if err != nil {
+		logger.Errorf("failed to create db pool: %s\n", err.Error())
+		return
+	}
+	SQL := sql.NewSQL(pool)
 	if err != nil {
 		logger.Errorf("failed to initialize db: %s\n", err.Error())
 		return
 	}
-	redisClient, err := redis.NewRedisClient(config.Redis.Dsn)
+	redisClient, err := redis.NewRedisPool(config.Redis.Dsn)
 	if err != nil {
 		logger.Errorf("failed to initialize redis: %s\n", err.Error())
 		return
@@ -60,7 +64,7 @@ func main() {
 		logger.Errorf("error occured on server shutting down: %s\n", err.Error())
 	}
 
-	SQL.Close()
+	pool.Close()
 	defer func() {
 		if r := recover(); r != nil {
 			logger.Errorf("Recovered from panic: %s", r)

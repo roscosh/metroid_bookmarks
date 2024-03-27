@@ -524,6 +524,57 @@ const docTemplate = `{
                 }
             }
         },
+        "/photos/download/{user_id}/{bookmark_id}/{name}": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "photos"
+                ],
+                "summary": "download",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "user_id",
+                        "name": "user_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "bookmark_id",
+                        "name": "bookmark_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "name",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/photos.deleteResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/baseApi.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/photos/{id}": {
             "delete": {
                 "consumes": [
@@ -1372,7 +1423,7 @@ const docTemplate = `{
                 "id": {
                     "type": "integer"
                 },
-                "path": {
+                "name": {
                     "type": "string"
                 }
             }
@@ -1386,7 +1437,7 @@ const docTemplate = `{
                 "id": {
                     "type": "integer"
                 },
-                "path": {
+                "name": {
                     "type": "string"
                 }
             }
@@ -1604,7 +1655,7 @@ const docTemplate = `{
                 "id": {
                     "type": "integer"
                 },
-                "path": {
+                "url": {
                     "type": "string"
                 }
             }

@@ -1,5 +1,7 @@
 package sql
 
+import "github.com/jackc/pgx/v5"
+
 const skillsTable = "skills"
 
 type Skill struct {
@@ -22,30 +24,59 @@ type SkillsSQL struct {
 	*baseSQL
 }
 
-func NewSkillsSQL(baseSQL *baseSQL) *SkillsSQL {
-	return &SkillsSQL{baseSQL: baseSQL}
-}
-
-func (s *SkillsSQL) GetByID(id int) (*Skill, error) {
-	return selectById[Skill](s.baseSQL, skillsTable, id)
+func NewSkillsSQL(pool *DbPool, table string) *SkillsSQL {
+	sql := newBaseSQl(pool, table, Skill{})
+	return &SkillsSQL{baseSQL: sql}
 }
 
 func (s *SkillsSQL) GetAll() ([]Skill, error) {
-	return selectAll[Skill](s.baseSQL, skillsTable)
+	rows, err := s.selectAll()
+	if err != nil {
+		return nil, err
+	}
+	return s.collectRows(rows)
+}
+
+func (s *SkillsSQL) GetByID(id int) (*Skill, error) {
+	rows, err := s.selectById(id)
+	if err != nil {
+		return nil, err
+	}
+	return s.collectOneRow(rows)
 }
 
 func (s *SkillsSQL) Create(createForm *CreateSkill) (*Skill, error) {
-	return insert[Skill](s.baseSQL, skillsTable, *createForm)
+	rows, err := s.insert(*createForm)
+	if err != nil {
+		return nil, err
+	}
+	return s.collectOneRow(rows)
 }
 
 func (s *SkillsSQL) Edit(id int, editForm *EditSkill) (*Skill, error) {
-	return update[Skill](s.baseSQL, skillsTable, id, *editForm)
+	rows, err := s.update(id, *editForm)
+	if err != nil {
+		return nil, err
+	}
+	return s.collectOneRow(rows)
 }
 
 func (s *SkillsSQL) Delete(id int) (*Skill, error) {
-	return deleteById[Skill](s.baseSQL, skillsTable, id)
+	rows, err := s.deleteById(id)
+	if err != nil {
+		return nil, err
+	}
+	return s.collectOneRow(rows)
 }
 
 func (s *SkillsSQL) Total() (int, error) {
-	return total(s.baseSQL, skillsTable)
+	return s.total()
+}
+
+func (s *SkillsSQL) collectOneRow(rows pgx.Rows) (*Skill, error) {
+	return collectOneRow[Skill](rows)
+}
+
+func (s *SkillsSQL) collectRows(rows pgx.Rows) ([]Skill, error) {
+	return collectRows[Skill](rows)
 }

@@ -8,9 +8,7 @@ import (
 
 var logger = misc.GetLogger()
 
-const SessionKey = "session"
-
-func NewRedisClient(dns string) (*redis.Pool, error) {
+func NewRedisPool(dns string) (*redis.Pool, error) {
 	pool := &redis.Pool{
 		MaxIdle:     10,
 		MaxActive:   0,

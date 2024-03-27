@@ -23,11 +23,20 @@ func newPhotosService(sql *sql.PhotosSQL) *PhotosService {
 	return &PhotosService{sql: sql}
 }
 
-func (s *PhotosService) Create(bookmarkId int, userId int, photoFile *multipart.FileHeader, photoRoot string, c *gin.Context) (*sql.PhotoPreview, error) {
+func (s *PhotosService) Create(
+	c *gin.Context,
+	userId int,
+	bookmarkId int,
+	photoFile *multipart.FileHeader,
+	photoRoot string,
+) (*sql.PhotoPreview, error) {
+
 	var errMessage string
 	filename := photoFile.Filename
 	// Проверка расширения файла
-	if !strings.HasSuffix(filename, ".jpg") && !strings.HasSuffix(filename, ".jpeg") && !strings.HasSuffix(filename, ".png") {
+	if !strings.HasSuffix(filename, ".jpg") &&
+		!strings.HasSuffix(filename, ".jpeg") &&
+		!strings.HasSuffix(filename, ".png") {
 		return nil, errors.New("файл не является изображением")
 	}
 	// Попытка прочитать изображение
@@ -102,8 +111,8 @@ func (s *PhotosService) Create(bookmarkId int, userId int, photoFile *multipart.
 	return photo, nil
 }
 
-func (s *PhotosService) Delete(id int) (*sql.PhotoPreview, error) {
-	photo, err := s.sql.Delete(id)
+func (s *PhotosService) Delete(id int, userId int) (*sql.PhotoPreview, error) {
+	photo, err := s.sql.Delete(id, userId)
 	if err != nil {
 		logger.Error(err.Error())
 		err = deletePgError(err, id)

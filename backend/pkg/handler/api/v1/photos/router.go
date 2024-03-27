@@ -25,6 +25,7 @@ func NewRouter(
 }
 
 func (h *router) RegisterHandlers(router *gin.RouterGroup) {
-	router.POST("/", h.Middleware.AuthRequired, h.create)
+	router.POST("/", h.create)
 	router.DELETE("/:id", h.delete)
+	router.GET("/download/:user_id/:bookmark_id/:name", h.download)
 }

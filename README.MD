@@ -42,7 +42,6 @@ _Если использовать Docker, то команды выше испо
 ```bash
 cd backend
 sudo docker compose exec web go install github.com/swaggo/swag/cmd/swag@latest
-sudo docker compose exec web swag init -g cmd/main.go
 ```
 
 ## PRODUCTION

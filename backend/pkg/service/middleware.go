@@ -17,28 +17,6 @@ func newMiddlewareService(sql *sql.UsersSQL, redis *redis.SessionRedis) *Middlew
 	return &MiddlewareService{sql: sql, redis: redis}
 }
 
-func (m *MiddlewareService) GetExistSession(token string) (*session.Session, error) {
-	if token == "" {
-		return nil, errors.New("нету токена")
-	}
-	id, err := m.redis.Get(token)
-	if err != nil {
-		return nil, err
-	}
-	var expires int
-	var user = &sql.User{}
-	if id == 0 {
-		expires = session.AnonymousExpires
-	} else {
-		expires = session.AuthenticatedExpires
-		user, err = m.sql.GetUserByID(id)
-		if err != nil {
-			return nil, err
-		}
-	}
-	return &session.Session{User: *user, Token: token, Expires: expires}, nil
-}
-
 func (m *MiddlewareService) CreateSession() (*session.Session, error) {
 	var token string
 	var result bool
@@ -53,6 +31,28 @@ func (m *MiddlewareService) CreateSession() (*session.Session, error) {
 		}
 	}
 	return &session.Session{Token: token, Expires: session.AnonymousExpires}, nil
+}
+
+func (m *MiddlewareService) GetExistSession(token string) (*session.Session, error) {
+	if token == "" {
+		return nil, errors.New("нету токена")
+	}
+	id, err := m.redis.Get(token)
+	if err != nil {
+		return nil, err
+	}
+	var expires int
+	var user = &sql.User{}
+	if id == 0 {
+		expires = session.AnonymousExpires
+	} else {
+		expires = session.AuthenticatedExpires
+		user, err = m.sql.GetByID(id)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return &session.Session{User: *user, Token: token, Expires: expires}, nil
 }
 
 func (m *MiddlewareService) UpdateSession(sessionObj *session.Session) {

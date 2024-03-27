@@ -1,20 +1,10 @@
 package sql
 
 import (
-	"fmt"
 	"github.com/jackc/pgx/v5"
-	"strings"
 )
 
 const usersTable = "users"
-
-type UsersSQL struct {
-	*baseSQL
-}
-
-func NewUsersSQL(baseSQL *baseSQL) *UsersSQL {
-	return &UsersSQL{baseSQL: baseSQL}
-}
 
 type User struct {
 	ID      int    `json:"id"       db:"id"`
@@ -36,45 +26,77 @@ type EditUser struct {
 	Password *string `db:"password"`
 }
 
-type ChangePassword struct {
+type UsersSQL struct {
+	*baseSQL
 }
 
-func (s *UsersSQL) GetUserByID(id int) (*User, error) {
-	return selectById[User](s.baseSQL, usersTable, id)
+func NewUsersSQL(pool *DbPool, table string) *UsersSQL {
+	sql := newBaseSQl(pool, table, User{})
+	return &UsersSQL{baseSQL: sql}
 }
 
 func (s *UsersSQL) Create(createForm *CreateUser) (*User, error) {
-	return insert[User](s.baseSQL, usersTable, *createForm)
+	rows, err := s.insert(*createForm)
+	if err != nil {
+		return nil, err
+	}
+	return s.collectOneRow(rows)
 }
 
-func (s *UsersSQL) GetUserByCredentials(login, password string) (*User, error) {
-	var user User
-	query := fmt.Sprintf(`SELECT %s FROM %s WHERE login = $1 AND password = $2`, getDbTags(user), usersTable)
-	rows, err := s.baseSQL.query(query, login, password)
-	user, err = pgx.CollectOneRow(rows, pgx.RowToStructByName[User])
-	return &user, err
+func (s *UsersSQL) GetAll(search string) ([]User, error) {
+	var rows pgx.Rows
+	var err error
+	if search != "" {
+		rows, err = s.selectWhere("WHERE LOWER(name) LIKE $1 OR LOWER(login) LIKE $2", search, search)
+	} else {
+		rows, err = s.selectAll()
+	}
+	if err != nil {
+		return nil, err
+	}
+	return s.collectRows(rows)
+}
+
+func (s *UsersSQL) GetByCredentials(login, password string) (*User, error) {
+	rows, err := s.selectWhere("login = $1 AND password = $2", login, password)
+	if err != nil {
+		return nil, err
+	}
+	return s.collectOneRow(rows)
+}
+
+func (s *UsersSQL) GetByID(id int) (*User, error) {
+	rows, err := s.selectById(id)
+	if err != nil {
+		return nil, err
+	}
+	return s.collectOneRow(rows)
 }
 
 func (s *UsersSQL) Delete(id int) (*User, error) {
-	return deleteById[User](s.baseSQL, usersTable, id)
+	rows, err := s.deleteById(id)
+	if err != nil {
+		return nil, err
+	}
+	return s.collectOneRow(rows)
 }
 
 func (s *UsersSQL) Edit(id int, editForm *EditUser) (*User, error) {
-	return update[User](s.baseSQL, usersTable, id, *editForm)
-}
-
-func (s *UsersSQL) Search(search string) ([]User, error) {
-	var user User
-	tableString := fmt.Sprintf(`SELECT %s FROM %s`, getDbTags(user), usersTable)
-	if search != "" {
-		search = strings.ToLower(search)
-		tableString += fmt.Sprintf(` WHERE LOWER(name) LIKE '%%%s%%' OR LOWER(login) LIKE '%%%s%%'`, search, search)
+	rows, err := s.update(id, *editForm)
+	if err != nil {
+		return nil, err
 	}
-	query := fmt.Sprintf("%s ORDER BY id DESC", tableString)
-	rows, _ := s.baseSQL.query(query)
-	return pgx.CollectRows(rows, pgx.RowToStructByName[User])
+	return s.collectOneRow(rows)
 }
 
 func (s *UsersSQL) Total() (int, error) {
-	return total(s.baseSQL, usersTable)
+	return s.total()
+}
+
+func (s *UsersSQL) collectOneRow(rows pgx.Rows) (*User, error) {
+	return collectOneRow[User](rows)
+}
+
+func (s *UsersSQL) collectRows(rows pgx.Rows) ([]User, error) {
+	return collectRows[User](rows)
 }

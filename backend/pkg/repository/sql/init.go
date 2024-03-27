@@ -1,6 +1,10 @@
 package sql
 
-import "metroid_bookmarks/misc"
+import (
+	"context"
+	"github.com/jackc/pgx/v5/pgxpool"
+	"metroid_bookmarks/misc"
+)
 
 var logger = misc.GetLogger()
 
@@ -13,21 +17,35 @@ type SQL struct {
 	Photos    *PhotosSQL
 }
 
-func (s *SQL) Close() {
-	s.Users.baseSQL.pool.Close()
+func NewSQL(pool *DbPool) *SQL {
+	return &SQL{
+		Users:     NewUsersSQL(pool, usersTable),
+		Areas:     NewAreasSQL(pool, areasTable),
+		Rooms:     NewRoomsSQL(pool, roomsTable),
+		Skills:    NewSkillsSQL(pool, skillsTable),
+		Bookmarks: NewBookmarksSQL(pool, bookmarksTable),
+		Photos:    NewPhotosSQL(pool, photosTable),
+	}
 }
 
-func NewSQL(dsn string) (*SQL, error) {
-	pool, err := newPostgresPool(dsn)
+type DbPool struct {
+	pool *pgxpool.Pool
+	ctx  context.Context
+}
+
+func (d *DbPool) Close() {
+	d.pool.Close()
+}
+
+func NewDbPool(dsn string) (*DbPool, error) {
+	ctx := context.Background()
+	pool, err := pgxpool.New(ctx, dsn)
 	if err != nil {
 		return nil, err
 	}
-	return &SQL{
-		Users:     NewUsersSQL(pool),
-		Areas:     NewAreasSQL(pool),
-		Rooms:     NewRoomsSQL(pool),
-		Skills:    NewSkillsSQL(pool),
-		Bookmarks: NewBookmarksSQL(pool),
-		Photos:    NewPhotosSQL(pool),
-	}, nil
+	err = pool.Ping(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return &DbPool{pool: pool, ctx: ctx}, nil
 }

@@ -53,3 +53,5 @@ services:
     image: redis
     volumes:
       - ./data/redisdata:/data
+    ports:
+      - "6379:6379"

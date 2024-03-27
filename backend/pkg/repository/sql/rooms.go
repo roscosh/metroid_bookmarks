@@ -1,5 +1,7 @@
 package sql
 
+import "github.com/jackc/pgx/v5"
+
 const roomsTable = "rooms"
 
 type Room struct {
@@ -22,30 +24,59 @@ type RoomsSQL struct {
 	*baseSQL
 }
 
-func NewRoomsSQL(baseSQL *baseSQL) *RoomsSQL {
-	return &RoomsSQL{baseSQL: baseSQL}
-}
-
-func (s *RoomsSQL) GetByID(id int) (*Room, error) {
-	return selectById[Room](s.baseSQL, roomsTable, id)
+func NewRoomsSQL(pool *DbPool, table string) *RoomsSQL {
+	sql := newBaseSQl(pool, table, Room{})
+	return &RoomsSQL{baseSQL: sql}
 }
 
 func (s *RoomsSQL) GetAll() ([]Room, error) {
-	return selectAll[Room](s.baseSQL, roomsTable)
+	rows, err := s.selectAll()
+	if err != nil {
+		return nil, err
+	}
+	return s.collectRows(rows)
+}
+
+func (s *RoomsSQL) GetByID(id int) (*Room, error) {
+	rows, err := s.selectById(id)
+	if err != nil {
+		return nil, err
+	}
+	return s.collectOneRow(rows)
 }
 
 func (s *RoomsSQL) Create(createForm *CreateRoom) (*Room, error) {
-	return insert[Room](s.baseSQL, roomsTable, *createForm)
+	rows, err := s.insert(*createForm)
+	if err != nil {
+		return nil, err
+	}
+	return s.collectOneRow(rows)
 }
 
 func (s *RoomsSQL) Edit(id int, editForm *EditRoom) (*Room, error) {
-	return update[Room](s.baseSQL, roomsTable, id, *editForm)
+	rows, err := s.update(id, *editForm)
+	if err != nil {
+		return nil, err
+	}
+	return s.collectOneRow(rows)
 }
 
 func (s *RoomsSQL) Delete(id int) (*Room, error) {
-	return deleteById[Room](s.baseSQL, roomsTable, id)
+	rows, err := s.deleteById(id)
+	if err != nil {
+		return nil, err
+	}
+	return s.collectOneRow(rows)
 }
 
 func (s *RoomsSQL) Total() (int, error) {
-	return total(s.baseSQL, roomsTable)
+	return s.total()
+}
+
+func (s *RoomsSQL) collectOneRow(rows pgx.Rows) (*Room, error) {
+	return collectOneRow[Room](rows)
+}
+
+func (s *RoomsSQL) collectRows(rows pgx.Rows) ([]Room, error) {
+	return collectRows[Room](rows)
 }

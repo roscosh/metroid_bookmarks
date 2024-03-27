@@ -47,7 +47,13 @@ func (s *BookmarksService) Edit(id int, userId int, editForm *sql.EditBookmark) 
 	return bookmark, nil
 }
 
-func (s *BookmarksService) GetAll(limit int, page int, userId int, completed *bool, orderById *bool) ([]sql.Bookmark, int, error) {
+func (s *BookmarksService) GetAll(
+	limit int,
+	page int,
+	userId int,
+	completed *bool,
+	orderById *bool,
+) ([]sql.Bookmark, int, error) {
 	offset := (page - 1) * limit
 	data, err := s.sqlBookmarks.GetAll(limit, offset, userId, completed, orderById)
 	if err != nil {

@@ -6,6 +6,8 @@ import (
 	"strconv"
 )
 
+const SessionKey = "session"
+
 type SessionRedis struct {
 	redis *baseRedis
 }
