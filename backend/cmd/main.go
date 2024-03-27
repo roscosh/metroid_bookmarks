@@ -15,9 +15,9 @@ import (
 
 var logger = misc.GetLogger()
 
-// @title Template Web API
+// @title METROID BOOKMARKS API
 // @version 1.0
-// @description Template API Server for Web App
+// @description Template API Server for metroid bookmarks
 // @host localhost:3000
 // @BasePath /api/v1
 func main() {
@@ -52,13 +52,13 @@ func main() {
 		}
 	}()
 
-	logger.Info("Template Web API started.")
+	logger.Info("METROID BOOKMARKS API started.")
 
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGTERM, syscall.SIGINT)
 	<-quit
 
-	logger.Info("Template Web API shutting down.")
+	logger.Info("METROID BOOKMARKS API shutting down.")
 
 	if err = srv.Shutdown(context.Background()); err != nil {
 		logger.Errorf("error occured on server shutting down: %s\n", err.Error())

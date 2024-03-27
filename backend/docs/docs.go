@@ -526,12 +526,6 @@ const docTemplate = `{
         },
         "/photos/download/{user_id}/{bookmark_id}/{name}": {
             "get": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
                 "tags": [
                     "photos"
                 ],
@@ -1806,8 +1800,8 @@ var SwaggerInfo = &swag.Spec{
 	Host:             "localhost:3000",
 	BasePath:         "/api/v1",
 	Schemes:          []string{},
-	Title:            "Template Web API",
-	Description:      "Template API Server for Web App",
+	Title:            "METROID BOOKMARKS API",
+	Description:      "Template API Server for metroid bookmarks",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",
