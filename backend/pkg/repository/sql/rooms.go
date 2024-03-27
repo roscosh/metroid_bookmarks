@@ -29,22 +29,6 @@ func NewRoomsSQL(pool *DbPool, table string) *RoomsSQL {
 	return &RoomsSQL{baseSQL: sql}
 }
 
-func (s *RoomsSQL) GetAll() ([]Room, error) {
-	rows, err := s.selectAll()
-	if err != nil {
-		return nil, err
-	}
-	return s.collectRows(rows)
-}
-
-func (s *RoomsSQL) GetByID(id int) (*Room, error) {
-	rows, err := s.selectById(id)
-	if err != nil {
-		return nil, err
-	}
-	return s.collectOneRow(rows)
-}
-
 func (s *RoomsSQL) Create(createForm *CreateRoom) (*Room, error) {
 	rows, err := s.insert(*createForm)
 	if err != nil {
@@ -61,8 +45,16 @@ func (s *RoomsSQL) Edit(id int, editForm *EditRoom) (*Room, error) {
 	return s.collectOneRow(rows)
 }
 
-func (s *RoomsSQL) Delete(id int) (*Room, error) {
-	rows, err := s.deleteById(id)
+func (s *RoomsSQL) GetAll() ([]Room, error) {
+	rows, err := s.selectAll()
+	if err != nil {
+		return nil, err
+	}
+	return s.collectRows(rows)
+}
+
+func (s *RoomsSQL) GetByID(id int) (*Room, error) {
+	rows, err := s.selectById(id)
 	if err != nil {
 		return nil, err
 	}

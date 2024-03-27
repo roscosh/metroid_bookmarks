@@ -43,6 +43,22 @@ func (s *UsersSQL) Create(createForm *CreateUser) (*User, error) {
 	return s.collectOneRow(rows)
 }
 
+func (s *UsersSQL) Delete(id int) (*User, error) {
+	rows, err := s.deleteById(id)
+	if err != nil {
+		return nil, err
+	}
+	return s.collectOneRow(rows)
+}
+
+func (s *UsersSQL) Edit(id int, editForm *EditUser) (*User, error) {
+	rows, err := s.update(id, *editForm)
+	if err != nil {
+		return nil, err
+	}
+	return s.collectOneRow(rows)
+}
+
 func (s *UsersSQL) GetAll(search string) ([]User, error) {
 	var rows pgx.Rows
 	var err error
@@ -67,22 +83,6 @@ func (s *UsersSQL) GetByCredentials(login, password string) (*User, error) {
 
 func (s *UsersSQL) GetByID(id int) (*User, error) {
 	rows, err := s.selectById(id)
-	if err != nil {
-		return nil, err
-	}
-	return s.collectOneRow(rows)
-}
-
-func (s *UsersSQL) Delete(id int) (*User, error) {
-	rows, err := s.deleteById(id)
-	if err != nil {
-		return nil, err
-	}
-	return s.collectOneRow(rows)
-}
-
-func (s *UsersSQL) Edit(id int, editForm *EditUser) (*User, error) {
-	rows, err := s.update(id, *editForm)
 	if err != nil {
 		return nil, err
 	}

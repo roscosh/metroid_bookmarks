@@ -29,24 +29,16 @@ func NewAreasSQL(pool *DbPool, table string) *AreasSQL {
 	return &AreasSQL{baseSQL: sql}
 }
 
-func (s *AreasSQL) GetAll() ([]Area, error) {
-	rows, err := s.selectAll()
-	if err != nil {
-		return nil, err
-	}
-	return s.collectRows(rows)
-}
-
-func (s *AreasSQL) GetByID(id int) (*Area, error) {
-	rows, err := s.selectById(id)
+func (s *AreasSQL) Create(createForm *CreateArea) (*Area, error) {
+	rows, err := s.insert(*createForm)
 	if err != nil {
 		return nil, err
 	}
 	return s.collectOneRow(rows)
 }
 
-func (s *AreasSQL) Create(createForm *CreateArea) (*Area, error) {
-	rows, err := s.insert(*createForm)
+func (s *AreasSQL) Delete(id int) (*Area, error) {
+	rows, err := s.deleteById(id)
 	if err != nil {
 		return nil, err
 	}
@@ -61,8 +53,16 @@ func (s *AreasSQL) Edit(id int, editForm *EditArea) (*Area, error) {
 	return s.collectOneRow(rows)
 }
 
-func (s *AreasSQL) Delete(id int) (*Area, error) {
-	rows, err := s.deleteById(id)
+func (s *AreasSQL) GetAll() ([]Area, error) {
+	rows, err := s.selectAll()
+	if err != nil {
+		return nil, err
+	}
+	return s.collectRows(rows)
+}
+
+func (s *AreasSQL) GetByID(id int) (*Area, error) {
+	rows, err := s.selectById(id)
 	if err != nil {
 		return nil, err
 	}

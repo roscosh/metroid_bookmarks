@@ -34,21 +34,6 @@ func (s *baseSQL) queryRow(query string, args ...any) pgx.Row {
 	return s.pool.QueryRow(s.ctx, query, args...)
 }
 
-func (s *baseSQL) selectById(pk int) (pgx.Rows, error) {
-	query := fmt.Sprintf("SELECT %s FROM %s WHERE id = $1", getDbTags(s.model), s.table)
-	return s.query(query, pk)
-}
-
-func (s *baseSQL) selectWhere(whereStatement string, args ...any) (pgx.Rows, error) {
-	query := fmt.Sprintf("SELECT %s FROM %s WHERE %s", getDbTags(s.model), s.table, whereStatement)
-	return s.query(query, args...)
-}
-
-func (s *baseSQL) selectAll() (pgx.Rows, error) {
-	query := fmt.Sprintf("SELECT %s FROM %s", getDbTags(s.model), s.table)
-	return s.query(query)
-}
-
 func (s *baseSQL) deleteById(pk int) (pgx.Rows, error) {
 	query := fmt.Sprintf(`DELETE FROM %s WHERE id = $1 RETURNING %s`, s.table, getDbTags(s.model))
 	return s.query(query, pk)
@@ -67,6 +52,27 @@ func (s *baseSQL) insert(createStruct interface{}) (pgx.Rows, error) {
 	return s.query(query, args...)
 }
 
+func (s *baseSQL) selectById(pk int) (pgx.Rows, error) {
+	query := fmt.Sprintf("SELECT %s FROM %s WHERE id = $1", getDbTags(s.model), s.table)
+	return s.query(query, pk)
+}
+
+func (s *baseSQL) selectWhere(whereStatement string, args ...any) (pgx.Rows, error) {
+	query := fmt.Sprintf("SELECT %s FROM %s WHERE %s", getDbTags(s.model), s.table, whereStatement)
+	return s.query(query, args...)
+}
+
+func (s *baseSQL) selectAll() (pgx.Rows, error) {
+	query := fmt.Sprintf("SELECT %s FROM %s", getDbTags(s.model), s.table)
+	return s.query(query)
+}
+
+func (s *baseSQL) total() (int, error) {
+	query := fmt.Sprintf("SELECT COUNT(*) FROM %s ", s.table)
+	var count int
+	return count, s.queryRow(query).Scan(&count)
+}
+
 func (s *baseSQL) update(pk int, editStruct interface{}) (pgx.Rows, error) {
 	query, args, err := getUpdateQuery(s.table, editStruct, s.model, "id=$1", pk)
 	if err != nil {
@@ -81,12 +87,6 @@ func (s *baseSQL) updateWhere(editStruct interface{}, where string, args ...any)
 		return nil, err
 	}
 	return s.query(query, args...)
-}
-
-func (s *baseSQL) total() (int, error) {
-	query := fmt.Sprintf("SELECT COUNT(*) FROM %s ", s.table)
-	var count int
-	return count, s.queryRow(query).Scan(&count)
 }
 
 func collectOneRow[T any](rows pgx.Rows) (*T, error) {

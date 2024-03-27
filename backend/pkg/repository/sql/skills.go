@@ -29,24 +29,16 @@ func NewSkillsSQL(pool *DbPool, table string) *SkillsSQL {
 	return &SkillsSQL{baseSQL: sql}
 }
 
-func (s *SkillsSQL) GetAll() ([]Skill, error) {
-	rows, err := s.selectAll()
-	if err != nil {
-		return nil, err
-	}
-	return s.collectRows(rows)
-}
-
-func (s *SkillsSQL) GetByID(id int) (*Skill, error) {
-	rows, err := s.selectById(id)
+func (s *SkillsSQL) Create(createForm *CreateSkill) (*Skill, error) {
+	rows, err := s.insert(*createForm)
 	if err != nil {
 		return nil, err
 	}
 	return s.collectOneRow(rows)
 }
 
-func (s *SkillsSQL) Create(createForm *CreateSkill) (*Skill, error) {
-	rows, err := s.insert(*createForm)
+func (s *SkillsSQL) Delete(id int) (*Skill, error) {
+	rows, err := s.deleteById(id)
 	if err != nil {
 		return nil, err
 	}
@@ -61,8 +53,16 @@ func (s *SkillsSQL) Edit(id int, editForm *EditSkill) (*Skill, error) {
 	return s.collectOneRow(rows)
 }
 
-func (s *SkillsSQL) Delete(id int) (*Skill, error) {
-	rows, err := s.deleteById(id)
+func (s *SkillsSQL) GetAll() ([]Skill, error) {
+	rows, err := s.selectAll()
+	if err != nil {
+		return nil, err
+	}
+	return s.collectRows(rows)
+}
+
+func (s *SkillsSQL) GetByID(id int) (*Skill, error) {
+	rows, err := s.selectById(id)
 	if err != nil {
 		return nil, err
 	}
