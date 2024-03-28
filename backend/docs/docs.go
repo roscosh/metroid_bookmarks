@@ -323,13 +323,29 @@ const docTemplate = `{
                 "summary": "create",
                 "parameters": [
                     {
-                        "description": "create",
-                        "name": "input",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/bookmarks.createForm"
-                        }
+                        "type": "integer",
+                        "name": "area_id",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "name": "room_id",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "name": "skill_id",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "photo",
+                        "name": "photo",
+                        "in": "formData",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -1280,25 +1296,6 @@ const docTemplate = `{
                 }
             }
         },
-        "bookmarks.createForm": {
-            "type": "object",
-            "required": [
-                "area_id",
-                "room_id",
-                "skill_id"
-            ],
-            "properties": {
-                "area_id": {
-                    "type": "integer"
-                },
-                "room_id": {
-                    "type": "integer"
-                },
-                "skill_id": {
-                    "type": "integer"
-                }
-            }
-        },
         "bookmarks.createResponse": {
             "type": "object",
             "properties": {
@@ -1801,7 +1798,7 @@ var SwaggerInfo = &swag.Spec{
 	BasePath:         "/api/v1",
 	Schemes:          []string{},
 	Title:            "METROID BOOKMARKS API",
-	Description:      "Template API Server for metroid bookmarks",
+	Description:      "API Server for metroid bookmarks",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",

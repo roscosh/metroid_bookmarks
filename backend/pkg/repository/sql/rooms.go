@@ -45,6 +45,14 @@ func (s *RoomsSQL) Edit(id int, editForm *EditRoom) (*Room, error) {
 	return s.collectOneRow(rows)
 }
 
+func (s *RoomsSQL) Delete(id int) (*Room, error) {
+	rows, err := s.deleteById(id)
+	if err != nil {
+		return nil, err
+	}
+	return s.collectOneRow(rows)
+}
+
 func (s *RoomsSQL) GetAll() ([]Room, error) {
 	rows, err := s.selectAll()
 	if err != nil {

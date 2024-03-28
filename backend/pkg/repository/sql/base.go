@@ -111,6 +111,7 @@ func getInsertQuery(
 	var fieldsArray []string
 	var indexRowArray []string
 	var placeholder = 1
+
 	for i := 0; i < userType.NumField(); i++ {
 		value := userValue.Field(i)
 		valuesArray = append(valuesArray, value.Interface())
@@ -122,6 +123,7 @@ func getInsertQuery(
 		fieldsArray = append(fieldsArray, fieldName)
 		placeholder++
 	}
+
 	if len(fieldsArray) == 0 {
 		return "", nil, errors.New("empty createInterface")
 	}
@@ -129,7 +131,6 @@ func getInsertQuery(
 	fields := strings.Join(fieldsArray, ", ")
 	placeholders := strings.Join(indexRowArray, ", ")
 	returning := getDbTags(returningInterface)
-
 	query := fmt.Sprintf("INSERT INTO %s (%s) VALUES (%s) RETURNING %s", table, fields, placeholders, returning)
 
 	return query, valuesArray, nil

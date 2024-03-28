@@ -22,6 +22,7 @@ import (
 // @router /photos/ [post]
 func (h *router) create(c *gin.Context) {
 	session := baseApi.GetSession(c)
+
 	var form createForm
 	err := c.ShouldBindWith(&form, binding.Form)
 	if err != nil {
@@ -29,6 +30,11 @@ func (h *router) create(c *gin.Context) {
 		return
 	}
 	file, err := baseApi.GetPhoto(c)
+	if err != nil {
+		baseApi.Response404(c, err)
+		return
+	}
+	format, err := baseApi.ValidatePhoto(file)
 	if err != nil {
 		baseApi.Response404(c, err)
 		return
@@ -42,7 +48,7 @@ func (h *router) create(c *gin.Context) {
 		baseApi.AccessDenied(c)
 		return
 	}
-	photo, err := h.photosService.Create(c, session.ID, form.BookmarkId, file, h.Config.PhotosPath)
+	photo, err := h.photosService.Create(c, session.ID, form.BookmarkId, file, h.Config.PhotosPath, format)
 	if err != nil {
 		baseApi.Response404(c, err)
 		return

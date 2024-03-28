@@ -17,7 +17,7 @@ var logger = misc.GetLogger()
 
 // @title METROID BOOKMARKS API
 // @version 1.0
-// @description Template API Server for metroid bookmarks
+// @description API Server for metroid bookmarks
 // @host localhost:3000
 // @BasePath /api/v1
 func main() {

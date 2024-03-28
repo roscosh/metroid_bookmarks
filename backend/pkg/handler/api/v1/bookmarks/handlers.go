@@ -11,20 +11,28 @@ import (
 // @Tags bookmarks
 // @Accept json
 // @Produce json
-// @Param input body createForm true "create"
+// @Param input formData createForm true "create"
+// @Param photo formData file true "photo"
 // @Success 200 {object} createResponse
 // @Failure 404 {object} baseApi.ErrorResponse
 // @router /bookmarks/ [post]
 func (h *router) create(c *gin.Context) {
 	session := baseApi.GetSession(c)
+
 	var form createForm
 	err := c.ShouldBindWith(&form, binding.JSON)
 	if err != nil {
 		baseApi.Response404(c, err)
 		return
 	}
+	file, err := baseApi.GetPhoto(c)
 	if err != nil {
-		baseApi.Response403(c, err)
+		baseApi.Response404(c, err)
+		return
+	}
+	format, err := baseApi.ValidatePhoto(file)
+	if err != nil {
+		baseApi.Response404(c, err)
 		return
 	}
 	sqlForm := &sql.CreateBookmark{
@@ -33,7 +41,12 @@ func (h *router) create(c *gin.Context) {
 		SkillId: form.SkillId,
 		RoomId:  form.RoomId,
 	}
-	bookmark, err := h.service.Create(sqlForm)
+	bookmark, err := h.bookmarksService.Create(sqlForm)
+	if err != nil {
+		baseApi.Response404(c, err)
+		return
+	}
+	_, err = h.photosService.Create(c, session.ID, bookmark.Id, file, h.Config.PhotosPath, format)
 	if err != nil {
 		baseApi.Response404(c, err)
 		return
@@ -56,7 +69,7 @@ func (h *router) delete(c *gin.Context) {
 		baseApi.Response404(c, err)
 		return
 	}
-	bookmark, err := h.service.Delete(id, session.ID)
+	bookmark, err := h.bookmarksService.Delete(id, session.ID)
 	if err != nil {
 		baseApi.Response404(c, err)
 		return
@@ -86,7 +99,7 @@ func (h *router) edit(c *gin.Context) {
 		baseApi.Response404(c, err)
 		return
 	}
-	bookmark, err := h.service.Edit(id, session.ID, form.EditBookmark)
+	bookmark, err := h.bookmarksService.Edit(id, session.ID, form.EditBookmark)
 	if err != nil {
 		baseApi.Response404(c, err)
 		return
@@ -110,7 +123,7 @@ func (h *router) getAll(c *gin.Context) {
 		baseApi.Response404(c, err)
 		return
 	}
-	bookmarks, total, err := h.service.GetAll(form.Limit, form.Page, session.ID, form.Completed, form.OrderById)
+	bookmarks, total, err := h.bookmarksService.GetAll(form.Limit, form.Page, session.ID, form.Completed, form.OrderById)
 	if err != nil {
 		baseApi.Response404(c, err)
 		return

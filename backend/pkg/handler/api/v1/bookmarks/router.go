@@ -8,16 +8,19 @@ import (
 
 type router struct {
 	*baseApi.Router
-	service *service.BookmarksService
+	bookmarksService *service.BookmarksService
+	photosService    *service.PhotosService
 }
 
 func NewRouter(
 	baseAPIRouter *baseApi.Router,
-	service *service.BookmarksService,
+	bookmarksService *service.BookmarksService,
+	photosService *service.PhotosService,
 ) baseApi.ApiRouter {
 	return &router{
-		Router:  baseAPIRouter,
-		service: service,
+		Router:           baseAPIRouter,
+		bookmarksService: bookmarksService,
+		photosService:    photosService,
 	}
 }
 
