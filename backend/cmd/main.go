@@ -63,7 +63,6 @@ func main() {
 	if err = srv.Shutdown(context.Background()); err != nil {
 		logger.Errorf("error occured on server shutting down: %s\n", err.Error())
 	}
-
 	pool.Close()
 	defer func() {
 		if r := recover(); r != nil {
