@@ -47,3 +47,7 @@ services:
       - ./data/redisdata:/data
     ports:
       - "6379:6379"
+
+networks:
+  default:
+    name: metroid_bookmarks
