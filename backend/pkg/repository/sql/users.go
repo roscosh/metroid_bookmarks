@@ -1,9 +1,5 @@
 package sql
 
-import (
-	"github.com/jackc/pgx/v5"
-)
-
 const usersTable = "users"
 
 type User struct {
@@ -27,76 +23,43 @@ type EditUser struct {
 }
 
 type UsersSQL struct {
-	*baseSQL
+	iBaseSQL[User]
 }
 
-func NewUsersSQL(pool *DbPool, table string) *UsersSQL {
-	sql := newBaseSQl(pool, table, User{})
-	return &UsersSQL{baseSQL: sql}
+func NewUsersSQL(dbPool *DbPool, table string) *UsersSQL {
+	sql := newIBaseSQL[User](dbPool, table)
+	return &UsersSQL{iBaseSQL: sql}
 }
 
 func (s *UsersSQL) Create(createForm *CreateUser) (*User, error) {
-	rows, err := s.insert(*createForm)
-	if err != nil {
-		return nil, err
-	}
-	return s.collectOneRow(rows)
+	return s.insert(*createForm)
 }
 
 func (s *UsersSQL) Delete(id int) (*User, error) {
-	rows, err := s.deleteById(id)
-	if err != nil {
-		return nil, err
-	}
-	return s.collectOneRow(rows)
+	return s.delete(id)
 }
 
 func (s *UsersSQL) Edit(id int, editForm *EditUser) (*User, error) {
-	rows, err := s.update(id, *editForm)
-	if err != nil {
-		return nil, err
-	}
-	return s.collectOneRow(rows)
+	return s.update(id, *editForm)
 }
 
 func (s *UsersSQL) GetAll(search string) ([]User, error) {
-	var rows pgx.Rows
-	var err error
 	if search != "" {
-		rows, err = s.selectWhere("WHERE LOWER(name) LIKE $1 OR LOWER(login) LIKE $2", search, search)
+		return s.selectManyWhere("WHERE LOWER(name) LIKE $1 OR LOWER(login) LIKE $2", search, search)
 	} else {
-		rows, err = s.selectAll()
+		return s.selectMany()
 	}
-	if err != nil {
-		return nil, err
-	}
-	return s.collectRows(rows)
 }
 
 func (s *UsersSQL) GetByCredentials(login, password string) (*User, error) {
-	rows, err := s.selectWhere("login = $1 AND password = $2", login, password)
-	if err != nil {
-		return nil, err
-	}
-	return s.collectOneRow(rows)
+	return s.selectWhere("login = $1 AND password = $2", login, password)
 }
 
-func (s *UsersSQL) GetByID(id int) (*User, error) {
-	rows, err := s.selectById(id)
-	if err != nil {
-		return nil, err
-	}
-	return s.collectOneRow(rows)
+func (s *UsersSQL) Get(id int) (*User, error) {
+	return s.selectOne(id)
+
 }
 
 func (s *UsersSQL) Total() (int, error) {
 	return s.total()
-}
-
-func (s *UsersSQL) collectOneRow(rows pgx.Rows) (*User, error) {
-	return collectOneRow[User](rows)
-}
-
-func (s *UsersSQL) collectRows(rows pgx.Rows) ([]User, error) {
-	return collectRows[User](rows)
 }

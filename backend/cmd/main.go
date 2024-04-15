@@ -22,12 +22,12 @@ var logger = misc.GetLogger()
 // @BasePath /api/v1
 func main() {
 	config := misc.GetConfig()
-	pool, err := sql.NewDbPool(config.Db.Dsn)
+	dbPool, err := sql.NewDbPool(config.Db.Dsn)
 	if err != nil {
-		logger.Errorf("failed to create db pool: %s\n", err.Error())
+		logger.Errorf("failed to create db dbPool: %s\n", err.Error())
 		return
 	}
-	SQL := sql.NewSQL(pool)
+	SQL := sql.NewSQL(dbPool)
 	if err != nil {
 		logger.Errorf("failed to initialize db: %s\n", err.Error())
 		return
@@ -63,7 +63,7 @@ func main() {
 	if err = srv.Shutdown(context.Background()); err != nil {
 		logger.Errorf("error occured on server shutting down: %s\n", err.Error())
 	}
-	pool.Close()
+	dbPool.Close()
 	defer func() {
 		if r := recover(); r != nil {
 			logger.Errorf("Recovered from panic: %s", r)

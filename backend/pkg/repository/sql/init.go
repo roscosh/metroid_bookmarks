@@ -17,14 +17,14 @@ type SQL struct {
 	Photos    *PhotosSQL
 }
 
-func NewSQL(pool *DbPool) *SQL {
+func NewSQL(dbPool *DbPool) *SQL {
 	return &SQL{
-		Users:     NewUsersSQL(pool, usersTable),
-		Areas:     NewAreasSQL(pool, areasTable),
-		Rooms:     NewRoomsSQL(pool, roomsTable),
-		Skills:    NewSkillsSQL(pool, skillsTable),
-		Bookmarks: NewBookmarksSQL(pool, bookmarksTable),
-		Photos:    NewPhotosSQL(pool, photosTable),
+		Users:     NewUsersSQL(dbPool, usersTable),
+		Areas:     NewAreasSQL(dbPool, areasTable),
+		Rooms:     NewRoomsSQL(dbPool, roomsTable),
+		Skills:    NewSkillsSQL(dbPool, skillsTable),
+		Bookmarks: NewBookmarksSQL(dbPool, bookmarksTable),
+		Photos:    NewPhotosSQL(dbPool, photosTable),
 	}
 }
 

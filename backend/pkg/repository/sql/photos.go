@@ -1,7 +1,5 @@
 package sql
 
-import "github.com/jackc/pgx/v5"
-
 const photosTable = "photos"
 
 type Photo struct {
@@ -21,20 +19,16 @@ type CreatePhoto struct {
 }
 
 type PhotosSQL struct {
-	*baseSQL
+	iBaseSQL[PhotoPreview]
 }
 
-func NewPhotosSQL(pool *DbPool, table string) *PhotosSQL {
-	sql := newBaseSQl(pool, table, PhotoPreview{})
-	return &PhotosSQL{baseSQL: sql}
+func NewPhotosSQL(dbPool *DbPool, table string) *PhotosSQL {
+	sql := newIBaseSQL[PhotoPreview](dbPool, table)
+	return &PhotosSQL{iBaseSQL: sql}
 }
 
 func (s *PhotosSQL) Create(createForm *CreatePhoto) (*PhotoPreview, error) {
-	rows, err := s.insert(*createForm)
-	if err != nil {
-		return nil, err
-	}
-	return s.collectOneRow(rows)
+	return s.insert(*createForm)
 }
 
 func (s *PhotosSQL) Delete(id int, userId int) (*PhotoPreview, error) {
@@ -45,17 +39,9 @@ func (s *PhotosSQL) Delete(id int, userId int) (*PhotoPreview, error) {
 	   Where p.bookmark_id=b.id AND b.user_id=$1 AND p.id=$2
 	   RETURNING p.id, p.bookmark_id, p.name
 	`
-	rows, err := s.baseSQL.query(query, userId, id)
+	rows, err := s.iBaseSQL.query(query, userId, id)
 	if err != nil {
 		return nil, err
 	}
 	return s.collectOneRow(rows)
-}
-
-func (s *PhotosSQL) collectOneRow(rows pgx.Rows) (*PhotoPreview, error) {
-	return collectOneRow[PhotoPreview](rows)
-}
-
-func (s *PhotosSQL) collectRows(rows pgx.Rows) ([]PhotoPreview, error) {
-	return collectRows[PhotoPreview](rows)
 }

@@ -1,7 +1,5 @@
 package sql
 
-import "github.com/jackc/pgx/v5"
-
 const roomsTable = "rooms"
 
 type Room struct {
@@ -21,62 +19,34 @@ type EditRoom struct {
 }
 
 type RoomsSQL struct {
-	*baseSQL
+	iBaseSQL[Room]
 }
 
-func NewRoomsSQL(pool *DbPool, table string) *RoomsSQL {
-	sql := newBaseSQl(pool, table, Room{})
-	return &RoomsSQL{baseSQL: sql}
+func NewRoomsSQL(dbPool *DbPool, table string) *RoomsSQL {
+	sql := newIBaseSQL[Room](dbPool, table)
+	return &RoomsSQL{iBaseSQL: sql}
 }
 
 func (s *RoomsSQL) Create(createForm *CreateRoom) (*Room, error) {
-	rows, err := s.insert(*createForm)
-	if err != nil {
-		return nil, err
-	}
-	return s.collectOneRow(rows)
+	return s.insert(*createForm)
 }
 
 func (s *RoomsSQL) Edit(id int, editForm *EditRoom) (*Room, error) {
-	rows, err := s.update(id, *editForm)
-	if err != nil {
-		return nil, err
-	}
-	return s.collectOneRow(rows)
+	return s.update(id, *editForm)
 }
 
 func (s *RoomsSQL) Delete(id int) (*Room, error) {
-	rows, err := s.deleteById(id)
-	if err != nil {
-		return nil, err
-	}
-	return s.collectOneRow(rows)
+	return s.delete(id)
 }
 
 func (s *RoomsSQL) GetAll() ([]Room, error) {
-	rows, err := s.selectAll()
-	if err != nil {
-		return nil, err
-	}
-	return s.collectRows(rows)
+	return s.selectMany()
 }
 
 func (s *RoomsSQL) GetByID(id int) (*Room, error) {
-	rows, err := s.selectById(id)
-	if err != nil {
-		return nil, err
-	}
-	return s.collectOneRow(rows)
+	return s.selectOne(id)
 }
 
 func (s *RoomsSQL) Total() (int, error) {
 	return s.total()
-}
-
-func (s *RoomsSQL) collectOneRow(rows pgx.Rows) (*Room, error) {
-	return collectOneRow[Room](rows)
-}
-
-func (s *RoomsSQL) collectRows(rows pgx.Rows) ([]Room, error) {
-	return collectRows[Room](rows)
 }

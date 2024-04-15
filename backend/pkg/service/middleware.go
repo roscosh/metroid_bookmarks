@@ -47,7 +47,7 @@ func (m *MiddlewareService) GetExistSession(token string) (*session.Session, err
 		expires = session.AnonymousExpires
 	} else {
 		expires = session.AuthenticatedExpires
-		user, err = m.sql.GetByID(id)
+		user, err = m.sql.Get(id)
 		if err != nil {
 			return nil, err
 		}

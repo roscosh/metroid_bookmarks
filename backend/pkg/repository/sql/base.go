@@ -1,7 +1,6 @@
 package sql
 
 import (
-	"C"
 	"errors"
 	"fmt"
 	"github.com/jackc/pgx/v5"
@@ -10,99 +9,160 @@ import (
 	"strings"
 )
 
-var DbTagsMap = make(map[string]string)
+type iBaseSQL[T any] interface {
+	//Query methods
+	collectOneRow(rows pgx.Rows) (*T, error)
+	collectRows(rows pgx.Rows) ([]T, error)
+	exec(query string, args ...any) (pgconn.CommandTag, error)
+	query(query string, args ...any) (pgx.Rows, error)
+	queryRow(query string, args ...any) pgx.Row
+	//CRUD methods
+	delete(pk int) (*T, error)
+	deleteWhere(whereStatement string, args ...any) (*T, error)
+	insert(createStruct interface{}) (*T, error)
+	selectMany() ([]T, error)
+	selectManyWhere(whereStatement string, args ...any) ([]T, error)
+	selectOne(pk int) (*T, error)
+	selectWhere(whereStatement string, args ...any) (*T, error)
+	total() (int, error)
+	update(pk int, editStruct interface{}) (*T, error)
+	updateWhere(editStruct interface{}, where string, args ...any) (*T, error)
+}
 
-type baseSQL struct {
+func newIBaseSQL[T any](dbPool *DbPool, table string) iBaseSQL[T] {
+	var structObj T
+	return &baseSQL[T]{
+		DbPool: dbPool,
+		table:  table,
+		dbTags: getDbTags(structObj),
+	}
+}
+
+type baseSQL[T any] struct {
 	*DbPool
-	table string
-	model interface{}
+	table  string
+	dbTags string
 }
 
-func newBaseSQl(pool *DbPool, table string, model interface{}) *baseSQL {
-	return &baseSQL{DbPool: pool, table: table, model: model}
+func (s *baseSQL[T]) collectOneRow(rows pgx.Rows) (*T, error) {
+	structObj, err := pgx.CollectOneRow(rows, pgx.RowToStructByName[T])
+	return &structObj, err
 }
 
-func (s *baseSQL) exec(query string, args ...any) (pgconn.CommandTag, error) {
+func (s *baseSQL[T]) collectRows(rows pgx.Rows) ([]T, error) {
+	return pgx.CollectRows(rows, pgx.RowToStructByName[T])
+}
+
+func (s *baseSQL[T]) exec(query string, args ...any) (pgconn.CommandTag, error) {
 	return s.pool.Exec(s.ctx, query, args...)
 }
 
-func (s *baseSQL) query(query string, args ...any) (pgx.Rows, error) {
+func (s *baseSQL[T]) query(query string, args ...any) (pgx.Rows, error) {
 	return s.pool.Query(s.ctx, query, args...)
 }
 
-func (s *baseSQL) queryRow(query string, args ...any) pgx.Row {
+func (s *baseSQL[T]) queryRow(query string, args ...any) pgx.Row {
 	return s.pool.QueryRow(s.ctx, query, args...)
 }
 
-func (s *baseSQL) deleteById(pk int) (pgx.Rows, error) {
-	query := fmt.Sprintf(`DELETE FROM %s WHERE id = $1 RETURNING %s`, s.table, getDbTags(s.model))
-	return s.query(query, pk)
-}
-
-func (s *baseSQL) deleteWhere(whereStatement string, args ...any) (pgx.Rows, error) {
-	query := fmt.Sprintf(`DELETE FROM %s WHERE %s RETURNING %s`, s.table, whereStatement, getDbTags(s.model))
-	return s.query(query, args...)
-}
-
-func (s *baseSQL) insert(createStruct interface{}) (pgx.Rows, error) {
-	query, args, err := getInsertQuery(s.table, createStruct, s.model)
+func (s *baseSQL[T]) delete(pk int) (*T, error) {
+	query := fmt.Sprintf(`DELETE FROM %s WHERE id = $1 RETURNING %s`, s.table, s.dbTags)
+	rows, err := s.query(query, pk)
 	if err != nil {
 		return nil, err
 	}
-	return s.query(query, args...)
+	return s.collectOneRow(rows)
 }
 
-func (s *baseSQL) selectById(pk int) (pgx.Rows, error) {
-	query := fmt.Sprintf("SELECT %s FROM %s WHERE id = $1", getDbTags(s.model), s.table)
-	return s.query(query, pk)
+func (s *baseSQL[T]) deleteWhere(whereStatement string, args ...any) (*T, error) {
+	query := fmt.Sprintf(`DELETE FROM %s WHERE %s RETURNING %s`, s.table, whereStatement, s.dbTags)
+	rows, err := s.query(query, args...)
+	if err != nil {
+		return nil, err
+	}
+	return s.collectOneRow(rows)
 }
 
-func (s *baseSQL) selectWhere(whereStatement string, args ...any) (pgx.Rows, error) {
-	query := fmt.Sprintf("SELECT %s FROM %s WHERE %s", getDbTags(s.model), s.table, whereStatement)
-	return s.query(query, args...)
+func (s *baseSQL[T]) insert(createStruct interface{}) (*T, error) {
+	query, args, err := s.getInsertQuery(createStruct)
+	if err != nil {
+		return nil, err
+	}
+	rows, err := s.query(query, args...)
+	if err != nil {
+		return nil, err
+	}
+	return s.collectOneRow(rows)
 }
 
-func (s *baseSQL) selectAll() (pgx.Rows, error) {
-	query := fmt.Sprintf("SELECT %s FROM %s", getDbTags(s.model), s.table)
-	return s.query(query)
+func (s *baseSQL[T]) selectOne(pk int) (*T, error) {
+	query := fmt.Sprintf("SELECT %s FROM %s WHERE id = $1", s.dbTags, s.table)
+	rows, err := s.query(query, pk)
+	if err != nil {
+		return nil, err
+	}
+	return s.collectOneRow(rows)
+
 }
 
-func (s *baseSQL) total() (int, error) {
+func (s *baseSQL[T]) selectManyWhere(whereStatement string, args ...any) ([]T, error) {
+	query := fmt.Sprintf("SELECT %s FROM %s WHERE %s", s.dbTags, s.table, whereStatement)
+	rows, err := s.query(query, args...)
+	if err != nil {
+		return nil, err
+	}
+	return s.collectRows(rows)
+}
+
+func (s *baseSQL[T]) selectWhere(whereStatement string, args ...any) (*T, error) {
+	query := fmt.Sprintf("SELECT %s FROM %s WHERE %s", s.dbTags, s.table, whereStatement)
+	rows, err := s.query(query, args...)
+	if err != nil {
+		return nil, err
+	}
+	return s.collectOneRow(rows)
+}
+
+func (s *baseSQL[T]) selectMany() ([]T, error) {
+	query := fmt.Sprintf("SELECT %s FROM %s", s.dbTags, s.table)
+	rows, err := s.query(query)
+	if err != nil {
+		return nil, err
+	}
+	return s.collectRows(rows)
+}
+
+func (s *baseSQL[T]) total() (int, error) {
 	query := fmt.Sprintf("SELECT COUNT(*) FROM %s ", s.table)
 	var count int
 	return count, s.queryRow(query).Scan(&count)
 }
 
-func (s *baseSQL) update(pk int, editStruct interface{}) (pgx.Rows, error) {
-	query, args, err := getUpdateQuery(s.table, editStruct, s.model, "id=$1", pk)
+func (s *baseSQL[T]) update(pk int, editStruct interface{}) (*T, error) {
+	query, args, err := s.getUpdateQuery(editStruct, "id=$1", pk)
 	if err != nil {
 		return nil, err
 	}
-	return s.query(query, args...)
-}
-
-func (s *baseSQL) updateWhere(editStruct interface{}, where string, args ...any) (pgx.Rows, error) {
-	query, args, err := getUpdateQuery(s.table, editStruct, s.model, where, args...)
+	rows, err := s.query(query, args...)
 	if err != nil {
 		return nil, err
 	}
-	return s.query(query, args...)
+	return s.collectOneRow(rows)
 }
 
-func collectOneRow[T any](rows pgx.Rows) (*T, error) {
-	structObj, err := pgx.CollectOneRow(rows, pgx.RowToStructByName[T])
-	return &structObj, err
+func (s *baseSQL[T]) updateWhere(editStruct interface{}, where string, args ...any) (*T, error) {
+	query, args, err := s.getUpdateQuery(editStruct, where, args...)
+	if err != nil {
+		return nil, err
+	}
+	rows, err := s.query(query, args...)
+	if err != nil {
+		return nil, err
+	}
+	return s.collectOneRow(rows)
 }
 
-func collectRows[T any](rows pgx.Rows) ([]T, error) {
-	return pgx.CollectRows(rows, pgx.RowToStructByName[T])
-}
-
-func getInsertQuery(
-	table string,
-	createInterface interface{},
-	returningInterface interface{},
-) (string, []interface{}, error) {
+func (s *baseSQL[T]) getInsertQuery(createInterface interface{}) (string, []interface{}, error) {
 	// Получаем тип структуры
 	userType := reflect.TypeOf(createInterface)
 	// Получаем значение структуры
@@ -130,16 +190,14 @@ func getInsertQuery(
 
 	fields := strings.Join(fieldsArray, ", ")
 	placeholders := strings.Join(indexRowArray, ", ")
-	returning := getDbTags(returningInterface)
-	query := fmt.Sprintf("INSERT INTO %s (%s) VALUES (%s) RETURNING %s", table, fields, placeholders, returning)
+
+	query := fmt.Sprintf("INSERT INTO %s (%s) VALUES (%s) RETURNING %s", s.table, fields, placeholders, s.dbTags)
 
 	return query, valuesArray, nil
 }
 
-func getUpdateQuery(
-	table string,
+func (s *baseSQL[T]) getUpdateQuery(
 	setInterface interface{},
-	returningInterface interface{},
 	where string,
 	args ...any,
 ) (string, []interface{}, error) {
@@ -170,29 +228,21 @@ func getUpdateQuery(
 	}
 	set := strings.Join(fields, ", ")
 
-	updateQuery := fmt.Sprintf("UPDATE %s SET %s", table, set)
+	updateQuery := fmt.Sprintf("UPDATE %s SET %s", s.table, set)
 	queryArray = append(queryArray, updateQuery)
 
 	if where != "" {
 		queryArray = append(queryArray, fmt.Sprintf("WHERE %s", where))
 	}
 
-	if returningInterface != nil {
-		returning := getDbTags(returningInterface)
-		if returning != "" {
-			queryArray = append(queryArray, fmt.Sprintf("RETURNING %s", returning))
-		}
-	}
+	queryArray = append(queryArray, fmt.Sprintf("RETURNING %s", s.dbTags))
+
 	query := strings.Join(queryArray, " ")
 	return query, args, nil
 }
 
-func getDbTags(structObj interface{}) string {
+func getDbTags[T any](structObj T) string {
 	structType := reflect.TypeOf(structObj)
-	structName := structType.Name()
-	if dbTags, ok := DbTagsMap[structName]; ok {
-		return dbTags
-	}
 	var dbTagArray []string
 	var traverseFields func(reflect.Type)
 
@@ -217,7 +267,5 @@ func getDbTags(structObj interface{}) string {
 
 	traverseFields(structType)
 
-	dbTags := strings.Join(dbTagArray, ", ")
-	DbTagsMap[structName] = dbTags
-	return dbTags
+	return strings.Join(dbTagArray, ", ")
 }

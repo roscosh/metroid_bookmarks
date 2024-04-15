@@ -1,7 +1,5 @@
 package sql
 
-import "github.com/jackc/pgx/v5"
-
 const areasTable = "areas"
 
 type Area struct {
@@ -21,62 +19,34 @@ type EditArea struct {
 }
 
 type AreasSQL struct {
-	*baseSQL
+	iBaseSQL[Area]
 }
 
-func NewAreasSQL(pool *DbPool, table string) *AreasSQL {
-	sql := newBaseSQl(pool, table, Area{})
-	return &AreasSQL{baseSQL: sql}
+func NewAreasSQL(dbPool *DbPool, table string) *AreasSQL {
+	sql := newIBaseSQL[Area](dbPool, table)
+	return &AreasSQL{iBaseSQL: sql}
 }
 
 func (s *AreasSQL) Create(createForm *CreateArea) (*Area, error) {
-	rows, err := s.insert(*createForm)
-	if err != nil {
-		return nil, err
-	}
-	return s.collectOneRow(rows)
+	return s.insert(*createForm)
 }
 
 func (s *AreasSQL) Delete(id int) (*Area, error) {
-	rows, err := s.deleteById(id)
-	if err != nil {
-		return nil, err
-	}
-	return s.collectOneRow(rows)
+	return s.delete(id)
 }
 
 func (s *AreasSQL) Edit(id int, editForm *EditArea) (*Area, error) {
-	rows, err := s.update(id, *editForm)
-	if err != nil {
-		return nil, err
-	}
-	return s.collectOneRow(rows)
+	return s.update(id, *editForm)
 }
 
 func (s *AreasSQL) GetAll() ([]Area, error) {
-	rows, err := s.selectAll()
-	if err != nil {
-		return nil, err
-	}
-	return s.collectRows(rows)
+	return s.selectMany()
 }
 
 func (s *AreasSQL) GetByID(id int) (*Area, error) {
-	rows, err := s.selectById(id)
-	if err != nil {
-		return nil, err
-	}
-	return s.collectOneRow(rows)
+	return s.selectOne(id)
 }
 
 func (s *AreasSQL) Total() (int, error) {
 	return s.total()
-}
-
-func (s *AreasSQL) collectOneRow(rows pgx.Rows) (*Area, error) {
-	return collectOneRow[Area](rows)
-}
-
-func (s *AreasSQL) collectRows(rows pgx.Rows) ([]Area, error) {
-	return collectRows[Area](rows)
 }

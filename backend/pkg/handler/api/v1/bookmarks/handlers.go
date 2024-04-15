@@ -18,9 +18,8 @@ import (
 // @router /bookmarks/ [post]
 func (h *router) create(c *gin.Context) {
 	session := baseApi.GetSession(c)
-
 	var form createForm
-	err := c.ShouldBindWith(&form, binding.JSON)
+	err := c.ShouldBindWith(&form, binding.Form)
 	if err != nil {
 		baseApi.Response404(c, err)
 		return

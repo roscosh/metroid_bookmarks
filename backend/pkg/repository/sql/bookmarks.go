@@ -3,7 +3,6 @@ package sql
 import (
 	"errors"
 	"fmt"
-	"github.com/jackc/pgx/v5"
 	"strings"
 	"time"
 )
@@ -45,36 +44,24 @@ type EditBookmark struct {
 }
 
 type BookmarksSQL struct {
-	*baseSQL
+	iBaseSQL[BookmarkPreview]
 }
 
-func NewBookmarksSQL(pool *DbPool, table string) *BookmarksSQL {
-	sql := newBaseSQl(pool, table, BookmarkPreview{})
-	return &BookmarksSQL{baseSQL: sql}
+func NewBookmarksSQL(dbPool *DbPool, table string) *BookmarksSQL {
+	sql := newIBaseSQL[BookmarkPreview](dbPool, table)
+	return &BookmarksSQL{iBaseSQL: sql}
 }
 
 func (s *BookmarksSQL) Create(createForm *CreateBookmark) (*BookmarkPreview, error) {
-	rows, err := s.insert(*createForm)
-	if err != nil {
-		return nil, err
-	}
-	return s.collectOneRow(rows)
+	return s.insert(*createForm)
 }
 
 func (s *BookmarksSQL) Delete(id int, userId int) (*BookmarkPreview, error) {
-	rows, err := s.deleteWhere("id=$1 AND user_id=$2", id, userId)
-	if err != nil {
-		return nil, err
-	}
-	return s.collectOneRow(rows)
+	return s.deleteWhere("id=$1 AND user_id=$2", id, userId)
 }
 
 func (s *BookmarksSQL) Edit(id int, userId int, editForm *EditBookmark) (*BookmarkPreview, error) {
-	rows, err := s.updateWhere(*editForm, "id=$1 AND user_id=$2", id, userId)
-	if err != nil {
-		return nil, err
-	}
-	return s.collectOneRow(rows)
+	return s.updateWhere(*editForm, "id=$1 AND user_id=$2", id, userId)
 }
 
 func (s *BookmarksSQL) GetAll(limit, offset, userId int, completed *bool, orderById *bool) ([]Bookmark, error) {
@@ -117,6 +104,7 @@ func (s *BookmarksSQL) GetAll(limit, offset, userId int, completed *bool, orderB
 		where := "WHERE " + strings.Join(whereArray, " AND ")
 		queryArray = append(queryArray, where)
 	}
+
 	groupBy := `GROUP BY b.id, b.ctime, b.completed, a.id, a.name_ru, a.name_en, r.id, r.name_ru, r.name_en,  s.id, s.name_ru, s.name_en`
 	queryArray = append(queryArray, groupBy)
 
@@ -177,11 +165,7 @@ func (s *BookmarksSQL) GetAll(limit, offset, userId int, completed *bool, orderB
 }
 
 func (s *BookmarksSQL) GetByID(id int) (*BookmarkPreview, error) {
-	rows, err := s.selectById(id)
-	if err != nil {
-		return nil, err
-	}
-	return collectOneRow[BookmarkPreview](rows)
+	return s.selectOne(id)
 }
 
 func (s *BookmarksSQL) Total(userId int, completed *bool) (int, error) {
@@ -219,12 +203,4 @@ func (s *BookmarksSQL) Total(userId int, completed *bool) (int, error) {
 	query := strings.Join(queryArray, " ")
 	err := s.queryRow(query, args...).Scan(&count)
 	return count, err
-}
-
-func (s *BookmarksSQL) collectOneRow(rows pgx.Rows) (*BookmarkPreview, error) {
-	return collectOneRow[BookmarkPreview](rows)
-}
-
-func (s *BookmarksSQL) collectRows(rows pgx.Rows) ([]BookmarkPreview, error) {
-	return collectRows[BookmarkPreview](rows)
 }
