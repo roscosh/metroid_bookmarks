@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  web:
+    build:
+      dockerfile: etc/docker/prod/Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - DB_CONFIG=$DB_CONFIG
+      - DBMATE_MIGRATIONS_DIR=$DBMATE_MIGRATIONS_DIR
+    volumes:
+      - .:/usr/src/app
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+
+  db:
+    extends:
+      file: etc/docker/docker-compose-base.yml
+      service: db
+    volumes:
+      - ./data/pgdata:$PGDATA
+
+  redis:
+    extends:
+      file: etc/docker/docker-compose-base.yml
+      service: redis
+    volumes:
+      - ./data/redisdata:/data
+
+networks:
+  default:
+    name: metroid_bookmarks_prod

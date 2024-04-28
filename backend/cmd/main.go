@@ -32,6 +32,11 @@ func main() {
 		logger.Errorf("failed to initialize db: %s\n", err.Error())
 		return
 	}
+	err = misc.DbMigrate()
+	if err != nil {
+		logger.Error(err.Error())
+		return
+	}
 	redisClient, err := redis.NewRedisPool(config.Redis.Dsn)
 	if err != nil {
 		logger.Errorf("failed to initialize redis: %s\n", err.Error())

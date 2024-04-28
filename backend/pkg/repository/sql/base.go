@@ -32,16 +32,16 @@ type iBaseSQL[T any] interface {
 func newIBaseSQL[T any](dbPool *DbPool, table string) iBaseSQL[T] {
 	var structObj T
 	return &baseSQL[T]{
-		DbPool: dbPool,
-		table:  table,
-		dbTags: getDbTags(structObj),
+		DbPool:    dbPool,
+		table:     table,
+		dbColumns: getDbTags(structObj),
 	}
 }
 
 type baseSQL[T any] struct {
 	*DbPool
-	table  string
-	dbTags string
+	table     string
+	dbColumns string
 }
 
 func (s *baseSQL[T]) collectOneRow(rows pgx.Rows) (*T, error) {
@@ -66,7 +66,7 @@ func (s *baseSQL[T]) queryRow(query string, args ...any) pgx.Row {
 }
 
 func (s *baseSQL[T]) delete(pk int) (*T, error) {
-	query := fmt.Sprintf(`DELETE FROM %s WHERE id = $1 RETURNING %s`, s.table, s.dbTags)
+	query := fmt.Sprintf(`DELETE FROM %s WHERE id = $1 RETURNING %s`, s.table, s.dbColumns)
 	rows, err := s.query(query, pk)
 	if err != nil {
 		return nil, err
@@ -75,7 +75,7 @@ func (s *baseSQL[T]) delete(pk int) (*T, error) {
 }
 
 func (s *baseSQL[T]) deleteWhere(whereStatement string, args ...any) (*T, error) {
-	query := fmt.Sprintf(`DELETE FROM %s WHERE %s RETURNING %s`, s.table, whereStatement, s.dbTags)
+	query := fmt.Sprintf(`DELETE FROM %s WHERE %s RETURNING %s`, s.table, whereStatement, s.dbColumns)
 	rows, err := s.query(query, args...)
 	if err != nil {
 		return nil, err
@@ -96,7 +96,7 @@ func (s *baseSQL[T]) insert(createStruct interface{}) (*T, error) {
 }
 
 func (s *baseSQL[T]) selectOne(pk int) (*T, error) {
-	query := fmt.Sprintf("SELECT %s FROM %s WHERE id = $1", s.dbTags, s.table)
+	query := fmt.Sprintf("SELECT %s FROM %s WHERE id = $1", s.dbColumns, s.table)
 	rows, err := s.query(query, pk)
 	if err != nil {
 		return nil, err
@@ -106,7 +106,7 @@ func (s *baseSQL[T]) selectOne(pk int) (*T, error) {
 }
 
 func (s *baseSQL[T]) selectManyWhere(whereStatement string, args ...any) ([]T, error) {
-	query := fmt.Sprintf("SELECT %s FROM %s WHERE %s", s.dbTags, s.table, whereStatement)
+	query := fmt.Sprintf("SELECT %s FROM %s WHERE %s", s.dbColumns, s.table, whereStatement)
 	rows, err := s.query(query, args...)
 	if err != nil {
 		return nil, err
@@ -115,7 +115,7 @@ func (s *baseSQL[T]) selectManyWhere(whereStatement string, args ...any) ([]T, e
 }
 
 func (s *baseSQL[T]) selectWhere(whereStatement string, args ...any) (*T, error) {
-	query := fmt.Sprintf("SELECT %s FROM %s WHERE %s", s.dbTags, s.table, whereStatement)
+	query := fmt.Sprintf("SELECT %s FROM %s WHERE %s", s.dbColumns, s.table, whereStatement)
 	rows, err := s.query(query, args...)
 	if err != nil {
 		return nil, err
@@ -124,7 +124,7 @@ func (s *baseSQL[T]) selectWhere(whereStatement string, args ...any) (*T, error)
 }
 
 func (s *baseSQL[T]) selectMany() ([]T, error) {
-	query := fmt.Sprintf("SELECT %s FROM %s", s.dbTags, s.table)
+	query := fmt.Sprintf("SELECT %s FROM %s", s.dbColumns, s.table)
 	rows, err := s.query(query)
 	if err != nil {
 		return nil, err
@@ -191,7 +191,7 @@ func (s *baseSQL[T]) getInsertQuery(createInterface interface{}) (string, []inte
 	fields := strings.Join(fieldsArray, ", ")
 	placeholders := strings.Join(indexRowArray, ", ")
 
-	query := fmt.Sprintf("INSERT INTO %s (%s) VALUES (%s) RETURNING %s", s.table, fields, placeholders, s.dbTags)
+	query := fmt.Sprintf("INSERT INTO %s (%s) VALUES (%s) RETURNING %s", s.table, fields, placeholders, s.dbColumns)
 
 	return query, valuesArray, nil
 }
@@ -235,7 +235,7 @@ func (s *baseSQL[T]) getUpdateQuery(
 		queryArray = append(queryArray, fmt.Sprintf("WHERE %s", where))
 	}
 
-	queryArray = append(queryArray, fmt.Sprintf("RETURNING %s", s.dbTags))
+	queryArray = append(queryArray, fmt.Sprintf("RETURNING %s", s.dbColumns))
 
 	query := strings.Join(queryArray, " ")
 	return query, args, nil
