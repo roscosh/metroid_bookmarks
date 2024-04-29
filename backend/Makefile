@@ -15,9 +15,7 @@ start:
 	docker compose -f $(FILE) --env-file .env --project-directory . -p $(PROJECT) up
 
 stop:
-	docker compose -f $(FILE) --project-directory . -p $(PROJECT) stop
+	docker compose -p $(PROJECT) stop
 
 clean:
-	docker compose -f $(FILE) --project-directory . -p $(PROJECT) down --rmi "all" -v
-
-
+	docker compose -p $(PROJECT) down --rmi "local" -v
