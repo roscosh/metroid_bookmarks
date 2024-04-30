@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/gin-gonic/gin"
 	"metroid_bookmarks/internal/handler"
+	"metroid_bookmarks/internal/models"
 	"metroid_bookmarks/internal/repository/redis"
 	"metroid_bookmarks/internal/repository/sql"
 	"metroid_bookmarks/internal/service"
@@ -15,13 +16,20 @@ import (
 
 var logger = misc.GetLogger()
 
-// @title METROID BOOKMARKS API
-// @version 1.0
-// @description API Server for metroid bookmarks
-// @host localhost:3000
-// @BasePath /api/v1
 func Init() {
-	config := misc.GetConfig()
+	envConf, err := models.NewEnvConfig()
+	if err != nil {
+		panic(err.Error())
+		return
+	}
+
+	logger.SetParams(envConf.LogLevel)
+
+	config, err := models.NewConfig(envConf.DbConfig)
+	if err != nil {
+		logger.Error(err.Error())
+		return
+	}
 	dbPool, err := sql.NewDbPool(config.Db.Dsn)
 	if err != nil {
 		logger.Errorf("failed to create db dbPool: %s\n", err.Error())
@@ -32,7 +40,7 @@ func Init() {
 		logger.Errorf("failed to initialize db: %s\n", err.Error())
 		return
 	}
-	err = misc.DbMigrate()
+	err = misc.DbMigrate(config.Db.Dsn, envConf.DbmateMigrationsDir)
 	if err != nil {
 		logger.Error(err.Error())
 		return
@@ -45,8 +53,7 @@ func Init() {
 	newRedis := redis.NewRedis(redisClient)
 	newService := service.NewService(SQL, newRedis)
 
-	PRODUCTION := os.Getenv("PRODUCTION")
-	if PRODUCTION == "true" {
+	if envConf.Production {
 		gin.SetMode(gin.ReleaseMode)
 	} else {
 		gin.SetMode(gin.DebugMode)
@@ -54,7 +61,7 @@ func Init() {
 
 	srv := new(misc.Server)
 	go func() {
-		if err = srv.Run(handler.InitRoutes(newService, config)); err != nil {
+		if err = srv.Run(handler.InitRoutes(newService, config, envConf)); err != nil {
 			logger.Errorf("error occured while running http server: %s", err.Error())
 		}
 	}()

@@ -164,19 +164,22 @@ func (s *baseSQL[T]) updateWhere(editStruct interface{}, where string, args ...a
 
 func (s *baseSQL[T]) getInsertQuery(createInterface interface{}) (string, []interface{}, error) {
 	// Получаем тип структуры
-	userType := reflect.TypeOf(createInterface)
+	t := reflect.TypeOf(createInterface)
+	if t.Kind() != reflect.Struct {
+		return "", nil, errors.New("object must be a structure")
+	}
 	// Получаем значение структуры
-	userValue := reflect.ValueOf(createInterface)
+	v := reflect.ValueOf(createInterface)
 	var valuesArray []interface{}
 	var fieldsArray []string
 	var indexRowArray []string
 	var placeholder = 1
 
-	for i := 0; i < userType.NumField(); i++ {
-		value := userValue.Field(i)
+	for i := 0; i < t.NumField(); i++ {
+		value := v.Field(i)
 		valuesArray = append(valuesArray, value.Interface())
 		// Получаем название поля
-		fieldName := userType.Field(i).Tag.Get("db")
+		fieldName := t.Field(i).Tag.Get("db")
 		// Добавляем позиционный индекс
 		placeholderStr := fmt.Sprintf("$%d", placeholder)
 		indexRowArray = append(indexRowArray, placeholderStr)
@@ -204,19 +207,22 @@ func (s *baseSQL[T]) getUpdateQuery(
 	queryArray := make([]string, 0, 3)
 
 	// Получаем тип структуры
-	userType := reflect.TypeOf(setInterface)
+	t := reflect.TypeOf(setInterface)
+	if t.Kind() != reflect.Struct {
+		return "", nil, errors.New("object must be a structure")
+	}
 	// Получаем значение структуры
-	userValue := reflect.ValueOf(setInterface)
+	v := reflect.ValueOf(setInterface)
 	var fields []string
 	var placeholder = 1 + len(args)
-	for i := 0; i < userType.NumField(); i++ {
-		value := userValue.Field(i)
+	for i := 0; i < t.NumField(); i++ {
+		value := v.Field(i)
 		if value.IsNil() {
 			continue
 		}
 		args = append(args, value.Interface())
 		// Получаем название поля
-		fieldName := userType.Field(i).Tag.Get("db")
+		fieldName := t.Field(i).Tag.Get("db")
 		// Добавляем позиционный индекс
 		fieldStr := fmt.Sprintf("%s = $%v", fieldName, placeholder)
 		fields = append(fields, fieldStr)

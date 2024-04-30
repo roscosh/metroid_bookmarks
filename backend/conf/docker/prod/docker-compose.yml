@@ -8,6 +8,7 @@ services:
       - DB_CONFIG=$DB_CONFIG
       - DBMATE_MIGRATIONS_DIR=$DBMATE_MIGRATIONS_DIR
       - PRODUCTION=$PRODUCTION
+      - LOG_LEVEL=$LOG_LEVEL
     volumes:
       - ./data/app_files:/bin/data/app_files
     depends_on:

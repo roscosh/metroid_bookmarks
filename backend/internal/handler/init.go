@@ -7,23 +7,21 @@ import (
 	_ "metroid_bookmarks/docs"
 	"metroid_bookmarks/internal/handler/api"
 	"metroid_bookmarks/internal/handler/api/base_api"
+	"metroid_bookmarks/internal/models"
 	"metroid_bookmarks/internal/service"
 	"metroid_bookmarks/pkg/misc"
-	"os"
 )
 
 var logger = misc.GetLogger()
 
-func InitRoutes(service *service.Service, config *misc.Config) *gin.Engine {
+func InitRoutes(service *service.Service, config *models.Config, envConf *models.EnvConfig) *gin.Engine {
 	router := gin.New()
 
-	PRODUCTION := os.Getenv("PRODUCTION")
-
-	if PRODUCTION != "true" {
+	if !envConf.Production {
 		router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	}
 
-	baseAPIRouter := baseApi.NewRouter(service, config)
+	baseAPIRouter := baseApi.NewRouter(service, config, envConf)
 
 	apiGroup := router.Group("/api/")
 	apiRouter := api.NewRouter(baseAPIRouter, service)

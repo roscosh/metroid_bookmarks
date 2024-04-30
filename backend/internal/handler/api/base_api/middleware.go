@@ -4,7 +4,6 @@ import (
 	"errors"
 	"github.com/gin-gonic/gin"
 	"metroid_bookmarks/internal/service"
-	"metroid_bookmarks/pkg/misc"
 	"metroid_bookmarks/pkg/session"
 )
 
@@ -15,11 +14,10 @@ const (
 
 type Middleware struct {
 	service *service.MiddlewareService
-	config  *misc.Config
 }
 
-func NewMiddleware(service *service.MiddlewareService, config *misc.Config) *Middleware {
-	return &Middleware{service: service, config: config}
+func NewMiddleware(service *service.MiddlewareService) *Middleware {
+	return &Middleware{service: service}
 }
 
 func (h *Middleware) SessionRequired(c *gin.Context) {

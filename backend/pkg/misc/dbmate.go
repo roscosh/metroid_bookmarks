@@ -1,16 +1,15 @@
 package misc
 
 import (
+	"github.com/amacneil/dbmate/pkg/dbmate"
+	"github.com/amacneil/dbmate/pkg/driver/postgres"
 	"net/url"
-	"os"
 )
-import "github.com/amacneil/dbmate/pkg/dbmate"
-import "github.com/amacneil/dbmate/pkg/driver/postgres"
 
-func DbMigrate() error {
-	dbURL, _ := url.Parse(config.Db.Dsn)
+func DbMigrate(dbUrl string, migrationsDir string) error {
+	URL, _ := url.Parse(dbUrl)
 	dbmate.RegisterDriver(postgres.NewDriver, "postgres")
-	db := dbmate.New(dbURL)
-	db.MigrationsDir = os.Getenv("DBMATE_MIGRATIONS_DIR")
+	db := dbmate.New(URL)
+	db.MigrationsDir = migrationsDir
 	return db.Migrate()
 }

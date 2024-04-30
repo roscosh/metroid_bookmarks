@@ -10,6 +10,7 @@ services:
       - DB_CONFIG=$DB_CONFIG
       - DBMATE_MIGRATIONS_DIR=$DBMATE_MIGRATIONS_DIR
       - PRODUCTION=$PRODUCTION
+      - LOG_LEVEL=$LOG_LEVEL
     volumes:
       - .:/usr/src/app
     command: air -c ./conf/.air.toml ./cmd/main.go -b 0.0.0.0
