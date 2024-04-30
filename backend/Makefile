@@ -1,10 +1,10 @@
 include .env
 
 ifeq ($(PRODUCTION), true)
-	FILE=./etc/docker/prod/docker-compose.yml
+	FILE=./conf/docker/prod/docker-compose.yml
 	PROJECT=metroid_bookmarks_prod
 else
-	FILE=./etc/docker/dev/docker-compose.yml
+	FILE=./conf/docker/dev/docker-compose.yml
 	PROJECT=metroid_bookmarks_dev
 endif
 

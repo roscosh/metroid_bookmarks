@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      dockerfile: conf/docker/dev/Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - DB_CONFIG=$DB_CONFIG
+      - DBMATE_MIGRATIONS_DIR=$DBMATE_MIGRATIONS_DIR
+      - PRODUCTION=$PRODUCTION
+    volumes:
+      - .:/usr/src/app
+    command: air -c ./conf/.air.toml ./cmd/main.go -b 0.0.0.0
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+
+  db:
+    extends:
+      file: conf/docker/docker-compose-base.yml
+      service: db
+    volumes:
+      - ./data/pgdata:$PGDATA
+    ports:
+      - "5434:5432"
+
+  redis:
+    extends:
+      file:  conf/docker/docker-compose-base.yml
+      service: redis
+    volumes:
+      - ./data/redisdata:/data
+    ports:
+      - "6379:6379"
+
+networks:
+  default:
+    name: metroid_bookmarks_dev
