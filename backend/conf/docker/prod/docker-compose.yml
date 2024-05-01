@@ -8,6 +8,11 @@ services:
       - APP_CONFIG_PATH=$APP_CONFIG_PATH
       - PRODUCTION=$PRODUCTION
       - LOG_LEVEL=$LOG_LEVEL
+      - MIN_CONNS=$MIN_CONNS
+      - MAX_CONNS=$MAX_CONNS
+      - MAX_CONN_LIFE_TIME=$MAX_CONN_LIFE_TIME
+      - MAX_CONNIDLE_TIME=$MAX_CONNIDLE_TIME
+      - HEALTH_CHECK_PERIOD=$HEALTH_CHECK_PERIOD
     volumes:
       - ./data/app_files:/bin/data/app_files
     depends_on:

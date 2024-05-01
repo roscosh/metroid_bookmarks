@@ -22,13 +22,13 @@ type SkillsSQL struct {
 	iBaseSQL[Skill]
 }
 
-func NewSkillsSQL(dbPool *DbPool, table string) *SkillsSQL {
-	sql := newIBaseSQL[Skill](dbPool, table)
+func NewSkillsSQL(dbPool *DbPool) *SkillsSQL {
+	sql := newIBaseSQL[Skill](dbPool, skillsTable)
 	return &SkillsSQL{iBaseSQL: sql}
 }
 
 func (s *SkillsSQL) Create(createForm *CreateSkill) (*Skill, error) {
-	return s.insert(*createForm)
+	return s.insert(createForm)
 }
 
 func (s *SkillsSQL) Delete(id int) (*Skill, error) {
@@ -36,7 +36,7 @@ func (s *SkillsSQL) Delete(id int) (*Skill, error) {
 }
 
 func (s *SkillsSQL) Edit(id int, editForm *EditSkill) (*Skill, error) {
-	return s.update(id, *editForm)
+	return s.update(id, editForm)
 }
 
 func (s *SkillsSQL) GetAll() ([]Skill, error) {

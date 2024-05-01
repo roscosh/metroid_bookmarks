@@ -22,13 +22,13 @@ type PhotosSQL struct {
 	iBaseSQL[PhotoPreview]
 }
 
-func NewPhotosSQL(dbPool *DbPool, table string) *PhotosSQL {
-	sql := newIBaseSQL[PhotoPreview](dbPool, table)
+func NewPhotosSQL(dbPool *DbPool) *PhotosSQL {
+	sql := newIBaseSQL[PhotoPreview](dbPool, photosTable)
 	return &PhotosSQL{iBaseSQL: sql}
 }
 
 func (s *PhotosSQL) Create(createForm *CreatePhoto) (*PhotoPreview, error) {
-	return s.insert(*createForm)
+	return s.insert(createForm)
 }
 
 func (s *PhotosSQL) Delete(id int, userId int) (*PhotoPreview, error) {

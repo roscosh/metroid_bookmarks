@@ -10,6 +10,12 @@ services:
       - APP_CONFIG_PATH=$APP_CONFIG_PATH
       - PRODUCTION=$PRODUCTION
       - LOG_LEVEL=$LOG_LEVEL
+      - MIN_CONNS=$MIN_CONNS
+      - MAX_CONNS=$MAX_CONNS
+      - MAX_CONN_LIFE_TIME=$MAX_CONN_LIFE_TIME
+      - MAX_CONNIDLE_TIME=$MAX_CONNIDLE_TIME
+      - HEALTH_CHECK_PERIOD=$HEALTH_CHECK_PERIOD
+
     volumes:
       - .:/usr/src/app
     command: air -c ./conf/.air.toml ./cmd/main.go -b 0.0.0.0
@@ -30,7 +36,7 @@ services:
 
   redis:
     extends:
-      file:  conf/docker/docker-compose-base.yml
+      file: conf/docker/docker-compose-base.yml
       service: redis
     volumes:
       - ./data/redisdata:/data

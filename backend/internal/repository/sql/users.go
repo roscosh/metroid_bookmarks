@@ -26,13 +26,13 @@ type UsersSQL struct {
 	iBaseSQL[User]
 }
 
-func NewUsersSQL(dbPool *DbPool, table string) *UsersSQL {
-	sql := newIBaseSQL[User](dbPool, table)
+func NewUsersSQL(dbPool *DbPool) *UsersSQL {
+	sql := newIBaseSQL[User](dbPool, usersTable)
 	return &UsersSQL{iBaseSQL: sql}
 }
 
 func (s *UsersSQL) Create(createForm *CreateUser) (*User, error) {
-	return s.insert(*createForm)
+	return s.insert(createForm)
 }
 
 func (s *UsersSQL) Delete(id int) (*User, error) {
@@ -40,7 +40,7 @@ func (s *UsersSQL) Delete(id int) (*User, error) {
 }
 
 func (s *UsersSQL) Edit(id int, editForm *EditUser) (*User, error) {
-	return s.update(id, *editForm)
+	return s.update(id, editForm)
 }
 
 func (s *UsersSQL) GetAll(search string) ([]User, error) {

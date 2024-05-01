@@ -12,14 +12,12 @@ var logger = misc.GetLogger()
 type Router struct {
 	Middleware *Middleware
 	AppConf    *models.AppConfig
-	EnvConf    *models.EnvConfig
 }
 
-func NewRouter(services *service.Service, appConf *models.AppConfig, envConf *models.EnvConfig) *Router {
+func NewRouter(services *service.Service, appConf *models.AppConfig) *Router {
 	return &Router{
 		Middleware: NewMiddleware(services.Middleware),
 		AppConf:    appConf,
-		EnvConf:    envConf,
 	}
 }
 

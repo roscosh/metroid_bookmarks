@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
+	"metroid_bookmarks/pkg/misc"
 	"reflect"
 	"strings"
 )
@@ -30,18 +31,18 @@ type iBaseSQL[T any] interface {
 }
 
 func newIBaseSQL[T any](dbPool *DbPool, table string) iBaseSQL[T] {
-	var structObj T
+
 	return &baseSQL[T]{
-		DbPool:    dbPool,
-		table:     table,
-		dbColumns: getDbTags(structObj),
+		DbPool:  dbPool,
+		table:   table,
+		columns: getDbTags[T](),
 	}
 }
 
 type baseSQL[T any] struct {
 	*DbPool
-	table     string
-	dbColumns string
+	table   string
+	columns string
 }
 
 func (s *baseSQL[T]) collectOneRow(rows pgx.Rows) (*T, error) {
@@ -66,7 +67,7 @@ func (s *baseSQL[T]) queryRow(query string, args ...any) pgx.Row {
 }
 
 func (s *baseSQL[T]) delete(pk int) (*T, error) {
-	query := fmt.Sprintf(`DELETE FROM %s WHERE id = $1 RETURNING %s`, s.table, s.dbColumns)
+	query := fmt.Sprintf(`DELETE FROM %s WHERE id = $1 RETURNING %s`, s.table, s.columns)
 	rows, err := s.query(query, pk)
 	if err != nil {
 		return nil, err
@@ -75,7 +76,7 @@ func (s *baseSQL[T]) delete(pk int) (*T, error) {
 }
 
 func (s *baseSQL[T]) deleteWhere(whereStatement string, args ...any) (*T, error) {
-	query := fmt.Sprintf(`DELETE FROM %s WHERE %s RETURNING %s`, s.table, whereStatement, s.dbColumns)
+	query := fmt.Sprintf(`DELETE FROM %s WHERE %s RETURNING %s`, s.table, whereStatement, s.columns)
 	rows, err := s.query(query, args...)
 	if err != nil {
 		return nil, err
@@ -96,7 +97,7 @@ func (s *baseSQL[T]) insert(createStruct interface{}) (*T, error) {
 }
 
 func (s *baseSQL[T]) selectOne(pk int) (*T, error) {
-	query := fmt.Sprintf("SELECT %s FROM %s WHERE id = $1", s.dbColumns, s.table)
+	query := fmt.Sprintf("SELECT %s FROM %s WHERE id = $1", s.columns, s.table)
 	rows, err := s.query(query, pk)
 	if err != nil {
 		return nil, err
@@ -106,7 +107,7 @@ func (s *baseSQL[T]) selectOne(pk int) (*T, error) {
 }
 
 func (s *baseSQL[T]) selectManyWhere(whereStatement string, args ...any) ([]T, error) {
-	query := fmt.Sprintf("SELECT %s FROM %s WHERE %s", s.dbColumns, s.table, whereStatement)
+	query := fmt.Sprintf("SELECT %s FROM %s WHERE %s", s.columns, s.table, whereStatement)
 	rows, err := s.query(query, args...)
 	if err != nil {
 		return nil, err
@@ -115,7 +116,7 @@ func (s *baseSQL[T]) selectManyWhere(whereStatement string, args ...any) ([]T, e
 }
 
 func (s *baseSQL[T]) selectWhere(whereStatement string, args ...any) (*T, error) {
-	query := fmt.Sprintf("SELECT %s FROM %s WHERE %s", s.dbColumns, s.table, whereStatement)
+	query := fmt.Sprintf("SELECT %s FROM %s WHERE %s", s.columns, s.table, whereStatement)
 	rows, err := s.query(query, args...)
 	if err != nil {
 		return nil, err
@@ -124,7 +125,7 @@ func (s *baseSQL[T]) selectWhere(whereStatement string, args ...any) (*T, error)
 }
 
 func (s *baseSQL[T]) selectMany() ([]T, error) {
-	query := fmt.Sprintf("SELECT %s FROM %s", s.dbColumns, s.table)
+	query := fmt.Sprintf("SELECT %s FROM %s", s.columns, s.table)
 	rows, err := s.query(query)
 	if err != nil {
 		return nil, err
@@ -163,23 +164,23 @@ func (s *baseSQL[T]) updateWhere(editStruct interface{}, where string, args ...a
 }
 
 func (s *baseSQL[T]) getInsertQuery(createInterface interface{}) (string, []interface{}, error) {
-	// Получаем тип структуры
+
 	t := reflect.TypeOf(createInterface)
-	if t.Kind() != reflect.Struct {
-		return "", nil, errors.New("object must be a structure")
+	if t.Kind() != reflect.Ptr || t.Elem().Kind() != reflect.Struct {
+		return "", nil, errors.New("object must be a pointer of structure")
 	}
-	// Получаем значение структуры
-	v := reflect.ValueOf(createInterface)
+
+	elem := reflect.ValueOf(createInterface).Elem()
 	var valuesArray []interface{}
 	var fieldsArray []string
 	var indexRowArray []string
 	var placeholder = 1
 
-	for i := 0; i < t.NumField(); i++ {
-		value := v.Field(i)
+	for i := 0; i < elem.NumField(); i++ {
+		value := elem.Field(i)
 		valuesArray = append(valuesArray, value.Interface())
 		// Получаем название поля
-		fieldName := t.Field(i).Tag.Get("db")
+		fieldName := elem.Type().Field(i).Tag.Get("db")
 		// Добавляем позиционный индекс
 		placeholderStr := fmt.Sprintf("$%d", placeholder)
 		indexRowArray = append(indexRowArray, placeholderStr)
@@ -194,7 +195,7 @@ func (s *baseSQL[T]) getInsertQuery(createInterface interface{}) (string, []inte
 	fields := strings.Join(fieldsArray, ", ")
 	placeholders := strings.Join(indexRowArray, ", ")
 
-	query := fmt.Sprintf("INSERT INTO %s (%s) VALUES (%s) RETURNING %s", s.table, fields, placeholders, s.dbColumns)
+	query := fmt.Sprintf("INSERT INTO %s (%s) VALUES (%s) RETURNING %s", s.table, fields, placeholders, s.columns)
 
 	return query, valuesArray, nil
 }
@@ -206,23 +207,23 @@ func (s *baseSQL[T]) getUpdateQuery(
 ) (string, []interface{}, error) {
 	queryArray := make([]string, 0, 3)
 
-	// Получаем тип структуры
 	t := reflect.TypeOf(setInterface)
-	if t.Kind() != reflect.Struct {
-		return "", nil, errors.New("object must be a structure")
+	if t.Kind() != reflect.Ptr || t.Elem().Kind() != reflect.Struct {
+		return "", nil, errors.New("object must be a pointer of structure")
 	}
-	// Получаем значение структуры
-	v := reflect.ValueOf(setInterface)
+
+	elem := reflect.ValueOf(setInterface).Elem()
+
 	var fields []string
 	var placeholder = 1 + len(args)
-	for i := 0; i < t.NumField(); i++ {
-		value := v.Field(i)
+	for i := 0; i < elem.NumField(); i++ {
+		value := elem.Field(i)
 		if value.IsNil() {
 			continue
 		}
 		args = append(args, value.Interface())
 		// Получаем название поля
-		fieldName := t.Field(i).Tag.Get("db")
+		fieldName := elem.Type().Field(i).Tag.Get("db")
 		// Добавляем позиционный индекс
 		fieldStr := fmt.Sprintf("%s = $%v", fieldName, placeholder)
 		fields = append(fields, fieldStr)
@@ -241,37 +242,13 @@ func (s *baseSQL[T]) getUpdateQuery(
 		queryArray = append(queryArray, fmt.Sprintf("WHERE %s", where))
 	}
 
-	queryArray = append(queryArray, fmt.Sprintf("RETURNING %s", s.dbColumns))
+	queryArray = append(queryArray, fmt.Sprintf("RETURNING %s", s.columns))
 
 	query := strings.Join(queryArray, " ")
 	return query, args, nil
 }
 
-func getDbTags[T any](structObj T) string {
-	structType := reflect.TypeOf(structObj)
-	var dbTagArray []string
-	var traverseFields func(reflect.Type)
-
-	traverseFields = func(t reflect.Type) {
-		for i := 0; i < t.NumField(); i++ {
-			field := t.Field(i)
-
-			// Если поле встраивается из другой структуры
-			if field.Anonymous {
-				traverseFields(field.Type)
-				continue
-			}
-
-			// Иначе получаем тэги и добавляем их к списку
-			dbTag := field.Tag.Get("db")
-			if dbTag != "" {
-				dbTagArray = append(dbTagArray, dbTag)
-			}
-
-		}
-	}
-
-	traverseFields(structType)
-
-	return strings.Join(dbTagArray, ", ")
+func getDbTags[T any]() string {
+	tags := misc.GetTags[T]("db")
+	return strings.Join(tags, ", ")
 }

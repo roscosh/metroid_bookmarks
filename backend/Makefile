@@ -14,6 +14,9 @@ build:
 start:
 	docker compose -f $(FILE) --env-file .env --project-directory . -p $(PROJECT) up
 
+logs:
+	docker compose -p $(PROJECT) logs app -f
+
 stop:
 	docker compose -p $(PROJECT) stop
 

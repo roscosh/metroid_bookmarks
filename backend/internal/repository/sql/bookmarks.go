@@ -47,13 +47,13 @@ type BookmarksSQL struct {
 	iBaseSQL[BookmarkPreview]
 }
 
-func NewBookmarksSQL(dbPool *DbPool, table string) *BookmarksSQL {
-	sql := newIBaseSQL[BookmarkPreview](dbPool, table)
+func NewBookmarksSQL(dbPool *DbPool) *BookmarksSQL {
+	sql := newIBaseSQL[BookmarkPreview](dbPool, bookmarksTable)
 	return &BookmarksSQL{iBaseSQL: sql}
 }
 
 func (s *BookmarksSQL) Create(createForm *CreateBookmark) (*BookmarkPreview, error) {
-	return s.insert(*createForm)
+	return s.insert(createForm)
 }
 
 func (s *BookmarksSQL) Delete(id int, userId int) (*BookmarkPreview, error) {
@@ -61,7 +61,7 @@ func (s *BookmarksSQL) Delete(id int, userId int) (*BookmarkPreview, error) {
 }
 
 func (s *BookmarksSQL) Edit(id int, userId int, editForm *EditBookmark) (*BookmarkPreview, error) {
-	return s.updateWhere(*editForm, "id=$1 AND user_id=$2", id, userId)
+	return s.updateWhere(editForm, "id=$1 AND user_id=$2", id, userId)
 }
 
 func (s *BookmarksSQL) GetAll(limit, offset, userId int, completed *bool, orderById *bool) ([]Bookmark, error) {

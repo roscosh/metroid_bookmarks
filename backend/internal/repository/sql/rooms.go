@@ -22,17 +22,17 @@ type RoomsSQL struct {
 	iBaseSQL[Room]
 }
 
-func NewRoomsSQL(dbPool *DbPool, table string) *RoomsSQL {
-	sql := newIBaseSQL[Room](dbPool, table)
+func NewRoomsSQL(dbPool *DbPool) *RoomsSQL {
+	sql := newIBaseSQL[Room](dbPool, roomsTable)
 	return &RoomsSQL{iBaseSQL: sql}
 }
 
 func (s *RoomsSQL) Create(createForm *CreateRoom) (*Room, error) {
-	return s.insert(*createForm)
+	return s.insert(createForm)
 }
 
 func (s *RoomsSQL) Edit(id int, editForm *EditRoom) (*Room, error) {
-	return s.update(id, *editForm)
+	return s.update(id, editForm)
 }
 
 func (s *RoomsSQL) Delete(id int) (*Room, error) {

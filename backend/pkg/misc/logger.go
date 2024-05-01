@@ -100,5 +100,5 @@ func (l *Logger) Fatalf(message string, args ...interface{}) {
 
 func (l *Logger) formatMessage(message string) string {
 	_, file, line, _ := runtime.Caller(2)
-	return fmt.Sprintf("| %s:%v | %s", file, line, message)
+	return fmt.Sprintf("%s:%v | %s", file, line, message)
 }

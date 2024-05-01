@@ -21,5 +21,6 @@ func main() {
 	logger := misc.GetLogger()
 	logger.SetParams(envConf.LogLevel)
 
-	app.Init(envConf)
+	appObj := app.NewApp(envConf)
+	appObj.Init()
 }

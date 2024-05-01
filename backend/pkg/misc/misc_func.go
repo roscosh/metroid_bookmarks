@@ -5,6 +5,7 @@ import (
 	"errors"
 	"io/ioutil"
 	"os"
+	"reflect"
 )
 
 func Contains[T comparable](item T, arr []T) bool {
@@ -37,4 +38,34 @@ func JsonToStruct[T any](path string) (*T, error) {
 		return nil, errors.New("failing convert file to struct")
 	}
 	return config, nil
+}
+
+func GetTags[T any](tagName string) []string {
+	var structObj T
+	structType := reflect.TypeOf(structObj)
+	var dbTagArray []string
+	var traverseFields func(reflect.Type)
+
+	traverseFields = func(t reflect.Type) {
+		for i := 0; i < t.NumField(); i++ {
+			field := t.Field(i)
+
+			// Если поле встраивается из другой структуры
+			if field.Anonymous {
+				traverseFields(field.Type)
+				continue
+			}
+
+			// Иначе получаем тэги и добавляем их к списку
+			dbTag := field.Tag.Get(tagName)
+			if dbTag != "" {
+				dbTagArray = append(dbTagArray, dbTag)
+			}
+
+		}
+	}
+
+	traverseFields(structType)
+
+	return dbTagArray
 }

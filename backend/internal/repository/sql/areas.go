@@ -22,13 +22,13 @@ type AreasSQL struct {
 	iBaseSQL[Area]
 }
 
-func NewAreasSQL(dbPool *DbPool, table string) *AreasSQL {
-	sql := newIBaseSQL[Area](dbPool, table)
+func NewAreasSQL(dbPool *DbPool) *AreasSQL {
+	sql := newIBaseSQL[Area](dbPool, areasTable)
 	return &AreasSQL{iBaseSQL: sql}
 }
 
 func (s *AreasSQL) Create(createForm *CreateArea) (*Area, error) {
-	return s.insert(*createForm)
+	return s.insert(createForm)
 }
 
 func (s *AreasSQL) Delete(id int) (*Area, error) {
@@ -36,7 +36,7 @@ func (s *AreasSQL) Delete(id int) (*Area, error) {
 }
 
 func (s *AreasSQL) Edit(id int, editForm *EditArea) (*Area, error) {
-	return s.update(id, *editForm)
+	return s.update(id, editForm)
 }
 
 func (s *AreasSQL) GetAll() ([]Area, error) {
