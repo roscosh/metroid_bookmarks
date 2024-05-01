@@ -14,14 +14,14 @@ import (
 
 var logger = misc.GetLogger()
 
-func InitRoutes(service *service.Service, config *models.Config, envConf *models.EnvConfig) *gin.Engine {
+func InitRoutes(service *service.Service, appConf *models.AppConfig, envConf *models.EnvConfig) *gin.Engine {
 	router := gin.New()
 
 	if !envConf.Production {
 		router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	}
 
-	baseAPIRouter := baseApi.NewRouter(service, config, envConf)
+	baseAPIRouter := baseApi.NewRouter(service, appConf, envConf)
 
 	apiGroup := router.Group("/api/")
 	apiRouter := api.NewRouter(baseAPIRouter, service)

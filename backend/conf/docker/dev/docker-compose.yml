@@ -7,8 +7,7 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - DB_CONFIG=$DB_CONFIG
-      - DBMATE_MIGRATIONS_DIR=$DBMATE_MIGRATIONS_DIR
+      - APP_CONFIG_PATH=$APP_CONFIG_PATH
       - PRODUCTION=$PRODUCTION
       - LOG_LEVEL=$LOG_LEVEL
     volumes:

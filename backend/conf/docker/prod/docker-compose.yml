@@ -5,8 +5,7 @@ services:
     build:
       dockerfile: conf/docker/prod/Dockerfile
     environment:
-      - DB_CONFIG=$DB_CONFIG
-      - DBMATE_MIGRATIONS_DIR=$DBMATE_MIGRATIONS_DIR
+      - APP_CONFIG_PATH=$APP_CONFIG_PATH
       - PRODUCTION=$PRODUCTION
       - LOG_LEVEL=$LOG_LEVEL
     volumes:

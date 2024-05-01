@@ -64,7 +64,7 @@ func (h *router) me(c *gin.Context) {
 	baseApi.Response200(c, meResponse{Session: session})
 }
 
-// @Summary signUp (только для разработки)
+// @Summary signUp
 // @Tags auth
 // @Accept json
 // @Produce json

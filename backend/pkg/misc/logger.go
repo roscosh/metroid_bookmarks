@@ -52,12 +52,7 @@ func (l *Logger) SetParams(logLevel string) {
 
 func GetLogger() *Logger {
 	loggerOnce.Do(func() {
-		log := &logrus.Logger{
-			Out:       os.Stdout,
-			Formatter: &logrus.TextFormatter{FullTimestamp: true},
-			Level:     logrus.InfoLevel,
-			ExitFunc:  os.Exit,
-		}
+		log := logrus.New()
 		logger = &Logger{logger: log}
 	})
 	return logger

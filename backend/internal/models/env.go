@@ -3,10 +3,9 @@ package models
 import "metroid_bookmarks/pkg/misc"
 
 type EnvConfig struct {
-	Production          bool   `env:"PRODUCTION"`
-	DbConfig            string `env:"DB_CONFIG"`
-	DbmateMigrationsDir string `env:"DBMATE_MIGRATIONS_DIR"`
-	LogLevel            string `env:"LOG_LEVEL"`
+	Production    bool   `env:"PRODUCTION"`
+	AppConfigPath string `env:"APP_CONFIG_PATH"`
+	LogLevel      string `env:"LOG_LEVEL"`
 }
 
 func NewEnvConfig() (*EnvConfig, error) {

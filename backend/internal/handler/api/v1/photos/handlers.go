@@ -48,7 +48,7 @@ func (h *router) create(c *gin.Context) {
 		baseApi.AccessDenied(c)
 		return
 	}
-	photo, err := h.photosService.Create(c, session.ID, form.BookmarkId, file, h.Config.PhotosPath, format)
+	photo, err := h.photosService.Create(c, session.ID, form.BookmarkId, file, h.AppConf.PhotosPath, format)
 	if err != nil {
 		baseApi.Response404(c, err)
 		return
@@ -109,7 +109,7 @@ func (h *router) download(c *gin.Context) {
 		baseApi.Response404(c, err)
 		return
 	}
-	path := filepath.Join(h.Config.PhotosPath, strconv.Itoa(userId), strconv.Itoa(bookmarkID), name)
+	path := filepath.Join(h.AppConf.PhotosPath, strconv.Itoa(userId), strconv.Itoa(bookmarkID), name)
 	_, err = os.Stat(path)
 	if err != nil {
 		if os.IsNotExist(err) {

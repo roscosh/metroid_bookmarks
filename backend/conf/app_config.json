@@ -5,5 +5,6 @@
   "redis": {
     "dsn": "redis://redis"
   },
-  "photos_path": "data/app_files/photos"
+  "dbmate_migrations_dir": "./schema",
+  "photos_path": "./data/app_files/photos"
 }

@@ -45,7 +45,7 @@ func (h *router) create(c *gin.Context) {
 		baseApi.Response404(c, err)
 		return
 	}
-	_, err = h.photosService.Create(c, session.ID, bookmark.Id, file, h.Config.PhotosPath, format)
+	_, err = h.photosService.Create(c, session.ID, bookmark.Id, file, h.AppConf.PhotosPath, format)
 	if err != nil {
 		baseApi.Response404(c, err)
 		return

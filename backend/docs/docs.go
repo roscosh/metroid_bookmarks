@@ -281,7 +281,7 @@ const docTemplate = `{
                 "tags": [
                     "auth"
                 ],
-                "summary": "signUp (только для разработки)",
+                "summary": "signUp",
                 "parameters": [
                     {
                         "description": "signUp",

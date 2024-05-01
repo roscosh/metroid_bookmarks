@@ -16,21 +16,13 @@ import (
 
 var logger = misc.GetLogger()
 
-func Init() {
-	envConf, err := models.NewEnvConfig()
-	if err != nil {
-		panic(err.Error())
-		return
-	}
-
-	logger.SetParams(envConf.LogLevel)
-
-	config, err := models.NewConfig(envConf.DbConfig)
+func Init(envConf *models.EnvConfig) {
+	appConf, err := models.NewAppConfig(envConf.AppConfigPath)
 	if err != nil {
 		logger.Error(err.Error())
 		return
 	}
-	dbPool, err := sql.NewDbPool(config.Db.Dsn)
+	dbPool, err := sql.NewDbPool(appConf.Db.Dsn)
 	if err != nil {
 		logger.Errorf("failed to create db dbPool: %s\n", err.Error())
 		return
@@ -40,12 +32,12 @@ func Init() {
 		logger.Errorf("failed to initialize db: %s\n", err.Error())
 		return
 	}
-	err = misc.DbMigrate(config.Db.Dsn, envConf.DbmateMigrationsDir)
+	err = misc.DbMigrate(appConf.Db.Dsn, appConf.DbmateMigrationsDir)
 	if err != nil {
 		logger.Error(err.Error())
 		return
 	}
-	redisClient, err := redis.NewRedisPool(config.Redis.Dsn)
+	redisClient, err := redis.NewRedisPool(appConf.Redis.Dsn)
 	if err != nil {
 		logger.Errorf("failed to initialize redis: %s\n", err.Error())
 		return
@@ -61,7 +53,7 @@ func Init() {
 
 	srv := new(misc.Server)
 	go func() {
-		if err = srv.Run(handler.InitRoutes(newService, config, envConf)); err != nil {
+		if err = srv.Run(handler.InitRoutes(newService, appConf, envConf)); err != nil {
 			logger.Errorf("error occured while running http server: %s", err.Error())
 		}
 	}()

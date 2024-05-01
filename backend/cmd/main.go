@@ -2,6 +2,8 @@ package main
 
 import (
 	"metroid_bookmarks/internal/app"
+	"metroid_bookmarks/internal/models"
+	"metroid_bookmarks/pkg/misc"
 )
 
 // @title METROID BOOKMARKS API
@@ -10,5 +12,14 @@ import (
 // @host localhost:3000
 // @BasePath /api/v1
 func main() {
-	app.Init()
+	envConf, err := models.NewEnvConfig()
+	if err != nil {
+		panic(err.Error())
+		return
+	}
+
+	logger := misc.GetLogger()
+	logger.SetParams(envConf.LogLevel)
+
+	app.Init(envConf)
 }
