@@ -146,9 +146,6 @@ func (s *BookmarksSQL) GetAll(limit, offset, userId int, completed *bool, orderB
 			&bookmark.Skill.Id, &bookmark.Skill.NameRu, &bookmark.Skill.NameEn,
 			&photoIds, &photoNames,
 		)
-		if err != nil {
-			return nil, err
-		}
 		for i, _ := range photoIds {
 			if photoIds[i] != nil {
 				ulr := fmt.Sprintf("/%d/%d/%s", userId, bookmark.Id, *photoNames[i])
