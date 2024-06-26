@@ -2,12 +2,13 @@ package photos
 
 import (
 	"fmt"
-	"github.com/gin-gonic/gin"
-	"github.com/gin-gonic/gin/binding"
 	"metroid_bookmarks/internal/handler/api/middleware"
 	"os"
 	"path/filepath"
 	"strconv"
+
+	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 )
 
 // @Summary create

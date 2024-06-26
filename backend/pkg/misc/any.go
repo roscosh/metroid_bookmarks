@@ -6,9 +6,7 @@ import (
 	"reflect"
 )
 
-var (
-	ErrJsonToStruct = errors.New("failing convert json to struct")
-)
+var ErrJsonToStruct = errors.New("failing convert json to struct")
 
 func Contains[T comparable](item T, arr []T) bool {
 	for _, value := range arr {

@@ -1,14 +1,15 @@
 package handler
 
 import (
-	"github.com/gin-gonic/gin"
-	"github.com/swaggo/files"       // swagger embed files
-	"github.com/swaggo/gin-swagger" // gin-swagger middleware
 	_ "metroid_bookmarks/docs"
 	"metroid_bookmarks/internal/handler/api"
 	"metroid_bookmarks/internal/handler/api/middleware"
 	"metroid_bookmarks/internal/models"
 	"metroid_bookmarks/internal/service"
+
+	"github.com/gin-gonic/gin"
+	"github.com/swaggo/files"       // swagger embed files
+	"github.com/swaggo/gin-swagger" // gin-swagger middleware
 )
 
 func InitRoutes(service *service.Service, appConf *models.AppConfig, production bool) *gin.Engine {

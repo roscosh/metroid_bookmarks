@@ -4,11 +4,12 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/jackc/pgx/v5"
-	"github.com/jackc/pgx/v5/pgconn"
 	"metroid_bookmarks/pkg/misc"
 	"reflect"
 	"strings"
+
+	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgconn"
 )
 
 var (
@@ -17,13 +18,13 @@ var (
 )
 
 type SQL[T any] interface {
-	//Query methods
+	// Query methods
 	CollectOneRow(rows pgx.Rows) (*T, error)
 	CollectRows(rows pgx.Rows) ([]T, error)
 	Exec(query string, args ...any) (pgconn.CommandTag, error)
 	Query(query string, args ...any) (pgx.Rows, error)
 	QueryRow(query string, args ...any) pgx.Row
-	//CRUD methods
+	// CRUD methods
 	Delete(pk int) (*T, error)
 	DeleteWhere(whereStatement string, args ...any) (*T, error)
 	Insert(createStruct interface{}) (*T, error)
@@ -37,7 +38,6 @@ type SQL[T any] interface {
 }
 
 func NewSQL[T any](dbPool *DbPool, table string) SQL[T] {
-
 	return &sql[T]{
 		DbPool:  dbPool,
 		table:   table,
@@ -109,7 +109,6 @@ func (s *sql[T]) SelectOne(pk int) (*T, error) {
 		return nil, err
 	}
 	return s.CollectOneRow(rows)
-
 }
 
 func (s *sql[T]) SelectManyWhere(whereStatement string, args ...any) ([]T, error) {
@@ -170,7 +169,6 @@ func (s *sql[T]) UpdateWhere(editStruct interface{}, where string, args ...any) 
 }
 
 func (s *sql[T]) GetInsertQuery(createInterface interface{}) (string, []interface{}, error) {
-
 	t := reflect.TypeOf(createInterface)
 	if t.Kind() != reflect.Ptr || t.Elem().Kind() != reflect.Struct {
 		return "", nil, ErrPointerStruct
@@ -180,7 +178,7 @@ func (s *sql[T]) GetInsertQuery(createInterface interface{}) (string, []interfac
 	var valuesArray []interface{}
 	var fieldsArray []string
 	var indexRowArray []string
-	var placeholder = 1
+	placeholder := 1
 
 	for i := 0; i < elem.NumField(); i++ {
 		value := elem.Field(i)
@@ -221,7 +219,7 @@ func (s *sql[T]) GetUpdateQuery(
 	elem := reflect.ValueOf(setInterface).Elem()
 
 	var fields []string
-	var placeholder = 1 + len(args)
+	placeholder := 1 + len(args)
 	for i := 0; i < elem.NumField(); i++ {
 		value := elem.Field(i)
 		if value.IsNil() {

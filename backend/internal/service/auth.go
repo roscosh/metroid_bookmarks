@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"metroid_bookmarks/internal/repository/sql/users"
+
 	. "metroid_bookmarks/pkg/session"
 )
 
@@ -12,9 +13,7 @@ const (
 	salt = "i3490tg4gj94jg0934jg"
 )
 
-var (
-	ErrUserDoesNotExist = errors.New("нет пользователя с таки логином/паролем")
-)
+var ErrUserDoesNotExist = errors.New("нет пользователя с таки логином/паролем")
 
 type AuthService struct {
 	sql *users.SQL
@@ -24,7 +23,7 @@ func newAuthService(sql *users.SQL) *AuthService {
 	return &AuthService{sql: sql}
 }
 
-func (s *AuthService) Login(login string, password string, session *Session) (*Session, error) {
+func (s *AuthService) Login(login, password string, session *Session) (*Session, error) {
 	token := generatePasswordHash(password)
 	user, err := s.sql.GetByCredentials(login, token)
 	if err != nil {

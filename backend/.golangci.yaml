@@ -1,3 +1,9 @@
+output:
+  show-stats: true
+issues:
+  max-issues-per-linter: 0
+  max-same-issues: 0
+  fix: true
 linters:
   enable:
     - asasalint
@@ -20,7 +26,29 @@ linters:
     - errname
     - errorlint
     - exhaustive
-
+#    - exhaustruct
+    - exportloopref
+    - fatcontext
+    - forbidigo
+    - forcetypeassert
+#    - funlen
+#    - gci
+    - ginkgolinter
+    - gocheckcompilerdirectives
+#    - gochecknoglobals
+    - gochecknoinits
+    - gochecksumtype
+#    - gocognit
+    - goconst
+    - gocritic
+#    - gocyclo
+#    - godot
+    - godox
+#    - gofmt
+    - gofumpt
+    - goheader
+#    - goimports
+    - gomoddirectives
 
 linters-settings:
   unused:
@@ -34,3 +62,7 @@ linters-settings:
       - switch
       - map
     default-signifies-exhaustive: true
+  gofumpt:
+    # Choose whether to use the extra rules.
+    # Default: false
+    extra-rules: true

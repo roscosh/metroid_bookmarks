@@ -1,10 +1,11 @@
 package photos
 
 import (
-	"github.com/gin-gonic/gin"
 	"metroid_bookmarks/internal/handler/api/middleware"
 	"metroid_bookmarks/internal/service"
 	"metroid_bookmarks/pkg/misc/log"
+
+	"github.com/gin-gonic/gin"
 )
 
 var logger = log.GetLogger()

@@ -1,9 +1,10 @@
 package middleware
 
 import (
-	"github.com/gin-gonic/gin"
 	"metroid_bookmarks/internal/service"
 	"metroid_bookmarks/pkg/session"
+
+	"github.com/gin-gonic/gin"
 )
 
 const (

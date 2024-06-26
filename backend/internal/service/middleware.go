@@ -39,7 +39,7 @@ func (m *MiddlewareService) GetExistSession(token string) (*session.Session, err
 		return nil, err
 	}
 	var expires int
-	var user = &users.User{}
+	user := &users.User{}
 	if id == 0 {
 		expires = session.AnonymousExpires
 	} else {

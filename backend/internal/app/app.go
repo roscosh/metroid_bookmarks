@@ -38,7 +38,7 @@ func (a *App) Init() {
 		return
 	}
 
-	a.start(appConf)
+	a.startUp(appConf)
 
 	logger.Info("METROID BOOKMARKS API started successfully")
 
@@ -51,7 +51,7 @@ func (a *App) Init() {
 	logger.Info("METROID BOOKMARKS API shutting down successfully")
 }
 
-func (a *App) start(appConf *models.AppConfig) {
+func (a *App) startUp(appConf *models.AppConfig) {
 	var err error
 
 	a.dbPool, err = pgpool.NewDbPool(
@@ -75,7 +75,7 @@ func (a *App) start(appConf *models.AppConfig) {
 
 	sqlObj := sql.NewSQL(a.dbPool)
 	redisObj := redis.NewRedis(a.redisPool)
-	newService := service.NewService(sqlObj, redisObj)
+	httpService := service.NewService(sqlObj, redisObj)
 
 	err = dbmate.DbMigrate(appConf.PostgreSQL.Dsn, appConf.DbmateMigrationsDir)
 	if err != nil {
@@ -86,7 +86,7 @@ func (a *App) start(appConf *models.AppConfig) {
 	a.srv = new(misc.Server)
 
 	go func() {
-		if err = a.srv.Run(handler.InitRoutes(newService, appConf, a.envConf.Production)); err != nil {
+		if err = a.srv.Run(handler.InitRoutes(httpService, appConf, a.envConf.Production)); err != nil {
 			if !errors.Is(err, http.ErrServerClosed) {
 				logger.Errorf("error occured while running http server: %s", err.Error())
 			}

@@ -3,9 +3,10 @@ package service
 import (
 	"errors"
 	"fmt"
+	"regexp"
+
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
-	"regexp"
 )
 
 var (
@@ -61,7 +62,6 @@ func editPgError(err error, id int) error {
 	default:
 		return err
 	}
-
 }
 
 func deletePgError(err error, id int) error {

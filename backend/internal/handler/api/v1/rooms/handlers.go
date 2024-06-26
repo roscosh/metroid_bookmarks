@@ -1,9 +1,10 @@
 package rooms
 
 import (
+	"metroid_bookmarks/internal/handler/api/middleware"
+
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
-	"metroid_bookmarks/internal/handler/api/middleware"
 )
 
 // @Summary create

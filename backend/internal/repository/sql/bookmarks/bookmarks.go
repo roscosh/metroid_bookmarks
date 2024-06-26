@@ -10,9 +10,7 @@ import (
 
 const bookmarksTable = "bookmarks"
 
-var (
-	ErrZeroID = errors.New("userId must be greater than zero")
-)
+var ErrZeroID = errors.New("userId must be greater than zero")
 
 type SQL struct {
 	sql pgpool.SQL[BookmarkPreview]
@@ -27,19 +25,19 @@ func (s *SQL) Create(createForm *CreateBookmark) (*BookmarkPreview, error) {
 	return s.sql.Insert(createForm)
 }
 
-func (s *SQL) Delete(id int, userId int) (*BookmarkPreview, error) {
+func (s *SQL) Delete(id, userId int) (*BookmarkPreview, error) {
 	return s.sql.DeleteWhere("id=$1 AND user_id=$2", id, userId)
 }
 
-func (s *SQL) Edit(id int, userId int, editForm *EditBookmark) (*BookmarkPreview, error) {
+func (s *SQL) Edit(id, userId int, editForm *EditBookmark) (*BookmarkPreview, error) {
 	return s.sql.UpdateWhere(editForm, "id=$1 AND user_id=$2", id, userId)
 }
 
-func (s *SQL) GetAll(limit, offset, userId int, completed *bool, orderById *bool) ([]Bookmark, error) {
+func (s *SQL) GetAll(limit, offset, userId int, completed, orderById *bool) ([]Bookmark, error) {
 	var bookmarks []Bookmark
 	var queryArray []string
-	var args = make([]any, 0, 3)
-	var whereArray = make([]string, 0, 3)
+	args := make([]any, 0, 3)
+	whereArray := make([]string, 0, 3)
 	placeHolder := 1
 	baseQuery := `
         SELECT
@@ -82,7 +80,6 @@ func (s *SQL) GetAll(limit, offset, userId int, completed *bool, orderById *bool
 		var order string
 		if *orderById {
 			order = fmt.Sprintf("ORDER BY b.id %s", "ASC")
-
 		} else {
 			order = fmt.Sprintf("ORDER BY b.id %s", "DESC")
 		}
@@ -141,8 +138,8 @@ func (s *SQL) GetByID(id int) (*BookmarkPreview, error) {
 func (s *SQL) Total(userId int, completed *bool) (int, error) {
 	var count int
 	var queryArray []string
-	var args = make([]any, 0, 3)
-	var whereArray = make([]string, 0, 3)
+	args := make([]any, 0, 3)
+	whereArray := make([]string, 0, 3)
 	placeHolder := 1
 	baseQuery := `
         SELECT COUNT(*)

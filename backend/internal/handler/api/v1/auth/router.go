@@ -1,9 +1,10 @@
 package auth
 
 import (
-	"github.com/gin-gonic/gin"
 	"metroid_bookmarks/internal/handler/api/middleware"
 	"metroid_bookmarks/internal/service"
+
+	"github.com/gin-gonic/gin"
 )
 
 type Router struct {

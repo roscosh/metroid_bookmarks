@@ -1,10 +1,11 @@
 package bookmarks
 
 import (
-	"github.com/gin-gonic/gin"
-	"github.com/gin-gonic/gin/binding"
 	"metroid_bookmarks/internal/handler/api/middleware"
 	"metroid_bookmarks/internal/repository/sql/bookmarks"
+
+	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 )
 
 // @Summary create

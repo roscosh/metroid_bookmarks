@@ -2,10 +2,11 @@ package log
 
 import (
 	"fmt"
-	"github.com/sirupsen/logrus"
 	"os"
 	"runtime"
 	"sync"
+
+	"github.com/sirupsen/logrus"
 )
 
 type LogLevel string

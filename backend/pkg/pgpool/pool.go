@@ -3,8 +3,9 @@ package pgpool
 import (
 	"context"
 	"fmt"
-	"github.com/jackc/pgx/v5/pgxpool"
 	"time"
+
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type Error struct {
@@ -19,7 +20,7 @@ type DbPool struct {
 	pool *pgxpool.Pool
 }
 
-func NewDbPool(dsn string, minConns int32, maxConns int32, maxConnLifetime int64, maxConnIdleTime int64, healthCheckPeriod int64) (*DbPool, error) {
+func NewDbPool(dsn string, minConns, maxConns int32, maxConnLifetime, maxConnIdleTime, healthCheckPeriod int64) (*DbPool, error) {
 	ctx := context.Background()
 	conf, err := pgxpool.ParseConfig(dsn)
 	if err != nil {

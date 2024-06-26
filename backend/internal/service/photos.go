@@ -2,13 +2,14 @@ package service
 
 import (
 	"fmt"
-	"github.com/gin-gonic/gin"
 	"metroid_bookmarks/internal/repository/sql/photos"
 	"mime/multipart"
 	"os"
 	"path/filepath"
 	"strconv"
 	"time"
+
+	"github.com/gin-gonic/gin"
 )
 
 type PhotosService struct {
@@ -74,7 +75,7 @@ func (s *PhotosService) Create(
 	return photo, nil
 }
 
-func (s *PhotosService) Delete(id int, userId int) (*photos.PhotoPreview, error) {
+func (s *PhotosService) Delete(id, userId int) (*photos.PhotoPreview, error) {
 	photo, err := s.sql.Delete(id, userId)
 	if err != nil {
 		logger.Error(err.Error())

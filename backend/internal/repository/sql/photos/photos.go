@@ -19,7 +19,7 @@ func (s *SQL) Create(createForm *CreatePhoto) (*PhotoPreview, error) {
 	return s.sql.Insert(createForm)
 }
 
-func (s *SQL) Delete(id int, userId int) (*PhotoPreview, error) {
+func (s *SQL) Delete(id, userId int) (*PhotoPreview, error) {
 	query := `
 	   DELETE
 	   FROM photos p

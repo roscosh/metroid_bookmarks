@@ -2,6 +2,7 @@ package redispool
 
 import (
 	"fmt"
+
 	"github.com/gomodule/redigo/redis"
 )
 
@@ -21,11 +22,11 @@ func (r *Redis) GET(key string) ([]byte, error) {
 	return redis.Bytes(conn.Do("GET", key))
 }
 
-func (r *Redis) GETEX(key string, TTL int) ([]byte, error) {
+func (r *Redis) GETEX(key string, ttl int) ([]byte, error) {
 	conn := r.pool.Get()
 	defer conn.Close()
 	key = r.addPrefixKey(key, r.keyPrefix)
-	return redis.Bytes(conn.Do("GETEX", key, "EX", TTL))
+	return redis.Bytes(conn.Do("GETEX", key, "EX", ttl))
 }
 
 func (r *Redis) SETNX(key string, value interface{}) (bool, error) {
@@ -35,27 +36,27 @@ func (r *Redis) SETNX(key string, value interface{}) (bool, error) {
 	return redis.Bool(conn.Do("SETNX", key, value))
 }
 
-func (r *Redis) EXPIRE(key string, TTL int) {
+func (r *Redis) EXPIRE(key string, ttl int) {
 	conn := r.pool.Get()
 	defer conn.Close()
 	key = r.addPrefixKey(key, r.keyPrefix)
-	_, err := conn.Do("EXPIRE", key, TTL)
+	_, err := conn.Do("EXPIRE", key, ttl)
 	if err != nil {
 		panic("Ошибка подключения к Redis")
 	}
 }
 
-func (r *Redis) SETEX(key string, value interface{}, TTL int) {
+func (r *Redis) SETEX(key string, value interface{}, ttl int) {
 	conn := r.pool.Get()
 	defer conn.Close()
 	key = r.addPrefixKey(key, r.keyPrefix)
-	_, err := conn.Do("SETEX", key, TTL, value)
+	_, err := conn.Do("SETEX", key, ttl, value)
 	if err != nil {
 		panic("Ошибка подключения к Redis")
 	}
 }
 
-func (r *Redis) EVAL(key string, script string, numKeys int, args ...any) (bool, error) {
+func (r *Redis) EVAL(key, script string, numKeys int, args ...any) (bool, error) {
 	conn := r.pool.Get()
 	defer conn.Close()
 	key = r.addPrefixKey(key, r.keyPrefix)

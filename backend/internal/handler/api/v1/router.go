@@ -1,7 +1,6 @@
 package v1
 
 import (
-	"github.com/gin-gonic/gin"
 	"metroid_bookmarks/internal/handler/api/middleware"
 	"metroid_bookmarks/internal/handler/api/v1/areas"
 	"metroid_bookmarks/internal/handler/api/v1/auth"
@@ -11,6 +10,8 @@ import (
 	"metroid_bookmarks/internal/handler/api/v1/skills"
 	"metroid_bookmarks/internal/handler/api/v1/users"
 	"metroid_bookmarks/internal/service"
+
+	"github.com/gin-gonic/gin"
 )
 
 type Router struct {
@@ -56,5 +57,4 @@ func (h *Router) RegisterHandlers(router *gin.RouterGroup) {
 	photosGroup := router.Group("/photos", h.Middleware.AuthRequired)
 	photosRouter := photos.NewRouter(h.Router, h.service.Photos, h.service.Bookmarks)
 	photosRouter.RegisterHandlers(photosGroup)
-
 }

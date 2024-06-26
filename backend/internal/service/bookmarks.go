@@ -23,7 +23,7 @@ func (s *BookmarksService) Create(createForm *bookmarks.CreateBookmark) (*bookma
 	return bookmark, nil
 }
 
-func (s *BookmarksService) Delete(id int, userId int) (*bookmarks.BookmarkPreview, error) {
+func (s *BookmarksService) Delete(id, userId int) (*bookmarks.BookmarkPreview, error) {
 	bookmark, err := s.sqlBookmarks.Delete(id, userId)
 	if err != nil {
 		logger.Error(err.Error())
@@ -34,7 +34,7 @@ func (s *BookmarksService) Delete(id int, userId int) (*bookmarks.BookmarkPrevie
 	return bookmark, nil
 }
 
-func (s *BookmarksService) Edit(id int, userId int, editForm *bookmarks.EditBookmark) (*bookmarks.BookmarkPreview, error) {
+func (s *BookmarksService) Edit(id, userId int, editForm *bookmarks.EditBookmark) (*bookmarks.BookmarkPreview, error) {
 	if (editForm == &bookmarks.EditBookmark{}) {
 		return nil, ErrEmptyStruct
 	}

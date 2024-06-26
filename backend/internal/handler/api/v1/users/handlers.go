@@ -1,10 +1,11 @@
 package users
 
 import (
-	"github.com/gin-gonic/gin"
-	"github.com/gin-gonic/gin/binding"
 	"metroid_bookmarks/internal/handler/api/middleware"
 	"metroid_bookmarks/internal/repository/sql/users"
+
+	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 )
 
 // @Summary changePassword
@@ -80,7 +81,7 @@ func (h *Router) edit(c *gin.Context) {
 		middleware.Response404(c, err)
 		return
 	}
-	var sqlForm = users.EditUser{
+	sqlForm := users.EditUser{
 		Name:    form.Name,
 		Login:   form.Login,
 		IsAdmin: form.IsAdmin,

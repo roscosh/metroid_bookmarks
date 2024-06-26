@@ -3,13 +3,14 @@ package middleware
 import (
 	"errors"
 	"fmt"
-	"github.com/gin-gonic/gin"
 	"image/jpeg"
 	"image/png"
 	"metroid_bookmarks/pkg/session"
 	"mime/multipart"
 	"strconv"
 	"strings"
+
+	"github.com/gin-gonic/gin"
 )
 
 var (
@@ -71,7 +72,7 @@ func GetPathName(c *gin.Context) (string, error) {
 }
 
 func GetSession(c *gin.Context) *session.Session {
-	return c.MustGet(userCtx).(*session.Session)
+	return c.MustGet(userCtx).(*session.Session) //nolint:forcetypeassert
 }
 
 func SetCookie(c *gin.Context, sessionObj *session.Session) {

@@ -1,8 +1,9 @@
 package redis
 
 import (
-	"github.com/gomodule/redigo/redis"
 	"time"
+
+	"github.com/gomodule/redigo/redis"
 )
 
 type Pool struct {
@@ -12,6 +13,7 @@ type Pool struct {
 func (p *Pool) Close() error {
 	return p.pool.Close()
 }
+
 func NewRedisPool(dns string) (*Pool, error) {
 	pool := &redis.Pool{
 		MaxIdle:     10,

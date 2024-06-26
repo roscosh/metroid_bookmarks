@@ -1,10 +1,11 @@
 package redis
 
 import (
-	"github.com/gomodule/redigo/redis"
 	"metroid_bookmarks/pkg/redispool"
 	"metroid_bookmarks/pkg/session"
 	"strconv"
+
+	"github.com/gomodule/redigo/redis"
 )
 
 const SessionKey = "session"
@@ -37,6 +38,6 @@ func (r *SessionRedis) Create(key string, value int) (bool, error) {
 	return r.redis.EVAL(key, script, 1, value)
 }
 
-func (r *SessionRedis) Update(key string, value int, ttl int) {
+func (r *SessionRedis) Update(key string, value, ttl int) {
 	r.redis.SETEX(key, value, ttl)
 }
