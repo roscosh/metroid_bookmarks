@@ -1,4 +1,4 @@
-package baseApi
+package middleware
 
 import (
 	"errors"
@@ -12,11 +12,34 @@ import (
 	"strings"
 )
 
+var (
+	ErrIDType            = errors.New("id должен быть числом")
+	ErrUserIDType        = errors.New("user_id должен быть числом")
+	ErrBookmarkIDType    = errors.New("bookmark_id должен быть числом")
+	ErrEmptyName         = errors.New("name не должен быть пустым")
+	ErrAccessDenied      = errors.New("отказ в доступе")
+	ErrAlreadyAuthorized = errors.New("you are already authorized")
+	ErrLoginRequired     = errors.New("нужно залогиниться для этого запроса")
+	ErrAdminRequired     = errors.New("нужны права администратора для этого запроса")
+	ErrFileNotImage      = errors.New("файл не является изображением")
+	ErrOpenFile          = errors.New("ошибка при открытии файла")
+	ErrSeekImage         = errors.New("ошибка при смещении координат")
+	ErrDecodeImage       = errors.New("ошибка при декодировании изображения")
+)
+
+type Error struct {
+	message string
+}
+
+func (e Error) Error() string {
+	return e.message
+}
+
 func GetPathID(c *gin.Context) (int, error) {
 	idStr := c.Param("id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		err = errors.New("id должен быть числом!")
+		return 0, ErrIDType
 	}
 	return id, err
 }
@@ -25,7 +48,7 @@ func GetPathUserID(c *gin.Context) (int, error) {
 	idStr := c.Param("user_id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		err = errors.New("user_id должен быть числом!")
+		return 0, ErrUserIDType
 	}
 	return id, err
 }
@@ -34,7 +57,7 @@ func GetPathBookmarkID(c *gin.Context) (int, error) {
 	idStr := c.Param("bookmark_id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		err = errors.New("bookmark_id должен быть числом!")
+		return 0, ErrBookmarkIDType
 	}
 	return id, err
 }
@@ -42,7 +65,7 @@ func GetPathBookmarkID(c *gin.Context) (int, error) {
 func GetPathName(c *gin.Context) (string, error) {
 	name := c.Param("name")
 	if name == "" {
-		return "", errors.New("name не должен быть пустым!")
+		return "", ErrEmptyName
 	}
 	return name, nil
 }
@@ -60,20 +83,17 @@ func GetPhoto(c *gin.Context) (*multipart.FileHeader, error) {
 }
 
 func ValidatePhoto(photoFile *multipart.FileHeader) (string, error) {
-	var errMessage string
 	filename := photoFile.Filename
 	// Проверка расширения файла
 	if !strings.HasSuffix(filename, ".jpg") &&
 		!strings.HasSuffix(filename, ".jpeg") &&
 		!strings.HasSuffix(filename, ".png") {
-		return "", errors.New("файл не является изображением")
+		return "", ErrFileNotImage
 	}
 	// Попытка прочитать изображение
 	file, err := photoFile.Open()
 	if err != nil {
-		errMessage = fmt.Sprintf("Ошибка при открытии файла:%s", err)
-		err = errors.New(errMessage)
-		logger.Error(err.Error())
+		err = fmt.Errorf("%w:%w", ErrOpenFile, err)
 		return "", err
 	}
 	defer file.Close()
@@ -82,12 +102,16 @@ func ValidatePhoto(photoFile *multipart.FileHeader) (string, error) {
 	format := "jpeg"
 	_, err = jpeg.Decode(file)
 	if err != nil {
-		file.Seek(0, 0)
+		_, err = file.Seek(0, 0)
+		if err != nil {
+			err = fmt.Errorf("%w:%w", ErrSeekImage, err)
+			logger.Error(err.Error())
+			return "", err
+		}
 		format = "png"
 		_, err = png.DecodeConfig(file)
 		if err != nil {
-			errMessage = fmt.Sprintf("Ошибка при декодировании изображения:%s", err)
-			err = errors.New(errMessage)
+			err = fmt.Errorf("%w:%w", ErrDecodeImage, err)
 			logger.Error(err.Error())
 			return "", err
 		}

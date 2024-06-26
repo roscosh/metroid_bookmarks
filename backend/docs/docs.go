@@ -48,7 +48,7 @@ const docTemplate = `{
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/baseApi.ErrorResponse"
+                            "$ref": "#/definitions/middleware.ErrorResponse"
                         }
                     }
                 }
@@ -76,7 +76,7 @@ const docTemplate = `{
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/baseApi.ErrorResponse"
+                            "$ref": "#/definitions/middleware.ErrorResponse"
                         }
                     }
                 }
@@ -122,7 +122,7 @@ const docTemplate = `{
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/baseApi.ErrorResponse"
+                            "$ref": "#/definitions/middleware.ErrorResponse"
                         }
                     }
                 }
@@ -157,7 +157,7 @@ const docTemplate = `{
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/baseApi.ErrorResponse"
+                            "$ref": "#/definitions/middleware.ErrorResponse"
                         }
                     }
                 }
@@ -196,13 +196,13 @@ const docTemplate = `{
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/baseApi.ErrorResponse"
+                            "$ref": "#/definitions/middleware.ErrorResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/baseApi.ErrorResponse"
+                            "$ref": "#/definitions/middleware.ErrorResponse"
                         }
                     }
                 }
@@ -227,13 +227,13 @@ const docTemplate = `{
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/baseApi.ErrorResponse"
+                            "$ref": "#/definitions/middleware.ErrorResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/baseApi.ErrorResponse"
+                            "$ref": "#/definitions/middleware.ErrorResponse"
                         }
                     }
                 }
@@ -258,13 +258,13 @@ const docTemplate = `{
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/baseApi.ErrorResponse"
+                            "$ref": "#/definitions/middleware.ErrorResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/baseApi.ErrorResponse"
+                            "$ref": "#/definitions/middleware.ErrorResponse"
                         }
                     }
                 }
@@ -303,7 +303,7 @@ const docTemplate = `{
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/baseApi.ErrorResponse"
+                            "$ref": "#/definitions/middleware.ErrorResponse"
                         }
                     }
                 }
@@ -358,7 +358,7 @@ const docTemplate = `{
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/baseApi.ErrorResponse"
+                            "$ref": "#/definitions/middleware.ErrorResponse"
                         }
                     }
                 }
@@ -410,7 +410,7 @@ const docTemplate = `{
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/baseApi.ErrorResponse"
+                            "$ref": "#/definitions/middleware.ErrorResponse"
                         }
                     }
                 }
@@ -456,7 +456,7 @@ const docTemplate = `{
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/baseApi.ErrorResponse"
+                            "$ref": "#/definitions/middleware.ErrorResponse"
                         }
                     }
                 }
@@ -491,7 +491,7 @@ const docTemplate = `{
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/baseApi.ErrorResponse"
+                            "$ref": "#/definitions/middleware.ErrorResponse"
                         }
                     }
                 }
@@ -534,7 +534,7 @@ const docTemplate = `{
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/baseApi.ErrorResponse"
+                            "$ref": "#/definitions/middleware.ErrorResponse"
                         }
                     }
                 }
@@ -579,7 +579,7 @@ const docTemplate = `{
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/baseApi.ErrorResponse"
+                            "$ref": "#/definitions/middleware.ErrorResponse"
                         }
                     }
                 }
@@ -616,7 +616,7 @@ const docTemplate = `{
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/baseApi.ErrorResponse"
+                            "$ref": "#/definitions/middleware.ErrorResponse"
                         }
                     }
                 }
@@ -655,7 +655,7 @@ const docTemplate = `{
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/baseApi.ErrorResponse"
+                            "$ref": "#/definitions/middleware.ErrorResponse"
                         }
                     }
                 }
@@ -683,7 +683,7 @@ const docTemplate = `{
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/baseApi.ErrorResponse"
+                            "$ref": "#/definitions/middleware.ErrorResponse"
                         }
                     }
                 }
@@ -729,7 +729,7 @@ const docTemplate = `{
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/baseApi.ErrorResponse"
+                            "$ref": "#/definitions/middleware.ErrorResponse"
                         }
                     }
                 }
@@ -764,7 +764,7 @@ const docTemplate = `{
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/baseApi.ErrorResponse"
+                            "$ref": "#/definitions/middleware.ErrorResponse"
                         }
                     }
                 }
@@ -803,7 +803,7 @@ const docTemplate = `{
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/baseApi.ErrorResponse"
+                            "$ref": "#/definitions/middleware.ErrorResponse"
                         }
                     }
                 }
@@ -831,7 +831,7 @@ const docTemplate = `{
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/baseApi.ErrorResponse"
+                            "$ref": "#/definitions/middleware.ErrorResponse"
                         }
                     }
                 }
@@ -877,7 +877,7 @@ const docTemplate = `{
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/baseApi.ErrorResponse"
+                            "$ref": "#/definitions/middleware.ErrorResponse"
                         }
                     }
                 }
@@ -912,7 +912,7 @@ const docTemplate = `{
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/baseApi.ErrorResponse"
+                            "$ref": "#/definitions/middleware.ErrorResponse"
                         }
                     }
                 }
@@ -958,7 +958,7 @@ const docTemplate = `{
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/baseApi.ErrorResponse"
+                            "$ref": "#/definitions/middleware.ErrorResponse"
                         }
                     }
                 }
@@ -993,7 +993,7 @@ const docTemplate = `{
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/baseApi.ErrorResponse"
+                            "$ref": "#/definitions/middleware.ErrorResponse"
                         }
                     }
                 }
@@ -1039,7 +1039,7 @@ const docTemplate = `{
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/baseApi.ErrorResponse"
+                            "$ref": "#/definitions/middleware.ErrorResponse"
                         }
                     }
                 }
@@ -1074,7 +1074,7 @@ const docTemplate = `{
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/baseApi.ErrorResponse"
+                            "$ref": "#/definitions/middleware.ErrorResponse"
                         }
                     }
                 }
@@ -1082,6 +1082,20 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "areas.Area": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name_en": {
+                    "type": "string"
+                },
+                "name_ru": {
+                    "type": "string"
+                }
+            }
+        },
         "areas.createForm": {
             "type": "object",
             "required": [
@@ -1156,7 +1170,7 @@ const docTemplate = `{
                 "data": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/sql.Area"
+                        "$ref": "#/definitions/areas.Area"
                     }
                 },
                 "total": {
@@ -1288,11 +1302,32 @@ const docTemplate = `{
                 }
             }
         },
-        "baseApi.ErrorResponse": {
+        "bookmarks.Bookmark": {
             "type": "object",
             "properties": {
-                "error": {
+                "area": {
+                    "$ref": "#/definitions/areas.Area"
+                },
+                "completed": {
+                    "type": "boolean"
+                },
+                "ctime": {
                     "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "photos": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/photos.Photo"
+                    }
+                },
+                "room": {
+                    "$ref": "#/definitions/rooms.Room"
+                },
+                "skill": {
+                    "$ref": "#/definitions/skills.Skill"
                 }
             }
         },
@@ -1397,11 +1432,30 @@ const docTemplate = `{
                 "data": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/sql.Bookmark"
+                        "$ref": "#/definitions/bookmarks.Bookmark"
                     }
                 },
                 "total": {
                     "type": "integer"
+                }
+            }
+        },
+        "middleware.ErrorResponse": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string"
+                }
+            }
+        },
+        "photos.Photo": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "url": {
+                    "type": "string"
                 }
             }
         },
@@ -1429,6 +1483,20 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "rooms.Room": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name_en": {
+                    "type": "string"
+                },
+                "name_ru": {
                     "type": "string"
                 }
             }
@@ -1507,11 +1575,25 @@ const docTemplate = `{
                 "data": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/sql.Room"
+                        "$ref": "#/definitions/rooms.Room"
                     }
                 },
                 "total": {
                     "type": "integer"
+                }
+            }
+        },
+        "skills.Skill": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name_en": {
+                    "type": "string"
+                },
+                "name_ru": {
+                    "type": "string"
                 }
             }
         },
@@ -1589,7 +1671,7 @@ const docTemplate = `{
                 "data": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/sql.Skill"
+                        "$ref": "#/definitions/skills.Skill"
                     }
                 },
                 "total": {
@@ -1597,89 +1679,7 @@ const docTemplate = `{
                 }
             }
         },
-        "sql.Area": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "integer"
-                },
-                "name_en": {
-                    "type": "string"
-                },
-                "name_ru": {
-                    "type": "string"
-                }
-            }
-        },
-        "sql.Bookmark": {
-            "type": "object",
-            "properties": {
-                "area": {
-                    "$ref": "#/definitions/sql.Area"
-                },
-                "completed": {
-                    "type": "boolean"
-                },
-                "ctime": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "photos": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/sql.Photo"
-                    }
-                },
-                "room": {
-                    "$ref": "#/definitions/sql.Room"
-                },
-                "skill": {
-                    "$ref": "#/definitions/sql.Skill"
-                }
-            }
-        },
-        "sql.Photo": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "integer"
-                },
-                "url": {
-                    "type": "string"
-                }
-            }
-        },
-        "sql.Room": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "integer"
-                },
-                "name_en": {
-                    "type": "string"
-                },
-                "name_ru": {
-                    "type": "string"
-                }
-            }
-        },
-        "sql.Skill": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "integer"
-                },
-                "name_en": {
-                    "type": "string"
-                },
-                "name_ru": {
-                    "type": "string"
-                }
-            }
-        },
-        "sql.User": {
+        "users.User": {
             "type": "object",
             "properties": {
                 "id": {
@@ -1780,7 +1780,7 @@ const docTemplate = `{
                 "data": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/sql.User"
+                        "$ref": "#/definitions/users.User"
                     }
                 },
                 "total": {

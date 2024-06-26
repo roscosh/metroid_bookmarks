@@ -2,7 +2,7 @@ package v1
 
 import (
 	"github.com/gin-gonic/gin"
-	"metroid_bookmarks/internal/handler/api/base_api"
+	"metroid_bookmarks/internal/handler/api/middleware"
 	"metroid_bookmarks/internal/handler/api/v1/areas"
 	"metroid_bookmarks/internal/handler/api/v1/auth"
 	"metroid_bookmarks/internal/handler/api/v1/bookmarks"
@@ -13,22 +13,22 @@ import (
 	"metroid_bookmarks/internal/service"
 )
 
-type router struct {
-	*baseApi.Router
+type Router struct {
+	*middleware.Router
 	service *service.Service
 }
 
 func NewRouter(
-	baseAPIRouter *baseApi.Router,
+	mwRouter *middleware.Router,
 	service *service.Service,
-) baseApi.ApiRouter {
-	return &router{
-		Router:  baseAPIRouter,
+) *Router {
+	return &Router{
+		Router:  mwRouter,
 		service: service,
 	}
 }
 
-func (h *router) RegisterHandlers(router *gin.RouterGroup) {
+func (h *Router) RegisterHandlers(router *gin.RouterGroup) {
 	authGroup := router.Group("/auth")
 	authRouter := auth.NewRouter(h.Router, h.service.Authorization)
 	authRouter.RegisterHandlers(authGroup)

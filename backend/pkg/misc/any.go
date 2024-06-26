@@ -3,9 +3,11 @@ package misc
 import (
 	"encoding/json"
 	"errors"
-	"io/ioutil"
-	"os"
 	"reflect"
+)
+
+var (
+	ErrJsonToStruct = errors.New("failing convert json to struct")
 )
 
 func Contains[T comparable](item T, arr []T) bool {
@@ -17,25 +19,12 @@ func Contains[T comparable](item T, arr []T) bool {
 	return false
 }
 
-func JsonToStruct[T any](path string) (*T, error) {
+func JsonToStruct[T any](bytes []byte) (*T, error) {
 	var config *T
-	jsonFile, err := os.Open(path)
+
+	err := json.Unmarshal(bytes, &config)
 	if err != nil {
-		return nil, errors.New("no file in path")
-	}
-	defer func(jsonFile *os.File) {
-		err := jsonFile.Close()
-		if err != nil {
-			return
-		}
-	}(jsonFile)
-	bytes, err := ioutil.ReadAll(jsonFile)
-	if err != nil {
-		return nil, errors.New("failing convert file to bytes")
-	}
-	err = json.Unmarshal(bytes, &config)
-	if err != nil {
-		return nil, errors.New("failing convert file to struct")
+		return nil, ErrJsonToStruct
 	}
 	return config, nil
 }

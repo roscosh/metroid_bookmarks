@@ -2,26 +2,26 @@ package users
 
 import (
 	"github.com/gin-gonic/gin"
-	"metroid_bookmarks/internal/handler/api/base_api"
+	"metroid_bookmarks/internal/handler/api/middleware"
 	"metroid_bookmarks/internal/service"
 )
 
-type router struct {
-	*baseApi.Router
+type Router struct {
+	*middleware.Router
 	service *service.UsersService
 }
 
 func NewRouter(
-	baseAPIRouter *baseApi.Router,
+	mwRouter *middleware.Router,
 	usersService *service.UsersService,
-) baseApi.ApiRouter {
-	return &router{
-		Router:  baseAPIRouter,
+) *Router {
+	return &Router{
+		Router:  mwRouter,
 		service: usersService,
 	}
 }
 
-func (h *router) RegisterHandlers(router *gin.RouterGroup) {
+func (h *Router) RegisterHandlers(router *gin.RouterGroup) {
 	router.GET("/get_all", h.getAll)
 	router.DELETE("/:id", h.delete)
 	router.PUT("/:id", h.edit)

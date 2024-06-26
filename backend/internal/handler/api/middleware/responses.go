@@ -1,7 +1,6 @@
-package baseApi
+package middleware
 
 import (
-	"errors"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -15,7 +14,7 @@ func NewErrorResponse(err error) *ErrorResponse {
 }
 
 func AccessDenied(c *gin.Context) {
-	Response403(c, errors.New("отказ в доступе"))
+	Response403(c, ErrAccessDenied)
 }
 
 func Response200(c *gin.Context, obj interface{}) {

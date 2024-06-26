@@ -1,4 +1,4 @@
-package misc
+package log
 
 import (
 	"fmt"
@@ -18,12 +18,22 @@ const (
 	Fatal   LogLevel = "FATAL"
 )
 
+var (
+	logger     *Logger
+	loggerOnce sync.Once
+)
+
 type Logger struct {
 	logger *logrus.Logger
 }
 
-var logger *Logger
-var loggerOnce sync.Once
+func GetLogger() *Logger {
+	loggerOnce.Do(func() {
+		log := logrus.New()
+		logger = &Logger{logger: log}
+	})
+	return logger
+}
 
 func (l *Logger) SetParams(logLevel string) {
 	var level logrus.Level
@@ -50,14 +60,6 @@ func (l *Logger) SetParams(logLevel string) {
 	}
 }
 
-func GetLogger() *Logger {
-	loggerOnce.Do(func() {
-		log := logrus.New()
-		logger = &Logger{logger: log}
-	})
-	return logger
-}
-
 func (l *Logger) Debug(message string) {
 	l.logger.Debug(l.formatMessage(message))
 }
@@ -79,23 +81,23 @@ func (l *Logger) Fatal(message string) {
 }
 
 func (l *Logger) Debugf(message string, args ...interface{}) {
-	l.logger.Debugf(l.formatMessage(message), args)
+	l.logger.Debugf(l.formatMessage(message), args...)
 }
 
 func (l *Logger) Infof(message string, args ...interface{}) {
-	l.logger.Infof(l.formatMessage(message), args)
+	l.logger.Infof(l.formatMessage(message), args...)
 }
 
 func (l *Logger) Warnf(message string, args ...interface{}) {
-	l.logger.Warnf(l.formatMessage(message), args)
+	l.logger.Warnf(l.formatMessage(message), args...)
 }
 
 func (l *Logger) Errorf(message string, args ...interface{}) {
-	l.logger.Errorf(l.formatMessage(message), args)
+	l.logger.Errorf(l.formatMessage(message), args...)
 }
 
 func (l *Logger) Fatalf(message string, args ...interface{}) {
-	l.logger.Fatalf(l.formatMessage(message), args)
+	l.logger.Fatalf(l.formatMessage(message), args...)
 }
 
 func (l *Logger) formatMessage(message string) string {

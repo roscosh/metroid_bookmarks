@@ -1,0 +1,36 @@
+linters:
+  enable:
+    - asasalint
+    - asciicheck
+    - bidichk
+    - bodyclose
+    - canonicalheader
+    - containedctx
+    - contextcheck
+    - copyloopvar
+#    - cyclop
+    - decorder
+#    - depguard
+    - dogsled
+#    - dupl
+    - dupword
+    - durationcheck
+    - err113
+    - errchkjson
+    - errname
+    - errorlint
+    - exhaustive
+
+
+linters-settings:
+  unused:
+    # Mark all struct fields that have been written to as used.
+    # Default: true
+    field-writes-are-uses: false
+  exhaustive:
+    # Program elements to check for exhaustiveness.
+    # Default: [ switch ]
+    check:
+      - switch
+      - map
+    default-signifies-exhaustive: true

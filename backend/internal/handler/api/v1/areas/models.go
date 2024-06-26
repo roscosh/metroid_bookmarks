@@ -1,26 +1,28 @@
 package areas
 
-import "metroid_bookmarks/internal/repository/sql"
+import (
+	"metroid_bookmarks/internal/repository/sql/areas"
+)
 
 type createForm struct {
-	*sql.CreateArea
+	*areas.CreateArea
 }
 
 type createResponse struct {
-	*sql.Area
+	*areas.Area
 }
 type editForm struct {
-	*sql.EditArea
+	*areas.EditArea
 }
 type editResponse struct {
-	*sql.Area
+	*areas.Area
 }
 
 type deleteResponse struct {
-	*sql.Area
+	*areas.Area
 }
 
 type getAllResponse struct {
-	Data  []sql.Area `json:"data"`
-	Total int        `json:"total"`
+	Data  []areas.Area `json:"data"`
+	Total int          `json:"total"`
 }

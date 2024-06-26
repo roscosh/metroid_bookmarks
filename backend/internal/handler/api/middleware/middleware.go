@@ -1,7 +1,6 @@
-package baseApi
+package middleware
 
 import (
-	"errors"
 	"github.com/gin-gonic/gin"
 	"metroid_bookmarks/internal/service"
 	"metroid_bookmarks/pkg/session"
@@ -43,7 +42,7 @@ func (h *Middleware) AdminRequired(c *gin.Context) {
 	sessionObj := GetSession(c)
 
 	if !sessionObj.IsAdmin() {
-		Response403(c, errors.New("Нужны права администратора для этого запроса!"))
+		Response403(c, ErrAdminRequired)
 		c.Abort()
 		return
 	}
@@ -53,7 +52,17 @@ func (h *Middleware) AuthRequired(c *gin.Context) {
 	sessionObj := GetSession(c)
 
 	if !sessionObj.IsAuthenticated() {
-		Response401(c, errors.New("Нужно залогиниться для этого запроса!"))
+		Response401(c, ErrLoginRequired)
+		c.Abort()
+		return
+	}
+}
+
+func (h *Middleware) LogoutRequired(c *gin.Context) {
+	sessionObj := GetSession(c)
+
+	if sessionObj.IsAuthenticated() {
+		Response401(c, ErrAlreadyAuthorized)
 		c.Abort()
 		return
 	}

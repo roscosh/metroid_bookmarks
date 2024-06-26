@@ -1,70 +1,41 @@
-package sql
+package bookmarks
 
 import (
 	"errors"
 	"fmt"
+	"metroid_bookmarks/internal/repository/sql/photos"
+	"metroid_bookmarks/pkg/pgpool"
 	"strings"
-	"time"
 )
 
 const bookmarksTable = "bookmarks"
 
-type Bookmark struct {
-	Id        int       `json:"id"`
-	Ctime     time.Time `json:"ctime"`
-	Completed bool      `json:"completed"`
-	Area      Area      `json:"area"`
-	Room      Room      `json:"room"`
-	Skill     Skill     `json:"skill"`
-	Photos    []Photo   `json:"photos"`
+var (
+	ErrZeroID = errors.New("userId must be greater than zero")
+)
+
+type SQL struct {
+	sql pgpool.SQL[BookmarkPreview]
 }
 
-type BookmarkPreview struct {
-	Id        int       `json:"id"        db:"id"`
-	UserId    int       `json:"user_id"   db:"user_id"`
-	AreaId    int       `json:"area_id"   db:"area_id"`
-	RoomId    int       `json:"room_id"   db:"room_id"`
-	SkillId   int       `json:"skill_id"  db:"skill_id"`
-	Ctime     time.Time `json:"ctime"     db:"ctime"`
-	Completed bool      `json:"completed" db:"completed"`
+func NewSQL(dbPool *pgpool.DbPool) *SQL {
+	sql := pgpool.NewSQL[BookmarkPreview](dbPool, bookmarksTable)
+	return &SQL{sql: sql}
 }
 
-type CreateBookmark struct {
-	UserId  int `db:"user_id"`
-	AreaId  int `db:"area_id"`
-	RoomId  int `db:"room_id"`
-	SkillId int `db:"skill_id"`
+func (s *SQL) Create(createForm *CreateBookmark) (*BookmarkPreview, error) {
+	return s.sql.Insert(createForm)
 }
 
-type EditBookmark struct {
-	AreaId    *int  `json:"area_id"  db:"area_id"`
-	RoomId    *int  `json:"room_id"  db:"room_id"`
-	SkillId   *int  `json:"skill_id" db:"skill_id"`
-	Completed *bool `json:"completed" db:"completed"`
+func (s *SQL) Delete(id int, userId int) (*BookmarkPreview, error) {
+	return s.sql.DeleteWhere("id=$1 AND user_id=$2", id, userId)
 }
 
-type BookmarksSQL struct {
-	iBaseSQL[BookmarkPreview]
+func (s *SQL) Edit(id int, userId int, editForm *EditBookmark) (*BookmarkPreview, error) {
+	return s.sql.UpdateWhere(editForm, "id=$1 AND user_id=$2", id, userId)
 }
 
-func NewBookmarksSQL(dbPool *DbPool) *BookmarksSQL {
-	sql := newIBaseSQL[BookmarkPreview](dbPool, bookmarksTable)
-	return &BookmarksSQL{iBaseSQL: sql}
-}
-
-func (s *BookmarksSQL) Create(createForm *CreateBookmark) (*BookmarkPreview, error) {
-	return s.insert(createForm)
-}
-
-func (s *BookmarksSQL) Delete(id int, userId int) (*BookmarkPreview, error) {
-	return s.deleteWhere("id=$1 AND user_id=$2", id, userId)
-}
-
-func (s *BookmarksSQL) Edit(id int, userId int, editForm *EditBookmark) (*BookmarkPreview, error) {
-	return s.updateWhere(editForm, "id=$1 AND user_id=$2", id, userId)
-}
-
-func (s *BookmarksSQL) GetAll(limit, offset, userId int, completed *bool, orderById *bool) ([]Bookmark, error) {
+func (s *SQL) GetAll(limit, offset, userId int, completed *bool, orderById *bool) ([]Bookmark, error) {
 	var bookmarks []Bookmark
 	var queryArray []string
 	var args = make([]any, 0, 3)
@@ -92,13 +63,12 @@ func (s *BookmarksSQL) GetAll(limit, offset, userId int, completed *bool, orderB
 		args = append(args, userId)
 		placeHolder++
 	} else {
-		return nil, errors.New("userId must be greater than zero")
+		return nil, ErrZeroID
 	}
 	if completed != nil {
 		whereCompleted := fmt.Sprintf("b.completed=$%d", placeHolder)
 		whereArray = append(whereArray, whereCompleted)
 		args = append(args, *completed)
-		placeHolder++
 	}
 	if whereArray != nil {
 		where := "WHERE " + strings.Join(whereArray, " AND ")
@@ -129,7 +99,7 @@ func (s *BookmarksSQL) GetAll(limit, offset, userId int, completed *bool, orderB
 
 	query := strings.Join(queryArray, " ")
 
-	rows, err := s.query(query, args...)
+	rows, err := s.sql.Query(query, args...)
 	if err != nil {
 		return nil, err
 	}
@@ -146,10 +116,13 @@ func (s *BookmarksSQL) GetAll(limit, offset, userId int, completed *bool, orderB
 			&bookmark.Skill.Id, &bookmark.Skill.NameRu, &bookmark.Skill.NameEn,
 			&photoIds, &photoNames,
 		)
-		for i, _ := range photoIds {
-			if photoIds[i] != nil {
+		if err != nil {
+			return nil, err
+		}
+		for i, photoId := range photoIds {
+			if photoId != nil {
 				ulr := fmt.Sprintf("/%d/%d/%s", userId, bookmark.Id, *photoNames[i])
-				bookmark.Photos = append(bookmark.Photos, Photo{Id: int(*photoIds[i]), Url: ulr})
+				bookmark.Photos = append(bookmark.Photos, photos.Photo{Id: int(*photoId), Url: ulr})
 			}
 		}
 		bookmarks = append(bookmarks, bookmark)
@@ -161,11 +134,11 @@ func (s *BookmarksSQL) GetAll(limit, offset, userId int, completed *bool, orderB
 	return bookmarks, nil
 }
 
-func (s *BookmarksSQL) GetByID(id int) (*BookmarkPreview, error) {
-	return s.selectOne(id)
+func (s *SQL) GetByID(id int) (*BookmarkPreview, error) {
+	return s.sql.SelectOne(id)
 }
 
-func (s *BookmarksSQL) Total(userId int, completed *bool) (int, error) {
+func (s *SQL) Total(userId int, completed *bool) (int, error) {
 	var count int
 	var queryArray []string
 	var args = make([]any, 0, 3)
@@ -184,13 +157,11 @@ func (s *BookmarksSQL) Total(userId int, completed *bool) (int, error) {
 		whereUserId := fmt.Sprintf("b.user_id=$%d", placeHolder)
 		whereArray = append(whereArray, whereUserId)
 		args = append(args, userId)
-		placeHolder++
 	}
 	if completed != nil {
 		whereCompleted := fmt.Sprintf("b.completed=$%d", placeHolder)
 		whereArray = append(whereArray, whereCompleted)
 		args = append(args, *completed)
-		placeHolder++
 	}
 	if whereArray != nil {
 		where := "WHERE " + strings.Join(whereArray, " AND ")
@@ -198,6 +169,6 @@ func (s *BookmarksSQL) Total(userId int, completed *bool) (int, error) {
 	}
 
 	query := strings.Join(queryArray, " ")
-	err := s.queryRow(query, args...).Scan(&count)
+	err := s.sql.QueryRow(query, args...).Scan(&count)
 	return count, err
 }

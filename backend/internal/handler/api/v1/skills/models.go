@@ -1,26 +1,28 @@
 package skills
 
-import "metroid_bookmarks/internal/repository/sql"
+import (
+	"metroid_bookmarks/internal/repository/sql/skills"
+)
 
 type createForm struct {
-	*sql.CreateSkill
+	*skills.CreateSkill
 }
 
 type createResponse struct {
-	*sql.Skill
+	*skills.Skill
 }
 type editForm struct {
-	*sql.EditSkill
+	*skills.EditSkill
 }
 type editResponse struct {
-	*sql.Skill
+	*skills.Skill
 }
 
 type deleteResponse struct {
-	*sql.Skill
+	*skills.Skill
 }
 
 type getAllResponse struct {
-	Data  []sql.Skill `json:"data"`
-	Total int         `json:"total"`
+	Data  []skills.Skill `json:"data"`
+	Total int            `json:"total"`
 }

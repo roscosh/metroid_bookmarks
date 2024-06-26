@@ -2,29 +2,32 @@ package photos
 
 import (
 	"github.com/gin-gonic/gin"
-	baseApi "metroid_bookmarks/internal/handler/api/base_api"
+	"metroid_bookmarks/internal/handler/api/middleware"
 	"metroid_bookmarks/internal/service"
+	"metroid_bookmarks/pkg/misc/log"
 )
 
-type router struct {
-	*baseApi.Router
+var logger = log.GetLogger()
+
+type Router struct {
+	*middleware.Router
 	photosService    *service.PhotosService
 	bookmarksService *service.BookmarksService
 }
 
 func NewRouter(
-	baseAPIRouter *baseApi.Router,
+	mwRouter *middleware.Router,
 	photosService *service.PhotosService,
 	bookmarksService *service.BookmarksService,
-) baseApi.ApiRouter {
-	return &router{
-		Router:           baseAPIRouter,
+) *Router {
+	return &Router{
+		Router:           mwRouter,
 		photosService:    photosService,
 		bookmarksService: bookmarksService,
 	}
 }
 
-func (h *router) RegisterHandlers(router *gin.RouterGroup) {
+func (h *Router) RegisterHandlers(router *gin.RouterGroup) {
 	router.POST("/", h.create)
 	router.DELETE("/:id", h.delete)
 	router.GET("/download/:user_id/:bookmark_id/:name", h.download)

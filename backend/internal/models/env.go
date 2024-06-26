@@ -1,6 +1,8 @@
 package models
 
-import "metroid_bookmarks/pkg/misc"
+import (
+	"metroid_bookmarks/pkg/misc/env"
+)
 
 type EnvConfig struct {
 	Production        bool   `env:"PRODUCTION"`
@@ -15,7 +17,7 @@ type EnvConfig struct {
 
 func NewEnvConfig() (*EnvConfig, error) {
 	var conf EnvConfig
-	err := misc.ParseEnv(&conf)
+	err := env.ParseEnv(&conf)
 	if err != nil {
 		return nil, err
 	}

@@ -1,7 +1,15 @@
 package models
 
 import (
+	"errors"
+	"io"
 	"metroid_bookmarks/pkg/misc"
+	"os"
+)
+
+var (
+	ErrFileDoesNotExist   = errors.New("no file in path")
+	ErrFailingConvertFile = errors.New("failing convert file to bytes")
 )
 
 type PostgreSQL struct {
@@ -17,6 +25,16 @@ type AppConfig struct {
 	PhotosPath          string     `json:"photos_path"`
 }
 
-func NewAppConfig(dbConfig string) (*AppConfig, error) {
-	return misc.JsonToStruct[AppConfig](dbConfig)
+func NewAppConfig(appConfigPath string) (*AppConfig, error) {
+	jsonFile, err := os.Open(appConfigPath)
+	if err != nil {
+		return nil, ErrFileDoesNotExist
+	}
+	defer jsonFile.Close()
+
+	bytes, err := io.ReadAll(jsonFile)
+	if err != nil {
+		return nil, ErrFailingConvertFile
+	}
+	return misc.JsonToStruct[AppConfig](bytes)
 }

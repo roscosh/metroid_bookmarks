@@ -2,28 +2,28 @@ package auth
 
 import (
 	"github.com/gin-gonic/gin"
-	"metroid_bookmarks/internal/handler/api/base_api"
+	"metroid_bookmarks/internal/handler/api/middleware"
 	"metroid_bookmarks/internal/service"
 )
 
-type router struct {
-	*baseApi.Router
+type Router struct {
+	*middleware.Router
 	service *service.AuthService
 }
 
 func NewRouter(
-	baseAPIRouter *baseApi.Router,
+	mwRouter *middleware.Router,
 	service *service.AuthService,
-) baseApi.ApiRouter {
-	return &router{
-		Router:  baseAPIRouter,
+) *Router {
+	return &Router{
+		Router:  mwRouter,
 		service: service,
 	}
 }
 
-func (h *router) RegisterHandlers(router *gin.RouterGroup) {
+func (h *Router) RegisterHandlers(router *gin.RouterGroup) {
 	router.GET("/me", h.me)
-	router.POST("/sign_up", h.signUp)
-	router.POST("/login", h.login)
+	router.POST("/sign_up", h.Middleware.LogoutRequired, h.signUp)
+	router.POST("/login", h.Middleware.LogoutRequired, h.login)
 	router.POST("/logout", h.Middleware.AuthRequired, h.logout)
 }

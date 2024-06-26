@@ -1,19 +1,18 @@
 package service
 
 import (
-	"errors"
-	"metroid_bookmarks/internal/repository/sql"
+	"metroid_bookmarks/internal/repository/sql/skills"
 )
 
 type SkillsService struct {
-	sql *sql.SkillsSQL
+	sql *skills.SQL
 }
 
-func newSkillsService(sql *sql.SkillsSQL) *SkillsService {
+func newSkillsService(sql *skills.SQL) *SkillsService {
 	return &SkillsService{sql: sql}
 }
 
-func (s *SkillsService) Create(createForm *sql.CreateSkill) (*sql.Skill, error) {
+func (s *SkillsService) Create(createForm *skills.CreateSkill) (*skills.Skill, error) {
 	skill, err := s.sql.Create(createForm)
 	if err != nil {
 		logger.Error(err.Error())
@@ -23,9 +22,9 @@ func (s *SkillsService) Create(createForm *sql.CreateSkill) (*sql.Skill, error) 
 	return skill, nil
 }
 
-func (s *SkillsService) Edit(id int, editForm *sql.EditSkill) (*sql.Skill, error) {
-	if (editForm == &sql.EditSkill{}) {
-		return nil, errors.New("Необходимо заполнить хотя бы один параметр в форме!")
+func (s *SkillsService) Edit(id int, editForm *skills.EditSkill) (*skills.Skill, error) {
+	if (editForm == &skills.EditSkill{}) {
+		return nil, ErrEmptyStruct
 	}
 	skill, err := s.sql.Edit(id, editForm)
 	if err != nil {
@@ -36,7 +35,7 @@ func (s *SkillsService) Edit(id int, editForm *sql.EditSkill) (*sql.Skill, error
 	return skill, nil
 }
 
-func (s *SkillsService) Delete(id int) (*sql.Skill, error) {
+func (s *SkillsService) Delete(id int) (*skills.Skill, error) {
 	skill, err := s.sql.Delete(id)
 	if err != nil {
 		logger.Error(err.Error())
@@ -46,7 +45,7 @@ func (s *SkillsService) Delete(id int) (*sql.Skill, error) {
 	return skill, nil
 }
 
-func (s *SkillsService) GetAll() ([]sql.Skill, int, error) {
+func (s *SkillsService) GetAll() ([]skills.Skill, int, error) {
 	data, err := s.sql.GetAll()
 	if err != nil {
 		logger.Error(err.Error())
@@ -56,6 +55,9 @@ func (s *SkillsService) GetAll() ([]sql.Skill, int, error) {
 	if err != nil {
 		logger.Error(err.Error())
 		return nil, 0, err
+	}
+	if data == nil {
+		data = []skills.Skill{}
 	}
 	return data, total, nil
 }

@@ -2,6 +2,7 @@ package redis
 
 import (
 	"github.com/gomodule/redigo/redis"
+	"metroid_bookmarks/pkg/redispool"
 	"metroid_bookmarks/pkg/session"
 	"strconv"
 )
@@ -9,12 +10,11 @@ import (
 const SessionKey = "session"
 
 type SessionRedis struct {
-	redis *baseRedis
+	redis *redispool.Redis
 }
 
 func newSessionRedis(pool *redis.Pool, keyPrefix string) *SessionRedis {
-
-	return &SessionRedis{redis: newBaseRedis(pool, keyPrefix)}
+	return &SessionRedis{redis: redispool.NewRedis(pool, keyPrefix)}
 }
 
 func (r *SessionRedis) Get(key string) (int, error) {

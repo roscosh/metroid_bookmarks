@@ -3,7 +3,7 @@ package session
 import (
 	"crypto/rand"
 	"encoding/hex"
-	"metroid_bookmarks/internal/repository/sql"
+	"metroid_bookmarks/internal/repository/sql/users"
 )
 
 const (
@@ -13,7 +13,7 @@ const (
 )
 
 type Session struct {
-	sql.User
+	users.User
 	Token   string `json:"token" db:"token"`
 	Expires int    `json:"expires" db:"expires"`
 }
@@ -30,13 +30,13 @@ func (s *Session) IsAdmin() bool {
 	return s.User.IsAdmin
 }
 
-func (s *Session) SetUser(user *sql.User) {
+func (s *Session) SetUser(user *users.User) {
 	s.User = *user
 	s.Expires = AuthenticatedExpires
 }
 
 func (s *Session) ResetUser() {
-	s.User = sql.User{}
+	s.User = users.User{}
 	s.Expires = AnonymousExpires
 }
 

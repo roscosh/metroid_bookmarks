@@ -1,42 +1,42 @@
 package service
 
 import (
-	"errors"
-	"metroid_bookmarks/internal/repository/sql"
+	"metroid_bookmarks/internal/repository/sql/bookmarks"
 )
 
 type BookmarksService struct {
-	sqlBookmarks *sql.BookmarksSQL
-	sqlPhotos    *sql.PhotosSQL
+	sqlBookmarks *bookmarks.SQL
 }
 
-func newBookmarksService(sqlBookmarks *sql.BookmarksSQL, sqlPhotos *sql.PhotosSQL) *BookmarksService {
-	return &BookmarksService{sqlBookmarks: sqlBookmarks, sqlPhotos: sqlPhotos}
+func newBookmarksService(sqlBookmarks *bookmarks.SQL) *BookmarksService {
+	return &BookmarksService{sqlBookmarks: sqlBookmarks}
 }
 
-func (s *BookmarksService) Create(createForm *sql.CreateBookmark) (*sql.BookmarkPreview, error) {
+func (s *BookmarksService) Create(createForm *bookmarks.CreateBookmark) (*bookmarks.BookmarkPreview, error) {
 	bookmark, err := s.sqlBookmarks.Create(createForm)
 	if err != nil {
 		logger.Error(err.Error())
 		err = createPgError(err)
 		return nil, err
 	}
+
 	return bookmark, nil
 }
 
-func (s *BookmarksService) Delete(id int, userId int) (*sql.BookmarkPreview, error) {
+func (s *BookmarksService) Delete(id int, userId int) (*bookmarks.BookmarkPreview, error) {
 	bookmark, err := s.sqlBookmarks.Delete(id, userId)
 	if err != nil {
 		logger.Error(err.Error())
 		err = deletePgError(err, id)
 		return nil, err
 	}
+
 	return bookmark, nil
 }
 
-func (s *BookmarksService) Edit(id int, userId int, editForm *sql.EditBookmark) (*sql.BookmarkPreview, error) {
-	if (editForm == &sql.EditBookmark{}) {
-		return nil, errors.New("Необходимо заполнить хотя бы один параметр в форме!")
+func (s *BookmarksService) Edit(id int, userId int, editForm *bookmarks.EditBookmark) (*bookmarks.BookmarkPreview, error) {
+	if (editForm == &bookmarks.EditBookmark{}) {
+		return nil, ErrEmptyStruct
 	}
 	bookmark, err := s.sqlBookmarks.Edit(id, userId, editForm)
 	if err != nil {
@@ -44,6 +44,7 @@ func (s *BookmarksService) Edit(id int, userId int, editForm *sql.EditBookmark) 
 		err = editPgError(err, id)
 		return nil, err
 	}
+
 	return bookmark, nil
 }
 
@@ -53,7 +54,7 @@ func (s *BookmarksService) GetAll(
 	userId int,
 	completed *bool,
 	orderById *bool,
-) ([]sql.Bookmark, int, error) {
+) ([]bookmarks.Bookmark, int, error) {
 	offset := (page - 1) * limit
 	data, err := s.sqlBookmarks.GetAll(limit, offset, userId, completed, orderById)
 	if err != nil {
@@ -66,14 +67,20 @@ func (s *BookmarksService) GetAll(
 		logger.Error(err.Error())
 		return nil, 0, err
 	}
+
+	if data == nil {
+		data = []bookmarks.Bookmark{}
+	}
+
 	return data, total, nil
 }
 
-func (s *BookmarksService) GetByID(id int) (*sql.BookmarkPreview, error) {
+func (s *BookmarksService) GetByID(id int) (*bookmarks.BookmarkPreview, error) {
 	bookmark, err := s.sqlBookmarks.GetByID(id)
 	if err != nil {
 		logger.Error(err.Error())
 		err = selectPgError(err, id)
 	}
+
 	return bookmark, err
 }

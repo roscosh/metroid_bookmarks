@@ -2,26 +2,26 @@ package skills
 
 import (
 	"github.com/gin-gonic/gin"
-	baseApi "metroid_bookmarks/internal/handler/api/base_api"
+	"metroid_bookmarks/internal/handler/api/middleware"
 	"metroid_bookmarks/internal/service"
 )
 
-type router struct {
-	*baseApi.Router
+type Router struct {
+	*middleware.Router
 	service *service.SkillsService
 }
 
 func NewRouter(
-	baseAPIRouter *baseApi.Router,
+	mwRouter *middleware.Router,
 	service *service.SkillsService,
-) baseApi.ApiRouter {
-	return &router{
-		Router:  baseAPIRouter,
+) *Router {
+	return &Router{
+		Router:  mwRouter,
 		service: service,
 	}
 }
 
-func (h *router) RegisterHandlers(router *gin.RouterGroup) {
+func (h *Router) RegisterHandlers(router *gin.RouterGroup) {
 	router.POST("/", h.Middleware.AdminRequired, h.create)
 	router.DELETE("/:id", h.Middleware.AdminRequired, h.delete)
 	router.PUT("/:id", h.Middleware.AdminRequired, h.edit)

@@ -1,6 +1,7 @@
-package sql
+package pgpool
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"github.com/jackc/pgx/v5"
@@ -10,164 +11,169 @@ import (
 	"strings"
 )
 
-type iBaseSQL[T any] interface {
+var (
+	ErrPointerStruct = errors.New("object must be a pointer of structure")
+	ErrEmptyStruct   = errors.New("empty struct")
+)
+
+type SQL[T any] interface {
 	//Query methods
-	collectOneRow(rows pgx.Rows) (*T, error)
-	collectRows(rows pgx.Rows) ([]T, error)
-	exec(query string, args ...any) (pgconn.CommandTag, error)
-	query(query string, args ...any) (pgx.Rows, error)
-	queryRow(query string, args ...any) pgx.Row
+	CollectOneRow(rows pgx.Rows) (*T, error)
+	CollectRows(rows pgx.Rows) ([]T, error)
+	Exec(query string, args ...any) (pgconn.CommandTag, error)
+	Query(query string, args ...any) (pgx.Rows, error)
+	QueryRow(query string, args ...any) pgx.Row
 	//CRUD methods
-	delete(pk int) (*T, error)
-	deleteWhere(whereStatement string, args ...any) (*T, error)
-	insert(createStruct interface{}) (*T, error)
-	selectMany() ([]T, error)
-	selectManyWhere(whereStatement string, args ...any) ([]T, error)
-	selectOne(pk int) (*T, error)
-	selectWhere(whereStatement string, args ...any) (*T, error)
-	total() (int, error)
-	update(pk int, editStruct interface{}) (*T, error)
-	updateWhere(editStruct interface{}, where string, args ...any) (*T, error)
+	Delete(pk int) (*T, error)
+	DeleteWhere(whereStatement string, args ...any) (*T, error)
+	Insert(createStruct interface{}) (*T, error)
+	SelectMany() ([]T, error)
+	SelectManyWhere(whereStatement string, args ...any) ([]T, error)
+	SelectOne(pk int) (*T, error)
+	SelectWhere(whereStatement string, args ...any) (*T, error)
+	Total() (int, error)
+	Update(pk int, editStruct interface{}) (*T, error)
+	UpdateWhere(editStruct interface{}, where string, args ...any) (*T, error)
 }
 
-func newIBaseSQL[T any](dbPool *DbPool, table string) iBaseSQL[T] {
+func NewSQL[T any](dbPool *DbPool, table string) SQL[T] {
 
-	return &baseSQL[T]{
+	return &sql[T]{
 		DbPool:  dbPool,
 		table:   table,
 		columns: getDbTags[T](),
 	}
 }
 
-type baseSQL[T any] struct {
+type sql[T any] struct {
 	*DbPool
 	table   string
 	columns string
 }
 
-func (s *baseSQL[T]) collectOneRow(rows pgx.Rows) (*T, error) {
+func (s *sql[T]) CollectOneRow(rows pgx.Rows) (*T, error) {
 	structObj, err := pgx.CollectOneRow(rows, pgx.RowToStructByName[T])
 	return &structObj, err
 }
 
-func (s *baseSQL[T]) collectRows(rows pgx.Rows) ([]T, error) {
+func (s *sql[T]) CollectRows(rows pgx.Rows) ([]T, error) {
 	return pgx.CollectRows(rows, pgx.RowToStructByName[T])
 }
 
-func (s *baseSQL[T]) exec(query string, args ...any) (pgconn.CommandTag, error) {
-	return s.pool.Exec(s.ctx, query, args...)
+func (s *sql[T]) Exec(query string, args ...any) (pgconn.CommandTag, error) {
+	return s.pool.Exec(context.Background(), query, args...)
 }
 
-func (s *baseSQL[T]) query(query string, args ...any) (pgx.Rows, error) {
-	return s.pool.Query(s.ctx, query, args...)
+func (s *sql[T]) Query(query string, args ...any) (pgx.Rows, error) {
+	return s.pool.Query(context.Background(), query, args...)
 }
 
-func (s *baseSQL[T]) queryRow(query string, args ...any) pgx.Row {
-	return s.pool.QueryRow(s.ctx, query, args...)
+func (s *sql[T]) QueryRow(query string, args ...any) pgx.Row {
+	return s.pool.QueryRow(context.Background(), query, args...)
 }
 
-func (s *baseSQL[T]) delete(pk int) (*T, error) {
+func (s *sql[T]) Delete(pk int) (*T, error) {
 	query := fmt.Sprintf(`DELETE FROM %s WHERE id = $1 RETURNING %s`, s.table, s.columns)
-	rows, err := s.query(query, pk)
+	rows, err := s.Query(query, pk)
 	if err != nil {
 		return nil, err
 	}
-	return s.collectOneRow(rows)
+	return s.CollectOneRow(rows)
 }
 
-func (s *baseSQL[T]) deleteWhere(whereStatement string, args ...any) (*T, error) {
+func (s *sql[T]) DeleteWhere(whereStatement string, args ...any) (*T, error) {
 	query := fmt.Sprintf(`DELETE FROM %s WHERE %s RETURNING %s`, s.table, whereStatement, s.columns)
-	rows, err := s.query(query, args...)
+	rows, err := s.Query(query, args...)
 	if err != nil {
 		return nil, err
 	}
-	return s.collectOneRow(rows)
+	return s.CollectOneRow(rows)
 }
 
-func (s *baseSQL[T]) insert(createStruct interface{}) (*T, error) {
-	query, args, err := s.getInsertQuery(createStruct)
+func (s *sql[T]) Insert(createStruct interface{}) (*T, error) {
+	query, args, err := s.GetInsertQuery(createStruct)
 	if err != nil {
 		return nil, err
 	}
-	rows, err := s.query(query, args...)
+	rows, err := s.Query(query, args...)
 	if err != nil {
 		return nil, err
 	}
-	return s.collectOneRow(rows)
+	return s.CollectOneRow(rows)
 }
 
-func (s *baseSQL[T]) selectOne(pk int) (*T, error) {
+func (s *sql[T]) SelectOne(pk int) (*T, error) {
 	query := fmt.Sprintf("SELECT %s FROM %s WHERE id = $1", s.columns, s.table)
-	rows, err := s.query(query, pk)
+	rows, err := s.Query(query, pk)
 	if err != nil {
 		return nil, err
 	}
-	return s.collectOneRow(rows)
+	return s.CollectOneRow(rows)
 
 }
 
-func (s *baseSQL[T]) selectManyWhere(whereStatement string, args ...any) ([]T, error) {
+func (s *sql[T]) SelectManyWhere(whereStatement string, args ...any) ([]T, error) {
 	query := fmt.Sprintf("SELECT %s FROM %s WHERE %s", s.columns, s.table, whereStatement)
-	rows, err := s.query(query, args...)
+	rows, err := s.Query(query, args...)
 	if err != nil {
 		return nil, err
 	}
-	return s.collectRows(rows)
+	return s.CollectRows(rows)
 }
 
-func (s *baseSQL[T]) selectWhere(whereStatement string, args ...any) (*T, error) {
+func (s *sql[T]) SelectWhere(whereStatement string, args ...any) (*T, error) {
 	query := fmt.Sprintf("SELECT %s FROM %s WHERE %s", s.columns, s.table, whereStatement)
-	rows, err := s.query(query, args...)
+	rows, err := s.Query(query, args...)
 	if err != nil {
 		return nil, err
 	}
-	return s.collectOneRow(rows)
+	return s.CollectOneRow(rows)
 }
 
-func (s *baseSQL[T]) selectMany() ([]T, error) {
+func (s *sql[T]) SelectMany() ([]T, error) {
 	query := fmt.Sprintf("SELECT %s FROM %s", s.columns, s.table)
-	rows, err := s.query(query)
+	rows, err := s.Query(query)
 	if err != nil {
 		return nil, err
 	}
-	return s.collectRows(rows)
+	return s.CollectRows(rows)
 }
 
-func (s *baseSQL[T]) total() (int, error) {
+func (s *sql[T]) Total() (int, error) {
 	query := fmt.Sprintf("SELECT COUNT(*) FROM %s ", s.table)
 	var count int
-	return count, s.queryRow(query).Scan(&count)
+	return count, s.QueryRow(query).Scan(&count)
 }
 
-func (s *baseSQL[T]) update(pk int, editStruct interface{}) (*T, error) {
-	query, args, err := s.getUpdateQuery(editStruct, "id=$1", pk)
+func (s *sql[T]) Update(pk int, editStruct interface{}) (*T, error) {
+	query, args, err := s.GetUpdateQuery(editStruct, "id=$1", pk)
 	if err != nil {
 		return nil, err
 	}
-	rows, err := s.query(query, args...)
+	rows, err := s.Query(query, args...)
 	if err != nil {
 		return nil, err
 	}
-	return s.collectOneRow(rows)
+	return s.CollectOneRow(rows)
 }
 
-func (s *baseSQL[T]) updateWhere(editStruct interface{}, where string, args ...any) (*T, error) {
-	query, args, err := s.getUpdateQuery(editStruct, where, args...)
+func (s *sql[T]) UpdateWhere(editStruct interface{}, where string, args ...any) (*T, error) {
+	query, args, err := s.GetUpdateQuery(editStruct, where, args...)
 	if err != nil {
 		return nil, err
 	}
-	rows, err := s.query(query, args...)
+	rows, err := s.Query(query, args...)
 	if err != nil {
 		return nil, err
 	}
-	return s.collectOneRow(rows)
+	return s.CollectOneRow(rows)
 }
 
-func (s *baseSQL[T]) getInsertQuery(createInterface interface{}) (string, []interface{}, error) {
+func (s *sql[T]) GetInsertQuery(createInterface interface{}) (string, []interface{}, error) {
 
 	t := reflect.TypeOf(createInterface)
 	if t.Kind() != reflect.Ptr || t.Elem().Kind() != reflect.Struct {
-		return "", nil, errors.New("object must be a pointer of structure")
+		return "", nil, ErrPointerStruct
 	}
 
 	elem := reflect.ValueOf(createInterface).Elem()
@@ -189,7 +195,7 @@ func (s *baseSQL[T]) getInsertQuery(createInterface interface{}) (string, []inte
 	}
 
 	if len(fieldsArray) == 0 {
-		return "", nil, errors.New("empty createInterface")
+		return "", nil, ErrEmptyStruct
 	}
 
 	fields := strings.Join(fieldsArray, ", ")
@@ -200,7 +206,7 @@ func (s *baseSQL[T]) getInsertQuery(createInterface interface{}) (string, []inte
 	return query, valuesArray, nil
 }
 
-func (s *baseSQL[T]) getUpdateQuery(
+func (s *sql[T]) GetUpdateQuery(
 	setInterface interface{},
 	where string,
 	args ...any,
@@ -209,7 +215,7 @@ func (s *baseSQL[T]) getUpdateQuery(
 
 	t := reflect.TypeOf(setInterface)
 	if t.Kind() != reflect.Ptr || t.Elem().Kind() != reflect.Struct {
-		return "", nil, errors.New("object must be a pointer of structure")
+		return "", nil, ErrPointerStruct
 	}
 
 	elem := reflect.ValueOf(setInterface).Elem()
@@ -231,7 +237,7 @@ func (s *baseSQL[T]) getUpdateQuery(
 
 	}
 	if len(fields) == 0 {
-		return "", nil, errors.New("empty setInterface")
+		return "", nil, ErrEmptyStruct
 	}
 	set := strings.Join(fields, ", ")
 

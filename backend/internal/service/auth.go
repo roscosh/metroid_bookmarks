@@ -4,7 +4,7 @@ import (
 	"crypto/sha1"
 	"errors"
 	"fmt"
-	"metroid_bookmarks/internal/repository/sql"
+	"metroid_bookmarks/internal/repository/sql/users"
 	. "metroid_bookmarks/pkg/session"
 )
 
@@ -12,11 +12,15 @@ const (
 	salt = "i3490tg4gj94jg0934jg"
 )
 
+var (
+	ErrUserDoesNotExist = errors.New("нет пользователя с таки логином/паролем")
+)
+
 type AuthService struct {
-	sql *sql.UsersSQL
+	sql *users.SQL
 }
 
-func newAuthService(sql *sql.UsersSQL) *AuthService {
+func newAuthService(sql *users.SQL) *AuthService {
 	return &AuthService{sql: sql}
 }
 
@@ -24,7 +28,7 @@ func (s *AuthService) Login(login string, password string, session *Session) (*S
 	token := generatePasswordHash(password)
 	user, err := s.sql.GetByCredentials(login, token)
 	if err != nil {
-		return nil, errors.New("Нет пользователя с таки логином/паролем!")
+		return nil, ErrUserDoesNotExist
 	}
 	session.SetUser(user)
 	return session, nil
@@ -35,7 +39,7 @@ func (s *AuthService) Logout(session *Session) *Session {
 	return session
 }
 
-func (s *AuthService) SignUp(createForm *sql.CreateUser) (*sql.User, error) {
+func (s *AuthService) SignUp(createForm *users.CreateUser) (*users.User, error) {
 	createForm.Password = generatePasswordHash(createForm.Password)
 	user, err := s.sql.Create(createForm)
 	if err != nil {

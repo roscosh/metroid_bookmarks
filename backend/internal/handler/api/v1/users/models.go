@@ -1,9 +1,11 @@
 package users
 
-import "metroid_bookmarks/internal/repository/sql"
+import (
+	"metroid_bookmarks/internal/repository/sql/users"
+)
 
 type changePasswordResponse struct {
-	*sql.User
+	*users.User
 }
 
 type changePasswordForm struct {
@@ -11,7 +13,7 @@ type changePasswordForm struct {
 }
 
 type deleteResponse struct {
-	*sql.User
+	*users.User
 }
 
 type editForm struct {
@@ -21,7 +23,7 @@ type editForm struct {
 }
 
 type editResponse struct {
-	*sql.User
+	*users.User
 }
 
 type getAllForm struct {
@@ -29,6 +31,6 @@ type getAllForm struct {
 }
 
 type getAllResponse struct {
-	Data  []sql.User `json:"data"`
-	Total int        `json:"total"`
+	Data  []users.User `json:"data"`
+	Total int          `json:"total"`
 }

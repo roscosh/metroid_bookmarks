@@ -1,19 +1,18 @@
 package service
 
 import (
-	"errors"
-	"metroid_bookmarks/internal/repository/sql"
+	"metroid_bookmarks/internal/repository/sql/rooms"
 )
 
 type RoomsService struct {
-	sql *sql.RoomsSQL
+	sql *rooms.SQL
 }
 
-func newRoomsService(sql *sql.RoomsSQL) *RoomsService {
+func newRoomsService(sql *rooms.SQL) *RoomsService {
 	return &RoomsService{sql: sql}
 }
 
-func (s *RoomsService) Create(createForm *sql.CreateRoom) (*sql.Room, error) {
+func (s *RoomsService) Create(createForm *rooms.CreateRoom) (*rooms.Room, error) {
 	room, err := s.sql.Create(createForm)
 	if err != nil {
 		logger.Error(err.Error())
@@ -23,9 +22,9 @@ func (s *RoomsService) Create(createForm *sql.CreateRoom) (*sql.Room, error) {
 	return room, nil
 }
 
-func (s *RoomsService) Edit(id int, editForm *sql.EditRoom) (*sql.Room, error) {
-	if (editForm == &sql.EditRoom{}) {
-		return nil, errors.New("Необходимо заполнить хотя бы один параметр в форме!")
+func (s *RoomsService) Edit(id int, editForm *rooms.EditRoom) (*rooms.Room, error) {
+	if (editForm == &rooms.EditRoom{}) {
+		return nil, ErrEmptyStruct
 	}
 	room, err := s.sql.Edit(id, editForm)
 	if err != nil {
@@ -36,7 +35,7 @@ func (s *RoomsService) Edit(id int, editForm *sql.EditRoom) (*sql.Room, error) {
 	return room, nil
 }
 
-func (s *RoomsService) Delete(id int) (*sql.Room, error) {
+func (s *RoomsService) Delete(id int) (*rooms.Room, error) {
 	room, err := s.sql.Delete(id)
 	if err != nil {
 		logger.Error(err.Error())
@@ -46,7 +45,7 @@ func (s *RoomsService) Delete(id int) (*sql.Room, error) {
 	return room, nil
 }
 
-func (s *RoomsService) GetAll() ([]sql.Room, int, error) {
+func (s *RoomsService) GetAll() ([]rooms.Room, int, error) {
 	data, err := s.sql.GetAll()
 	if err != nil {
 		logger.Error(err.Error())
@@ -56,6 +55,9 @@ func (s *RoomsService) GetAll() ([]sql.Room, int, error) {
 	if err != nil {
 		logger.Error(err.Error())
 		return nil, 0, err
+	}
+	if data == nil {
+		data = []rooms.Room{}
 	}
 	return data, total, nil
 }

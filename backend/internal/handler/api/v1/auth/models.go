@@ -1,7 +1,7 @@
 package auth
 
 import (
-	"metroid_bookmarks/internal/repository/sql"
+	"metroid_bookmarks/internal/repository/sql/users"
 	"metroid_bookmarks/pkg/session"
 )
 
@@ -23,9 +23,9 @@ type meResponse struct {
 }
 
 type signUpForm struct {
-	*sql.CreateUser
+	*users.CreateUser
 }
 
 type signUpResponse struct {
-	*sql.User
+	*users.User
 }

@@ -3,10 +3,10 @@ package service
 import (
 	"metroid_bookmarks/internal/repository/redis"
 	"metroid_bookmarks/internal/repository/sql"
-	"metroid_bookmarks/pkg/misc"
+	"metroid_bookmarks/pkg/misc/log"
 )
 
-var logger = misc.GetLogger()
+var logger = log.GetLogger()
 
 type Service struct {
 	Middleware    *MiddlewareService
@@ -27,7 +27,7 @@ func NewService(sql *sql.SQL, redis *redis.Redis) *Service {
 		Areas:         newAreasService(sql.Areas),
 		Rooms:         newRoomsService(sql.Rooms),
 		Skills:        newSkillsService(sql.Skills),
-		Bookmarks:     newBookmarksService(sql.Bookmarks, sql.Photos),
+		Bookmarks:     newBookmarksService(sql.Bookmarks),
 		Photos:        newPhotosService(sql.Photos),
 	}
 }

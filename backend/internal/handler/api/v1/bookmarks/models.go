@@ -1,6 +1,8 @@
 package bookmarks
 
-import "metroid_bookmarks/internal/repository/sql"
+import (
+	"metroid_bookmarks/internal/repository/sql/bookmarks"
+)
 
 type createForm struct {
 	AreaId  int `form:"area_id"  binding:"required"`
@@ -8,19 +10,19 @@ type createForm struct {
 	SkillId int `form:"skill_id" binding:"required"`
 }
 type createResponse struct {
-	*sql.BookmarkPreview
+	*bookmarks.BookmarkPreview
 }
 
 type deleteResponse struct {
-	*sql.BookmarkPreview
+	*bookmarks.BookmarkPreview
 }
 
 type editForm struct {
-	*sql.EditBookmark
+	*bookmarks.EditBookmark
 }
 
 type editResponse struct {
-	*sql.BookmarkPreview
+	*bookmarks.BookmarkPreview
 }
 
 type getAllForm struct {
@@ -31,6 +33,6 @@ type getAllForm struct {
 }
 
 type getAllResponse struct {
-	Data  []sql.Bookmark `json:"data"`
-	Total int            `json:"total"`
+	Data  []bookmarks.Bookmark `json:"data"`
+	Total int                  `json:"total"`
 }

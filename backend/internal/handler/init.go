@@ -6,13 +6,10 @@ import (
 	"github.com/swaggo/gin-swagger" // gin-swagger middleware
 	_ "metroid_bookmarks/docs"
 	"metroid_bookmarks/internal/handler/api"
-	"metroid_bookmarks/internal/handler/api/base_api"
+	"metroid_bookmarks/internal/handler/api/middleware"
 	"metroid_bookmarks/internal/models"
 	"metroid_bookmarks/internal/service"
-	"metroid_bookmarks/pkg/misc"
 )
-
-var logger = misc.GetLogger()
 
 func InitRoutes(service *service.Service, appConf *models.AppConfig, production bool) *gin.Engine {
 	if production {
@@ -27,10 +24,10 @@ func InitRoutes(service *service.Service, appConf *models.AppConfig, production 
 		router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	}
 
-	baseAPIRouter := baseApi.NewRouter(service, appConf)
+	mwRouter := middleware.NewRouter(service, appConf)
 
 	apiGroup := router.Group("/api/")
-	apiRouter := api.NewRouter(baseAPIRouter, service)
+	apiRouter := api.NewRouter(mwRouter, service)
 	apiRouter.RegisterHandlers(apiGroup)
 
 	return router

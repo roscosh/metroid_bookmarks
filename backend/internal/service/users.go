@@ -1,21 +1,20 @@
 package service
 
 import (
-	"errors"
-	"metroid_bookmarks/internal/repository/sql"
+	"metroid_bookmarks/internal/repository/sql/users"
 )
 
 type UsersService struct {
-	sql *sql.UsersSQL
+	sql *users.SQL
 }
 
-func newUsersService(sql *sql.UsersSQL) *UsersService {
+func newUsersService(sql *users.SQL) *UsersService {
 	return &UsersService{sql: sql}
 }
 
-func (s *UsersService) ChangePassword(id int, password string) (*sql.User, error) {
+func (s *UsersService) ChangePassword(id int, password string) (*users.User, error) {
 	token := generatePasswordHash(password)
-	editForm := sql.EditUser{Password: &token}
+	editForm := users.EditUser{Password: &token}
 	user, err := s.sql.Edit(id, &editForm)
 	if err != nil {
 		logger.Error(err.Error())
@@ -25,7 +24,7 @@ func (s *UsersService) ChangePassword(id int, password string) (*sql.User, error
 	return user, nil
 }
 
-func (s *UsersService) Delete(id int) (*sql.User, error) {
+func (s *UsersService) Delete(id int) (*users.User, error) {
 	user, err := s.sql.Delete(id)
 	if err != nil {
 		logger.Error(err.Error())
@@ -35,9 +34,9 @@ func (s *UsersService) Delete(id int) (*sql.User, error) {
 	return user, nil
 }
 
-func (s *UsersService) Edit(id int, editForm *sql.EditUser) (*sql.User, error) {
-	if (editForm == &sql.EditUser{}) {
-		return nil, errors.New("Необходимо заполнить хотя бы один параметр в форме!")
+func (s *UsersService) Edit(id int, editForm *users.EditUser) (*users.User, error) {
+	if (editForm == &users.EditUser{}) {
+		return nil, ErrEmptyStruct
 	}
 	user, err := s.sql.Edit(id, editForm)
 	if err != nil {
@@ -48,11 +47,14 @@ func (s *UsersService) Edit(id int, editForm *sql.EditUser) (*sql.User, error) {
 	return user, nil
 }
 
-func (s *UsersService) GetAll(search string) ([]sql.User, int, error) {
+func (s *UsersService) GetAll(search string) ([]users.User, int, error) {
 	data, err := s.sql.GetAll(search)
 	if err != nil {
 		logger.Error(err.Error())
 		return nil, 0, err
+	}
+	if data == nil {
+		data = []users.User{}
 	}
 	return data, len(data), nil
 }

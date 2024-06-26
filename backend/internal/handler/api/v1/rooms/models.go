@@ -1,26 +1,28 @@
 package rooms
 
-import "metroid_bookmarks/internal/repository/sql"
+import (
+	"metroid_bookmarks/internal/repository/sql/rooms"
+)
 
 type createForm struct {
-	*sql.CreateRoom
+	*rooms.CreateRoom
 }
 
 type createResponse struct {
-	*sql.Room
+	*rooms.Room
 }
 type editForm struct {
-	*sql.EditRoom
+	*rooms.EditRoom
 }
 type editResponse struct {
-	*sql.Room
+	*rooms.Room
 }
 
 type deleteResponse struct {
-	*sql.Room
+	*rooms.Room
 }
 
 type getAllResponse struct {
-	Data  []sql.Room `json:"data"`
-	Total int        `json:"total"`
+	Data  []rooms.Room `json:"data"`
+	Total int          `json:"total"`
 }

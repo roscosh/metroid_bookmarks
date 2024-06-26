@@ -1,13 +1,12 @@
-package baseApi
+package middleware
 
 import (
-	"github.com/gin-gonic/gin"
 	"metroid_bookmarks/internal/models"
 	"metroid_bookmarks/internal/service"
-	"metroid_bookmarks/pkg/misc"
+	"metroid_bookmarks/pkg/misc/log"
 )
 
-var logger = misc.GetLogger()
+var logger = log.GetLogger()
 
 type Router struct {
 	Middleware *Middleware
@@ -19,8 +18,4 @@ func NewRouter(services *service.Service, appConf *models.AppConfig) *Router {
 		Middleware: NewMiddleware(services.Middleware),
 		AppConf:    appConf,
 	}
-}
-
-type ApiRouter interface {
-	RegisterHandlers(router *gin.RouterGroup)
 }

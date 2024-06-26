@@ -1,10 +1,9 @@
 package service
 
 import (
-	"errors"
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"metroid_bookmarks/internal/repository/sql"
+	"metroid_bookmarks/internal/repository/sql/photos"
 	"mime/multipart"
 	"os"
 	"path/filepath"
@@ -13,10 +12,10 @@ import (
 )
 
 type PhotosService struct {
-	sql *sql.PhotosSQL
+	sql *photos.SQL
 }
 
-func newPhotosService(sql *sql.PhotosSQL) *PhotosService {
+func newPhotosService(sql *photos.SQL) *PhotosService {
 	return &PhotosService{sql: sql}
 }
 
@@ -27,7 +26,7 @@ func (s *PhotosService) Create(
 	photoFile *multipart.FileHeader,
 	photoRoot string,
 	format string,
-) (*sql.PhotoPreview, error) {
+) (*photos.PhotoPreview, error) {
 	var errMessage string
 	var err error
 
@@ -35,9 +34,8 @@ func (s *PhotosService) Create(
 	saveDir := filepath.Join(photoRoot, strconv.Itoa(userId), strconv.Itoa(bookmarkId))
 	if err = os.MkdirAll(saveDir, os.ModePerm); err != nil {
 		errMessage = fmt.Sprintf("Ошибка при создании директории:%s", err)
-		err = errors.New(errMessage)
-		logger.Error(err.Error())
-		return nil, err
+		logger.Error(errMessage)
+		return nil, &Error{message: errMessage}
 	}
 	NewFilename := time.Now().UTC().Format("20060102_150405")
 	filenameFormat := NewFilename + "." + format
@@ -48,9 +46,8 @@ func (s *PhotosService) Create(
 			err = c.SaveUploadedFile(photoFile, path)
 			if err != nil {
 				errMessage = fmt.Sprintf("Ошибка при сохранении файла:%s", err)
-				err = errors.New(errMessage)
-				logger.Error(err.Error())
-				return nil, err
+				logger.Error(errMessage)
+				return nil, &Error{message: errMessage}
 			} else {
 				success = true
 				break
@@ -62,9 +59,9 @@ func (s *PhotosService) Create(
 		}
 	}
 	if !success {
-		return nil, errors.New("file upload is overloaded, please try later")
+		return nil, ErrFileUploadOverload
 	}
-	createForm := sql.CreatePhoto{
+	createForm := photos.CreatePhoto{
 		BookmarkId: bookmarkId,
 		Name:       filenameFormat,
 	}
@@ -77,7 +74,7 @@ func (s *PhotosService) Create(
 	return photo, nil
 }
 
-func (s *PhotosService) Delete(id int, userId int) (*sql.PhotoPreview, error) {
+func (s *PhotosService) Delete(id int, userId int) (*photos.PhotoPreview, error) {
 	photo, err := s.sql.Delete(id, userId)
 	if err != nil {
 		logger.Error(err.Error())

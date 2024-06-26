@@ -1,4 +1,4 @@
-package misc
+package dbmate
 
 import (
 	"github.com/amacneil/dbmate/pkg/dbmate"

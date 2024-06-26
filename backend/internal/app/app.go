@@ -9,18 +9,21 @@ import (
 	"metroid_bookmarks/internal/repository/sql"
 	"metroid_bookmarks/internal/service"
 	"metroid_bookmarks/pkg/misc"
+	"metroid_bookmarks/pkg/misc/dbmate"
+	"metroid_bookmarks/pkg/misc/log"
+	"metroid_bookmarks/pkg/pgpool"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 )
 
-var logger = misc.GetLogger()
+var logger = log.GetLogger()
 
 type App struct {
 	envConf   *models.EnvConfig
-	dbPool    *sql.DbPool
-	redisPool *redis.RedisPool
+	dbPool    *pgpool.DbPool
+	redisPool *redis.Pool
 	srv       *misc.Server
 }
 
@@ -51,7 +54,7 @@ func (a *App) Init() {
 func (a *App) start(appConf *models.AppConfig) {
 	var err error
 
-	a.dbPool, err = sql.NewDbPool(
+	a.dbPool, err = pgpool.NewDbPool(
 		appConf.PostgreSQL.Dsn,
 		a.envConf.MinConns,
 		a.envConf.MaxConns,
@@ -74,7 +77,7 @@ func (a *App) start(appConf *models.AppConfig) {
 	redisObj := redis.NewRedis(a.redisPool)
 	newService := service.NewService(sqlObj, redisObj)
 
-	err = misc.DbMigrate(appConf.PostgreSQL.Dsn, appConf.DbmateMigrationsDir)
+	err = dbmate.DbMigrate(appConf.PostgreSQL.Dsn, appConf.DbmateMigrationsDir)
 	if err != nil {
 		logger.Error(err.Error())
 		return

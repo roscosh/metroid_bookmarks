@@ -1,41 +1,41 @@
-package redis
+package redispool
 
 import (
 	"fmt"
 	"github.com/gomodule/redigo/redis"
 )
 
-type baseRedis struct {
+type Redis struct {
 	pool      *redis.Pool
 	keyPrefix string
 }
 
-func newBaseRedis(pool *redis.Pool, keyPrefix string) *baseRedis {
-	return &baseRedis{pool: pool, keyPrefix: keyPrefix}
+func NewRedis(pool *redis.Pool, keyPrefix string) *Redis {
+	return &Redis{pool: pool, keyPrefix: keyPrefix}
 }
 
-func (r *baseRedis) GET(key string) ([]byte, error) {
+func (r *Redis) GET(key string) ([]byte, error) {
 	conn := r.pool.Get()
 	defer conn.Close()
 	key = r.addPrefixKey(key, r.keyPrefix)
 	return redis.Bytes(conn.Do("GET", key))
 }
 
-func (r *baseRedis) GETEX(key string, TTL int) ([]byte, error) {
+func (r *Redis) GETEX(key string, TTL int) ([]byte, error) {
 	conn := r.pool.Get()
 	defer conn.Close()
 	key = r.addPrefixKey(key, r.keyPrefix)
 	return redis.Bytes(conn.Do("GETEX", key, "EX", TTL))
 }
 
-func (r *baseRedis) SETNX(key string, value interface{}) (bool, error) {
+func (r *Redis) SETNX(key string, value interface{}) (bool, error) {
 	conn := r.pool.Get()
 	defer conn.Close()
 	key = r.addPrefixKey(key, r.keyPrefix)
 	return redis.Bool(conn.Do("SETNX", key, value))
 }
 
-func (r *baseRedis) EXPIRE(key string, TTL int) {
+func (r *Redis) EXPIRE(key string, TTL int) {
 	conn := r.pool.Get()
 	defer conn.Close()
 	key = r.addPrefixKey(key, r.keyPrefix)
@@ -45,7 +45,7 @@ func (r *baseRedis) EXPIRE(key string, TTL int) {
 	}
 }
 
-func (r *baseRedis) SETEX(key string, value interface{}, TTL int) {
+func (r *Redis) SETEX(key string, value interface{}, TTL int) {
 	conn := r.pool.Get()
 	defer conn.Close()
 	key = r.addPrefixKey(key, r.keyPrefix)
@@ -55,22 +55,13 @@ func (r *baseRedis) SETEX(key string, value interface{}, TTL int) {
 	}
 }
 
-func (r *baseRedis) EVAL(key string, script string, numKeys int, args ...any) (bool, error) {
+func (r *Redis) EVAL(key string, script string, numKeys int, args ...any) (bool, error) {
 	conn := r.pool.Get()
 	defer conn.Close()
 	key = r.addPrefixKey(key, r.keyPrefix)
 	return redis.Bool(conn.Do("EVAL", script, numKeys, key, args))
 }
 
-func (r *baseRedis) Keys() {
-	conn := r.pool.Get()
-	defer conn.Close()
-	keys, _ := redis.Strings(conn.Do("KEYS", "*"))
-	for _, key := range keys {
-		logger.Info(key)
-	}
-}
-
-func (r *baseRedis) addPrefixKey(key, prefix string) string {
+func (r *Redis) addPrefixKey(key, prefix string) string {
 	return fmt.Sprintf("%s_%s", prefix, key)
 }

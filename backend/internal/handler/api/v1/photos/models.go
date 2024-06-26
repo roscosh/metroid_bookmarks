@@ -1,15 +1,28 @@
 package photos
 
-import "metroid_bookmarks/internal/repository/sql"
+import (
+	"errors"
+	"metroid_bookmarks/internal/repository/sql/photos"
+)
+
+var ErrFileDoesNotExist = errors.New("файл не существует")
+
+type Error struct {
+	message string
+}
+
+func (e *Error) Error() string {
+	return e.message
+}
 
 type createForm struct {
 	BookmarkId int `form:"bookmark_id" binding:"required"`
 }
 
 type createResponse struct {
-	*sql.PhotoPreview
+	*photos.PhotoPreview
 }
 
 type deleteResponse struct {
-	*sql.PhotoPreview
+	*photos.PhotoPreview
 }
