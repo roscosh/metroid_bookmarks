@@ -88,7 +88,7 @@ func (a *App) startUp(appConf *models.AppConfig) {
 	go func() {
 		if err = a.srv.Run(handler.InitRoutes(httpService, appConf, a.envConf.Production)); err != nil {
 			if !errors.Is(err, http.ErrServerClosed) {
-				logger.Errorf("error occured while running http server: %s", err.Error())
+				logger.Errorf("error occurred while running http server: %s", err.Error())
 			}
 		}
 	}()
@@ -97,19 +97,19 @@ func (a *App) startUp(appConf *models.AppConfig) {
 // shutdown function for graceful close. The function will not run on develop mode
 func (a *App) shutdown() {
 	if err := a.srv.Shutdown(context.Background()); err != nil {
-		logger.Errorf("error occured on server shutting down: %s", err.Error())
+		logger.Errorf("error occurred on server shutting down: %s", err.Error())
 	} else {
 		logger.Info("HTTP server closed")
 	}
 
 	if err := a.dbPool.Close(); err != nil {
-		logger.Errorf("error occured on redis connection close: %s", err.Error())
+		logger.Errorf("error occurred on redis connection close: %s", err.Error())
 	} else {
 		logger.Info("postgreSQL connection pool closed successfully")
 	}
 
 	if err := a.redisPool.Close(); err != nil {
-		logger.Errorf("error occured on redis connection close: %s", err.Error())
+		logger.Errorf("error occurred on redis connection close: %s", err.Error())
 	} else {
 		logger.Info("redis connection pool closed successfully")
 	}

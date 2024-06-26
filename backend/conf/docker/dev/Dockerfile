@@ -4,6 +4,7 @@ WORKDIR /usr/src/app
 
 RUN go install github.com/cosmtrek/air@latest
 RUN go install github.com/swaggo/swag/cmd/swag@latest
+RUN go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
 
 COPY go.mod .
 RUN  go mod download

@@ -35,6 +35,7 @@ func (r *SessionRedis) Create(key string, value int) (bool, error) {
 	return 0
 	end
 	`
+
 	return r.redis.EVAL(key, script, 1, value)
 }
 

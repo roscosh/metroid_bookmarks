@@ -1,7 +1,7 @@
 package service
 
 import (
-	"crypto/sha1"
+	"crypto/sha512"
 	"errors"
 	"fmt"
 	"metroid_bookmarks/internal/repository/sql/users"
@@ -50,7 +50,7 @@ func (s *AuthService) SignUp(createForm *users.CreateUser) (*users.User, error) 
 }
 
 func generatePasswordHash(password string) string {
-	hash := sha1.New()
+	hash := sha512.New()
 	hash.Write([]byte(password))
 	return fmt.Sprintf("%x", hash.Sum([]byte(salt)))
 }

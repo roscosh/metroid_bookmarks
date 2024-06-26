@@ -51,6 +51,7 @@ func (s *UsersService) GetAll(search string) ([]users.User, int, error) {
 	data, err := s.sql.GetAll(search)
 	if err != nil {
 		logger.Error(err.Error())
+
 		return nil, 0, err
 	}
 	if data == nil {

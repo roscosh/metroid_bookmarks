@@ -34,7 +34,7 @@ func GetTags[T any](tagName string) []string {
 	var traverseFields func(reflect.Type)
 
 	traverseFields = func(t reflect.Type) {
-		for i := 0; i < t.NumField(); i++ {
+		for i := range t.NumField() {
 			field := t.Field(i)
 
 			// Если поле встраивается из другой структуры

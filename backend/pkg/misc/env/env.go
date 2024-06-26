@@ -24,7 +24,7 @@ func ParseEnv(envStruct interface{}) error {
 	}
 
 	elem := reflect.ValueOf(envStruct).Elem()
-	for i := 0; i < elem.NumField(); i++ {
+	for i := range elem.NumField() {
 		structField := elem.Type().Field(i)
 		envTag, exist := structField.Tag.Lookup("env")
 		if !exist {

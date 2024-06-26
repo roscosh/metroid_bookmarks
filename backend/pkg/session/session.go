@@ -10,6 +10,7 @@ const (
 	AnonymousExpires     = 3600
 	AuthenticatedExpires = 2592000
 	CookieSessionName    = "X-Session"
+	TokenLength          = 24
 )
 
 type Session struct {
@@ -41,7 +42,7 @@ func (s *Session) ResetUser() {
 }
 
 func CreateToken() string {
-	byteArray := make([]byte, 24)
+	byteArray := make([]byte, TokenLength)
 	if _, err := rand.Read(byteArray); err != nil {
 		panic(err)
 	}

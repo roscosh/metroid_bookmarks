@@ -36,8 +36,8 @@ func (s *SQL) Edit(id, userId int, editForm *EditBookmark) (*BookmarkPreview, er
 func (s *SQL) GetAll(limit, offset, userId int, completed, orderById *bool) ([]Bookmark, error) {
 	var bookmarks []Bookmark
 	var queryArray []string
-	args := make([]any, 0, 3)
-	whereArray := make([]string, 0, 3)
+	args := make([]any, 0, 3)          //nolint:mnd
+	whereArray := make([]string, 0, 3) //nolint:mnd
 	placeHolder := 1
 	baseQuery := `
         SELECT
@@ -138,8 +138,8 @@ func (s *SQL) GetByID(id int) (*BookmarkPreview, error) {
 func (s *SQL) Total(userId int, completed *bool) (int, error) {
 	var count int
 	var queryArray []string
-	args := make([]any, 0, 3)
-	whereArray := make([]string, 0, 3)
+	args := make([]any, 0, 3)          //nolint:mnd
+	whereArray := make([]string, 0, 3) //nolint:mnd
 	placeHolder := 1
 	baseQuery := `
         SELECT COUNT(*)

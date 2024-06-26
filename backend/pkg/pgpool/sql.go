@@ -165,6 +165,7 @@ func (s *sql[T]) UpdateWhere(editStruct interface{}, where string, args ...any) 
 	if err != nil {
 		return nil, err
 	}
+
 	return s.CollectOneRow(rows)
 }
 
@@ -180,7 +181,7 @@ func (s *sql[T]) GetInsertQuery(createInterface interface{}) (string, []interfac
 	var indexRowArray []string
 	placeholder := 1
 
-	for i := 0; i < elem.NumField(); i++ {
+	for i := range elem.NumField() {
 		value := elem.Field(i)
 		valuesArray = append(valuesArray, value.Interface())
 		// Получаем название поля
@@ -209,7 +210,7 @@ func (s *sql[T]) GetUpdateQuery(
 	where string,
 	args ...any,
 ) (string, []interface{}, error) {
-	queryArray := make([]string, 0, 3)
+	queryArray := make([]string, 0, 3) //nolint:mnd
 
 	t := reflect.TypeOf(setInterface)
 	if t.Kind() != reflect.Ptr || t.Elem().Kind() != reflect.Struct {
@@ -220,7 +221,7 @@ func (s *sql[T]) GetUpdateQuery(
 
 	var fields []string
 	placeholder := 1 + len(args)
-	for i := 0; i < elem.NumField(); i++ {
+	for i := range elem.NumField() {
 		value := elem.Field(i)
 		if value.IsNil() {
 			continue
@@ -249,6 +250,7 @@ func (s *sql[T]) GetUpdateQuery(
 	queryArray = append(queryArray, fmt.Sprintf("RETURNING %s", s.columns))
 
 	query := strings.Join(queryArray, " ")
+
 	return query, args, nil
 }
 

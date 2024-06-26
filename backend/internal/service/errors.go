@@ -85,7 +85,7 @@ func selectPgError(err error, id int) error {
 func parsePgErr23505(pgErr *pgconn.PgError) string {
 	re := regexp.MustCompile(`Key \((\w+)\)=\(([^)]+)\)`)
 	match := re.FindStringSubmatch(pgErr.Detail)
-	if len(match) < 3 {
+	if len(match) < 3 { //nolint:mnd
 		return ""
 	}
 
@@ -95,7 +95,7 @@ func parsePgErr23505(pgErr *pgconn.PgError) string {
 func parsePgErr23503(pgErr *pgconn.PgError) string {
 	re := regexp.MustCompile(`Key \((\w+)\)=\(([^)]+)\)`)
 	match := re.FindStringSubmatch(pgErr.Detail)
-	if len(match) < 3 {
+	if len(match) < 3 { //nolint:mnd
 		return ""
 	}
 

@@ -3,7 +3,10 @@ package misc
 import (
 	"context"
 	"net/http"
+	"time"
 )
+
+const ReadHeaderTimeout = 20 * time.Second
 
 type Server struct {
 	httpServer *http.Server
@@ -11,8 +14,9 @@ type Server struct {
 
 func (s *Server) Run(handler http.Handler) error {
 	s.httpServer = &http.Server{
-		Addr:    ":3000",
-		Handler: handler,
+		Addr:              ":3000",
+		Handler:           handler,
+		ReadHeaderTimeout: ReadHeaderTimeout,
 	}
 
 	return s.httpServer.ListenAndServe()

@@ -12,5 +12,6 @@ func DbMigrate(dbUrl, migrationsDir string) error {
 	dbmate.RegisterDriver(postgres.NewDriver, "postgres")
 	db := dbmate.New(URL)
 	db.MigrationsDir = migrationsDir
+
 	return db.Migrate()
 }
