@@ -24,10 +24,12 @@ func newAuthService(sql *users.SQL) *AuthService {
 
 func (s *AuthService) Login(login, password string, session *session.Session) (*session.Session, error) {
 	token := generatePasswordHash(password)
+
 	user, err := s.sql.GetByCredentials(login, token)
 	if err != nil {
 		return nil, ErrUserDoesNotExist
 	}
+
 	session.SetUser(user)
 
 	return session, nil
@@ -40,10 +42,12 @@ func (s *AuthService) Logout(session *session.Session) *session.Session {
 
 func (s *AuthService) SignUp(createForm *users.CreateUser) (*users.User, error) {
 	createForm.Password = generatePasswordHash(createForm.Password)
+
 	user, err := s.sql.Create(createForm)
 	if err != nil {
 		logger.Error(err.Error())
 		err = createPgError(err)
+
 		return nil, err
 	}
 
@@ -53,5 +57,6 @@ func (s *AuthService) SignUp(createForm *users.CreateUser) (*users.User, error) 
 func generatePasswordHash(password string) string {
 	hash := sha512.New()
 	hash.Write([]byte(password))
+
 	return hex.EncodeToString(hash.Sum([]byte(salt)))
 }

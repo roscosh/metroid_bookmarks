@@ -17,16 +17,19 @@ import (
 // @router /rooms/ [post]
 func (h *Router) create(c *gin.Context) {
 	var form createForm
+
 	err := c.ShouldBindWith(&form, binding.JSON)
 	if err != nil {
 		middleware.Response404(c, err)
 		return
 	}
+
 	room, err := h.service.Create(form.CreateRoom)
 	if err != nil {
 		middleware.Response404(c, err)
 		return
 	}
+
 	middleware.Response200(c, createResponse{Room: room})
 }
 
@@ -40,22 +43,26 @@ func (h *Router) create(c *gin.Context) {
 // @Failure 404 {object} middleware.ErrorResponse
 // @router /rooms/{id} [put]
 func (h *Router) edit(c *gin.Context) {
-	id, err := middleware.GetPathID(c)
+	roomID, err := middleware.GetPathID(c)
 	if err != nil {
 		middleware.Response404(c, err)
 		return
 	}
+
 	var form editForm
+
 	err = c.ShouldBindWith(&form, binding.JSON)
 	if err != nil {
 		middleware.Response404(c, err)
 		return
 	}
-	room, err := h.service.Edit(id, form.EditRoom)
+
+	room, err := h.service.Edit(roomID, form.EditRoom)
 	if err != nil {
 		middleware.Response404(c, err)
 		return
 	}
+
 	middleware.Response200(c, editResponse{Room: room})
 }
 
@@ -68,16 +75,18 @@ func (h *Router) edit(c *gin.Context) {
 // @Failure 404 {object} middleware.ErrorResponse
 // @Router /rooms/{id} [delete]
 func (h *Router) delete(c *gin.Context) {
-	id, err := middleware.GetPathID(c)
+	roomID, err := middleware.GetPathID(c)
 	if err != nil {
 		middleware.Response404(c, err)
 		return
 	}
-	room, err := h.service.Delete(id)
+
+	room, err := h.service.Delete(roomID)
 	if err != nil {
 		middleware.Response404(c, err)
 		return
 	}
+
 	middleware.Response200(c, deleteResponse{Room: room})
 }
 
@@ -94,5 +103,6 @@ func (h *Router) getAll(c *gin.Context) {
 		middleware.Response404(c, err)
 		return
 	}
+
 	middleware.Response200(c, getAllResponse{Data: room, Total: total})
 }

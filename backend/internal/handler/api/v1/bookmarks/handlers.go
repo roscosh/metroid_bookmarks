@@ -19,38 +19,46 @@ import (
 // @router /bookmarks/ [post]
 func (h *Router) create(c *gin.Context) {
 	session := middleware.GetSession(c)
+
 	var form createForm
+
 	err := c.ShouldBindWith(&form, binding.Form)
 	if err != nil {
 		middleware.Response404(c, err)
 		return
 	}
+
 	file, err := middleware.GetPhoto(c)
 	if err != nil {
 		middleware.Response404(c, err)
 		return
 	}
+
 	format, err := middleware.ValidatePhoto(file)
 	if err != nil {
 		middleware.Response404(c, err)
 		return
 	}
+
 	sqlForm := &bookmarks.CreateBookmark{
 		UserID:  session.ID,
 		AreaID:  form.AreaID,
 		SkillID: form.SkillID,
 		RoomID:  form.RoomID,
 	}
+
 	bookmark, err := h.bookmarksService.Create(sqlForm)
 	if err != nil {
 		middleware.Response404(c, err)
 		return
 	}
+
 	_, err = h.photosService.Create(c, session.ID, bookmark.ID, file, h.AppConf.PhotosPath, format)
 	if err != nil {
 		middleware.Response404(c, err)
 		return
 	}
+
 	middleware.Response200(c, createResponse{bookmark})
 }
 
@@ -64,16 +72,19 @@ func (h *Router) create(c *gin.Context) {
 // @Router /bookmarks/{id} [delete]
 func (h *Router) delete(c *gin.Context) {
 	session := middleware.GetSession(c)
-	id, err := middleware.GetPathID(c)
+
+	bookmarkID, err := middleware.GetPathID(c)
 	if err != nil {
 		middleware.Response404(c, err)
 		return
 	}
-	bookmark, err := h.bookmarksService.Delete(id, session.ID)
+
+	bookmark, err := h.bookmarksService.Delete(bookmarkID, session.ID)
 	if err != nil {
 		middleware.Response404(c, err)
 		return
 	}
+
 	middleware.Response200(c, deleteResponse{bookmark})
 }
 
@@ -88,22 +99,26 @@ func (h *Router) delete(c *gin.Context) {
 // @router /bookmarks/{id} [put]
 func (h *Router) edit(c *gin.Context) {
 	session := middleware.GetSession(c)
-	id, err := middleware.GetPathID(c)
+
+	bookmarkID, err := middleware.GetPathID(c)
 	if err != nil {
 		middleware.Response404(c, err)
 	}
 
 	var form editForm
+
 	err = c.ShouldBindWith(&form, binding.JSON)
 	if err != nil {
 		middleware.Response404(c, err)
 		return
 	}
-	bookmark, err := h.bookmarksService.Edit(id, session.ID, form.EditBookmark)
+
+	bookmark, err := h.bookmarksService.Edit(bookmarkID, session.ID, form.EditBookmark)
 	if err != nil {
 		middleware.Response404(c, err)
 		return
 	}
+
 	middleware.Response200(c, editResponse{bookmark})
 }
 
@@ -117,16 +132,20 @@ func (h *Router) edit(c *gin.Context) {
 // @router /bookmarks/get_all [get]
 func (h *Router) getAll(c *gin.Context) {
 	session := middleware.GetSession(c)
+
 	var form getAllForm
+
 	err := c.ShouldBindWith(&form, binding.Query)
 	if err != nil {
 		middleware.Response404(c, err)
 		return
 	}
+
 	bookmarkList, total, err := h.bookmarksService.GetAll(form.Limit, form.Page, session.ID, form.Completed, form.OrderByID)
 	if err != nil {
 		middleware.Response404(c, err)
 		return
 	}
+
 	middleware.Response200(c, getAllResponse{Data: bookmarkList, Total: total})
 }

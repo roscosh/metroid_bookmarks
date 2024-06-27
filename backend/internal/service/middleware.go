@@ -16,11 +16,15 @@ func newMiddlewareService(sql *users.SQL, redis *redis.SessionRedis) *Middleware
 }
 
 func (m *MiddlewareService) CreateSession() (*session.Session, error) {
-	var token string
-	var result bool
-	var err error
+	var (
+		token  string
+		result bool
+		err    error
+	)
+
 	for !result {
 		token = session.CreateToken()
+
 		result, err = m.redis.Create(token, session.AnonymousExpires)
 		if err != nil {
 			logger.Error(err.Error())
@@ -35,17 +39,22 @@ func (m *MiddlewareService) GetExistSession(token string) (*session.Session, err
 	if token == "" {
 		return nil, ErrNoToken
 	}
-	id, err := m.redis.Get(token)
+
+	userID, err := m.redis.Get(token)
 	if err != nil {
 		return nil, err
 	}
+
 	var expires int
-	user := &users.User{}
-	if id == 0 {
+
+	user := new(users.User)
+
+	if userID == 0 {
 		expires = session.AnonymousExpires
 	} else {
 		expires = session.AuthenticatedExpires
-		user, err = m.sql.Get(id)
+
+		user, err = m.sql.Get(userID)
 		if err != nil {
 			return nil, err
 		}

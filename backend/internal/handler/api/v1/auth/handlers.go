@@ -19,16 +19,19 @@ func (h *Router) login(c *gin.Context) {
 	session := middleware.GetSession(c)
 
 	var form loginForm
+
 	err := c.ShouldBindWith(&form, binding.JSON)
 	if err != nil {
 		middleware.Response404(c, err)
 		return
 	}
+
 	session, err = h.service.Login(form.Login, form.Password, session)
 	if err != nil {
 		middleware.Response404(c, err)
 		return
 	}
+
 	middleware.SetCookie(c, session)
 	middleware.Response200(c, loginResponse{Session: session})
 }
@@ -69,15 +72,18 @@ func (h *Router) me(c *gin.Context) {
 // @Router /auth/sign_up [post]
 func (h *Router) signUp(c *gin.Context) {
 	var form signUpForm
+
 	err := c.ShouldBindWith(&form, binding.JSON)
 	if err != nil {
 		middleware.Response404(c, err)
 		return
 	}
+
 	user, err := h.service.SignUp(form.CreateUser)
 	if err != nil {
 		middleware.Response404(c, err)
 		return
 	}
+
 	middleware.Response200(c, signUpResponse{User: user})
 }

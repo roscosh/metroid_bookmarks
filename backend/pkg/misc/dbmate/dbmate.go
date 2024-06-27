@@ -9,6 +9,7 @@ import (
 
 func DBMigrate(dbURL, migrationsDir string) error {
 	URL, _ := url.Parse(dbURL)
+
 	dbmate.RegisterDriver(postgres.NewDriver, "postgres")
 	db := dbmate.New(URL)
 	db.MigrationsDir = migrationsDir

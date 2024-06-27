@@ -17,31 +17,35 @@ func (s *SkillsService) Create(createForm *skills.CreateSkill) (*skills.Skill, e
 	if err != nil {
 		logger.Error(err.Error())
 		err = createPgError(err)
+
 		return nil, err
 	}
 
 	return skill, nil
 }
 
-func (s *SkillsService) Edit(id int, editForm *skills.EditSkill) (*skills.Skill, error) {
+func (s *SkillsService) Edit(skillID int, editForm *skills.EditSkill) (*skills.Skill, error) {
 	if (editForm == &skills.EditSkill{}) {
 		return nil, ErrEmptyStruct
 	}
-	skill, err := s.sql.Edit(id, editForm)
+
+	skill, err := s.sql.Edit(skillID, editForm)
 	if err != nil {
 		logger.Error(err.Error())
-		err = editPgError(err, id)
+		err = editPgError(err, skillID)
+
 		return nil, err
 	}
 
 	return skill, nil
 }
 
-func (s *SkillsService) Delete(id int) (*skills.Skill, error) {
-	skill, err := s.sql.Delete(id)
+func (s *SkillsService) Delete(skillID int) (*skills.Skill, error) {
+	skill, err := s.sql.Delete(skillID)
 	if err != nil {
 		logger.Error(err.Error())
-		err = deletePgError(err, id)
+		err = deletePgError(err, skillID)
+
 		return nil, err
 	}
 
@@ -54,11 +58,13 @@ func (s *SkillsService) GetAll() ([]skills.Skill, int, error) {
 		logger.Error(err.Error())
 		return nil, 0, err
 	}
+
 	total, err := s.sql.Total()
 	if err != nil {
 		logger.Error(err.Error())
 		return nil, 0, err
 	}
+
 	if data == nil {
 		data = []skills.Skill{}
 	}

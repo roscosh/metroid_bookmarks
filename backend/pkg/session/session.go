@@ -42,5 +42,6 @@ func CreateToken() string {
 	if _, err := rand.Read(byteArray); err != nil {
 		panic(err)
 	}
+
 	return hex.EncodeToString(byteArray)
 }

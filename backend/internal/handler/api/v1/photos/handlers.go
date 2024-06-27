@@ -23,30 +23,36 @@ func (h *Router) create(c *gin.Context) {
 	session := middleware.GetSession(c)
 
 	var form createForm
+
 	err := c.ShouldBindWith(&form, binding.Form)
 	if err != nil {
 		middleware.Response404(c, err)
 		return
 	}
+
 	file, err := middleware.GetPhoto(c)
 	if err != nil {
 		middleware.Response404(c, err)
 		return
 	}
+
 	format, err := middleware.ValidatePhoto(file)
 	if err != nil {
 		middleware.Response404(c, err)
 		return
 	}
+
 	bookmark, err := h.bookmarksService.GetByID(form.BookmarkID)
 	if err != nil {
 		middleware.Response404(c, err)
 		return
 	}
+
 	if bookmark.UserID != session.ID {
 		middleware.AccessDenied(c)
 		return
 	}
+
 	photo, err := h.photosService.Create(c, session.ID, form.BookmarkID, file, h.AppConf.PhotosPath, format)
 	if err != nil {
 		middleware.Response404(c, err)
@@ -66,16 +72,19 @@ func (h *Router) create(c *gin.Context) {
 // @Router /photos/{id} [delete]
 func (h *Router) delete(c *gin.Context) {
 	session := middleware.GetSession(c)
-	id, err := middleware.GetPathID(c)
+
+	photoID, err := middleware.GetPathID(c)
 	if err != nil {
 		middleware.Response404(c, err)
 		return
 	}
-	photo, err := h.photosService.Delete(id, session.ID)
+
+	photo, err := h.photosService.Delete(photoID, session.ID)
 	if err != nil {
 		middleware.Response404(c, err)
 		return
 	}
+
 	middleware.Response200(c, deleteResponse{PhotoPreview: photo})
 }
 
@@ -89,26 +98,32 @@ func (h *Router) delete(c *gin.Context) {
 // @Router /photos/download/{user_id}/{bookmark_id}/{name} [get]
 func (h *Router) download(c *gin.Context) {
 	session := middleware.GetSession(c)
+
 	userID, err := middleware.GetPathUserID(c)
 	if err != nil {
 		middleware.Response404(c, err)
 		return
 	}
+
 	if session.ID != userID {
 		middleware.AccessDenied(c)
 		return
 	}
+
 	bookmarkID, err := middleware.GetPathBookmarkID(c)
 	if err != nil {
 		middleware.Response404(c, err)
 		return
 	}
+
 	name, err := middleware.GetPathName(c)
 	if err != nil {
 		middleware.Response404(c, err)
 		return
 	}
+
 	path := filepath.Join(h.AppConf.PhotosPath, strconv.Itoa(userID), strconv.Itoa(bookmarkID), name)
+
 	_, err = os.Stat(path)
 	if err != nil {
 		if os.IsNotExist(err) {
@@ -121,6 +136,7 @@ func (h *Router) download(c *gin.Context) {
 
 		return
 	}
+
 	c.Header("Content-Description", "File Transfer")
 	c.Header("Content-Transfer-Encoding", "binary")
 	c.Header("Content-Disposition", "attachment; filename="+name)

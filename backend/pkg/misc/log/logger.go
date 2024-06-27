@@ -33,6 +33,7 @@ func GetLogger() *Logger {
 		log := logrus.New()
 		logger = &Logger{logger: log}
 	})
+
 	return logger
 }
 
@@ -53,6 +54,7 @@ func (l *Logger) SetParams(logLevel string) {
 	default:
 		level = logrus.InfoLevel
 	}
+
 	l.logger = &logrus.Logger{
 		Out:       os.Stdout,
 		Formatter: &logrus.TextFormatter{FullTimestamp: true},

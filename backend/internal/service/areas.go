@@ -17,31 +17,35 @@ func (s *AreasService) Create(createForm *areas.CreateArea) (*areas.Area, error)
 	if err != nil {
 		logger.Error(err.Error())
 		err = createPgError(err)
+
 		return nil, err
 	}
 
 	return area, nil
 }
 
-func (s *AreasService) Edit(id int, editForm *areas.EditArea) (*areas.Area, error) {
+func (s *AreasService) Edit(areaID int, editForm *areas.EditArea) (*areas.Area, error) {
 	if (editForm == &areas.EditArea{}) {
 		return nil, ErrEmptyStruct
 	}
-	area, err := s.sql.Edit(id, editForm)
+
+	area, err := s.sql.Edit(areaID, editForm)
 	if err != nil {
 		logger.Error(err.Error())
-		err = editPgError(err, id)
+		err = editPgError(err, areaID)
+
 		return nil, err
 	}
 
 	return area, nil
 }
 
-func (s *AreasService) Delete(id int) (*areas.Area, error) {
-	area, err := s.sql.Delete(id)
+func (s *AreasService) Delete(areaID int) (*areas.Area, error) {
+	area, err := s.sql.Delete(areaID)
 	if err != nil {
 		logger.Error(err.Error())
-		err = deletePgError(err, id)
+		err = deletePgError(err, areaID)
+
 		return nil, err
 	}
 
@@ -54,11 +58,13 @@ func (s *AreasService) GetAll() ([]areas.Area, int, error) {
 		logger.Error(err.Error())
 		return nil, 0, err
 	}
+
 	total, err := s.sql.Total()
 	if err != nil {
 		logger.Error(err.Error())
 		return nil, 0, err
 	}
+
 	if data == nil {
 		data = []areas.Area{}
 	}

@@ -17,6 +17,7 @@ func (s *BookmarksService) Create(createForm *bookmarks.CreateBookmark) (*bookma
 	if err != nil {
 		logger.Error(err.Error())
 		err = createPgError(err)
+
 		return nil, err
 	}
 
@@ -28,20 +29,23 @@ func (s *BookmarksService) Delete(id, userID int) (*bookmarks.BookmarkPreview, e
 	if err != nil {
 		logger.Error(err.Error())
 		err = deletePgError(err, id)
+
 		return nil, err
 	}
 
 	return bookmark, nil
 }
 
-func (s *BookmarksService) Edit(id, userID int, editForm *bookmarks.EditBookmark) (*bookmarks.BookmarkPreview, error) {
+func (s *BookmarksService) Edit(bookmarkID, userID int, editForm *bookmarks.EditBookmark) (*bookmarks.BookmarkPreview, error) {
 	if (editForm == &bookmarks.EditBookmark{}) {
 		return nil, ErrEmptyStruct
 	}
-	bookmark, err := s.sqlBookmarks.Edit(id, userID, editForm)
+
+	bookmark, err := s.sqlBookmarks.Edit(bookmarkID, userID, editForm)
 	if err != nil {
 		logger.Error(err.Error())
-		err = editPgError(err, id)
+		err = editPgError(err, bookmarkID)
+
 		return nil, err
 	}
 
@@ -56,6 +60,7 @@ func (s *BookmarksService) GetAll(
 	orderByID *bool,
 ) ([]bookmarks.Bookmark, int, error) {
 	offset := (page - 1) * limit
+
 	data, err := s.sqlBookmarks.GetAll(limit, offset, userID, completed, orderByID)
 	if err != nil {
 		logger.Error(err.Error())

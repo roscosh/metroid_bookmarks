@@ -38,32 +38,35 @@ func (e Error) Error() string {
 
 func GetPathID(c *gin.Context) (int, error) {
 	idStr := c.Param("id")
+
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
 		return 0, ErrIDType
 	}
 
-	return id, err
+	return id, nil
 }
 
 func GetPathUserID(c *gin.Context) (int, error) {
 	idStr := c.Param("user_id")
+
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
 		return 0, ErrUserIDType
 	}
 
-	return id, err
+	return id, nil
 }
 
 func GetPathBookmarkID(c *gin.Context) (int, error) {
 	idStr := c.Param("bookmark_id")
+
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
 		return 0, ErrBookmarkIDType
 	}
 
-	return id, err
+	return id, nil
 }
 
 func GetPathName(c *gin.Context) (string, error) {
@@ -71,6 +74,7 @@ func GetPathName(c *gin.Context) (string, error) {
 	if name == "" {
 		return "", ErrEmptyName
 	}
+
 	return name, nil
 }
 
@@ -104,19 +108,24 @@ func ValidatePhoto(photoFile *multipart.FileHeader) (string, error) {
 
 	// Попытка декодировать изображение
 	format := "jpeg"
+
 	_, err = jpeg.Decode(file)
 	if err != nil {
 		_, err = file.Seek(0, 0)
 		if err != nil {
 			err = fmt.Errorf("%w:%w", ErrSeekImage, err)
 			logger.Error(err.Error())
+
 			return "", err
 		}
+
 		format = "png"
+
 		_, err = png.DecodeConfig(file)
 		if err != nil {
 			err = fmt.Errorf("%w:%w", ErrDecodeImage, err)
 			logger.Error(err.Error())
+
 			return "", err
 		}
 	}

@@ -109,7 +109,9 @@ linters:
     - varnamelen
     - wastedassign
     - whitespace
-    - wrapcheck
+#    - wrapcheck
+    - wsl
+    - zerologlint
 
 
 linters-settings:
@@ -132,4 +134,8 @@ linters-settings:
     # Size of the block (including return statement that is still "OK")
     # so no return split required.
     # Default: 1
-    block-size: 5
+    block-size: 2
+  varnamelen:
+    ignore-decls:
+      - c *gin.Context
+      - i int

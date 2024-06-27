@@ -12,38 +12,43 @@ func newUsersService(sql *users.SQL) *UsersService {
 	return &UsersService{sql: sql}
 }
 
-func (s *UsersService) ChangePassword(id int, password string) (*users.User, error) {
+func (s *UsersService) ChangePassword(userID int, password string) (*users.User, error) {
 	token := generatePasswordHash(password)
 	editForm := users.EditUser{Password: &token}
-	user, err := s.sql.Edit(id, &editForm)
+
+	user, err := s.sql.Edit(userID, &editForm)
 	if err != nil {
 		logger.Error(err.Error())
-		err = editPgError(err, id)
+		err = editPgError(err, userID)
+
 		return nil, err
 	}
 
 	return user, nil
 }
 
-func (s *UsersService) Delete(id int) (*users.User, error) {
-	user, err := s.sql.Delete(id)
+func (s *UsersService) Delete(userID int) (*users.User, error) {
+	user, err := s.sql.Delete(userID)
 	if err != nil {
 		logger.Error(err.Error())
-		err = deletePgError(err, id)
+		err = deletePgError(err, userID)
+
 		return nil, err
 	}
 
 	return user, nil
 }
 
-func (s *UsersService) Edit(id int, editForm *users.EditUser) (*users.User, error) {
+func (s *UsersService) Edit(userID int, editForm *users.EditUser) (*users.User, error) {
 	if (editForm == &users.EditUser{}) {
 		return nil, ErrEmptyStruct
 	}
-	user, err := s.sql.Edit(id, editForm)
+
+	user, err := s.sql.Edit(userID, editForm)
 	if err != nil {
 		logger.Error(err.Error())
-		err = editPgError(err, id)
+		err = editPgError(err, userID)
+
 		return nil, err
 	}
 
@@ -57,6 +62,7 @@ func (s *UsersService) GetAll(search string) ([]users.User, int, error) {
 
 		return nil, 0, err
 	}
+
 	if data == nil {
 		data = []users.User{}
 	}

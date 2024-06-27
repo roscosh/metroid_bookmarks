@@ -25,6 +25,7 @@ func (e *Error) Error() string {
 
 func createPgError(err error) error {
 	var pgErr *pgconn.PgError
+
 	switch {
 	case errors.As(err, &pgErr):
 		switch pgErr.Code {
@@ -42,12 +43,12 @@ func createPgError(err error) error {
 	}
 }
 
-func editPgError(err error, id int) error {
+func editPgError(err error, rowID int) error {
 	var pgErr *pgconn.PgError
+
 	switch {
 	case errors.Is(err, pgx.ErrNoRows):
-
-		return &Error{message: fmt.Sprintf("no row found with id: %v", id)}
+		return &Error{message: fmt.Sprintf("no row found with id: %v", rowID)}
 	case errors.As(err, &pgErr):
 		switch pgErr.Code {
 		case "23505":
@@ -64,10 +65,10 @@ func editPgError(err error, id int) error {
 	}
 }
 
-func deletePgError(err error, id int) error {
+func deletePgError(err error, rowID int) error {
 	var errMessage string
 	if errors.Is(err, pgx.ErrNoRows) {
-		errMessage = fmt.Sprintf(`No row with id="%v"!`, id)
+		errMessage = fmt.Sprintf(`No row with id="%v"!`, rowID)
 		return &Error{message: errMessage}
 	}
 
@@ -86,6 +87,7 @@ func selectPgError(err error, id int) error {
 
 func parsePgErr23505(pgErr *pgconn.PgError) string {
 	re := regexp.MustCompile(`Key \((\w+)\)=\(([^)]+)\)`)
+
 	match := re.FindStringSubmatch(pgErr.Detail)
 	if len(match) < 3 { //nolint:mnd
 		return ""
@@ -96,6 +98,7 @@ func parsePgErr23505(pgErr *pgconn.PgError) string {
 
 func parsePgErr23503(pgErr *pgconn.PgError) string {
 	re := regexp.MustCompile(`Key \((\w+)\)=\(([^)]+)\)`)
+
 	match := re.FindStringSubmatch(pgErr.Detail)
 	if len(match) < 3 { //nolint:mnd
 		return ""

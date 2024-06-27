@@ -74,6 +74,7 @@ func (s *sql[T]) QueryRow(query string, args ...any) pgx.Row {
 
 func (s *sql[T]) Delete(pk int) (*T, error) {
 	query := fmt.Sprintf(`DELETE FROM %s WHERE id = $1 RETURNING %s`, s.table, s.columns)
+
 	rows, err := s.Query(query, pk)
 	if err != nil {
 		return nil, err
@@ -84,6 +85,7 @@ func (s *sql[T]) Delete(pk int) (*T, error) {
 
 func (s *sql[T]) DeleteWhere(whereStatement string, args ...any) (*T, error) {
 	query := fmt.Sprintf(`DELETE FROM %s WHERE %s RETURNING %s`, s.table, whereStatement, s.columns)
+
 	rows, err := s.Query(query, args...)
 	if err != nil {
 		return nil, err
@@ -97,6 +99,7 @@ func (s *sql[T]) Insert(createStruct interface{}) (*T, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	rows, err := s.Query(query, args...)
 	if err != nil {
 		return nil, err
@@ -107,6 +110,7 @@ func (s *sql[T]) Insert(createStruct interface{}) (*T, error) {
 
 func (s *sql[T]) SelectOne(pk int) (*T, error) {
 	query := fmt.Sprintf("SELECT %s FROM %s WHERE id = $1", s.columns, s.table)
+
 	rows, err := s.Query(query, pk)
 	if err != nil {
 		return nil, err
@@ -117,6 +121,7 @@ func (s *sql[T]) SelectOne(pk int) (*T, error) {
 
 func (s *sql[T]) SelectManyWhere(whereStatement string, args ...any) ([]T, error) {
 	query := fmt.Sprintf("SELECT %s FROM %s WHERE %s", s.columns, s.table, whereStatement)
+
 	rows, err := s.Query(query, args...)
 	if err != nil {
 		return nil, err
@@ -127,6 +132,7 @@ func (s *sql[T]) SelectManyWhere(whereStatement string, args ...any) ([]T, error
 
 func (s *sql[T]) SelectWhere(whereStatement string, args ...any) (*T, error) {
 	query := fmt.Sprintf("SELECT %s FROM %s WHERE %s", s.columns, s.table, whereStatement)
+
 	rows, err := s.Query(query, args...)
 	if err != nil {
 		return nil, err
@@ -137,6 +143,7 @@ func (s *sql[T]) SelectWhere(whereStatement string, args ...any) (*T, error) {
 
 func (s *sql[T]) SelectMany() ([]T, error) {
 	query := fmt.Sprintf("SELECT %s FROM %s", s.columns, s.table)
+
 	rows, err := s.Query(query)
 	if err != nil {
 		return nil, err
@@ -146,8 +153,10 @@ func (s *sql[T]) SelectMany() ([]T, error) {
 }
 
 func (s *sql[T]) Total() (int, error) {
-	query := fmt.Sprintf("SELECT COUNT(*) FROM %s ", s.table)
 	var count int
+
+	query := "SELECT COUNT(*) FROM " + s.table
+
 	return count, s.QueryRow(query).Scan(&count)
 }
 
@@ -156,6 +165,7 @@ func (s *sql[T]) Update(pk int, editStruct interface{}) (*T, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	rows, err := s.Query(query, args...)
 	if err != nil {
 		return nil, err
@@ -169,6 +179,7 @@ func (s *sql[T]) UpdateWhere(editStruct interface{}, where string, args ...any) 
 	if err != nil {
 		return nil, err
 	}
+
 	rows, err := s.Query(query, args...)
 	if err != nil {
 		return nil, err
@@ -229,11 +240,13 @@ func (s *sql[T]) GetUpdateQuery(
 
 	fields := make([]string, 0, elem.NumField())
 	placeholder := 1 + len(args)
+
 	for i := range elem.NumField() {
 		value := elem.Field(i)
 		if value.IsNil() {
 			continue
 		}
+
 		args = append(args, value.Interface())
 		// Получаем название поля
 		fieldName := elem.Type().Field(i).Tag.Get("db")
@@ -241,11 +254,12 @@ func (s *sql[T]) GetUpdateQuery(
 		fieldStr := fmt.Sprintf("%s = $%v", fieldName, placeholder)
 		fields = append(fields, fieldStr)
 		placeholder++
-
 	}
+
 	if len(fields) == 0 {
 		return "", nil, ErrEmptyStruct
 	}
+
 	set := strings.Join(fields, ", ")
 
 	updateQuery := fmt.Sprintf("UPDATE %s SET %s", s.table, set)

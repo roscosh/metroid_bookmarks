@@ -17,16 +17,19 @@ import (
 // @router /skills/ [post]
 func (h *Router) create(c *gin.Context) {
 	var form createForm
+
 	err := c.ShouldBindWith(&form, binding.JSON)
 	if err != nil {
 		middleware.Response404(c, err)
 		return
 	}
+
 	skill, err := h.service.Create(form.CreateSkill)
 	if err != nil {
 		middleware.Response404(c, err)
 		return
 	}
+
 	middleware.Response200(c, createResponse{Skill: skill})
 }
 
@@ -40,22 +43,26 @@ func (h *Router) create(c *gin.Context) {
 // @Failure 404 {object} middleware.ErrorResponse
 // @router /skills/{id} [put]
 func (h *Router) edit(c *gin.Context) {
-	id, err := middleware.GetPathID(c)
+	skillID, err := middleware.GetPathID(c)
 	if err != nil {
 		middleware.Response404(c, err)
 		return
 	}
+
 	var form editForm
+
 	err = c.ShouldBindWith(&form, binding.JSON)
 	if err != nil {
 		middleware.Response404(c, err)
 		return
 	}
-	skill, err := h.service.Edit(id, form.EditSkill)
+
+	skill, err := h.service.Edit(skillID, form.EditSkill)
 	if err != nil {
 		middleware.Response404(c, err)
 		return
 	}
+
 	middleware.Response200(c, editResponse{Skill: skill})
 }
 
@@ -68,16 +75,18 @@ func (h *Router) edit(c *gin.Context) {
 // @Failure 404 {object} middleware.ErrorResponse
 // @Router /skills/{id} [delete]
 func (h *Router) delete(c *gin.Context) {
-	id, err := middleware.GetPathID(c)
+	skillID, err := middleware.GetPathID(c)
 	if err != nil {
 		middleware.Response404(c, err)
 		return
 	}
-	skill, err := h.service.Delete(id)
+
+	skill, err := h.service.Delete(skillID)
 	if err != nil {
 		middleware.Response404(c, err)
 		return
 	}
+
 	middleware.Response200(c, deleteResponse{Skill: skill})
 }
 
@@ -94,5 +103,6 @@ func (h *Router) getAll(c *gin.Context) {
 		middleware.Response404(c, err)
 		return
 	}
+
 	middleware.Response200(c, getAllResponse{Data: skill, Total: total})
 }

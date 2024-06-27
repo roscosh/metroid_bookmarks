@@ -22,15 +22,18 @@ func NewMiddleware(service *service.MiddlewareService) *Middleware {
 
 func (h *Middleware) SessionRequired(c *gin.Context) {
 	token, _ := c.Cookie(session.CookieSessionName)
+
 	sessionObj, err := h.service.GetExistSession(token)
 	if err != nil {
 		sessionObj, err = h.service.CreateSession()
 		if err != nil {
 			Response404(c, err)
 			c.Abort()
+
 			return
 		}
 	}
+
 	c.Set(userCtx, sessionObj)
 
 	SetCookie(c, sessionObj)
@@ -45,6 +48,7 @@ func (h *Middleware) AdminRequired(c *gin.Context) {
 	if !sessionObj.IsAdmin() {
 		Response403(c, ErrAdminRequired)
 		c.Abort()
+
 		return
 	}
 }
@@ -55,6 +59,7 @@ func (h *Middleware) AuthRequired(c *gin.Context) {
 	if !sessionObj.IsAuthenticated() {
 		Response401(c, ErrLoginRequired)
 		c.Abort()
+
 		return
 	}
 }
@@ -65,6 +70,7 @@ func (h *Middleware) LogoutRequired(c *gin.Context) {
 	if sessionObj.IsAuthenticated() {
 		Response401(c, ErrAlreadyAuthorized)
 		c.Abort()
+
 		return
 	}
 }

@@ -31,6 +31,7 @@ func (s *SQL) GetAll(search string) ([]User, error) {
 	if search != "" {
 		return s.sql.SelectManyWhere("WHERE LOWER(name) LIKE $1 OR LOWER(login) LIKE $2", search, search)
 	}
+
 	return s.sql.SelectMany()
 }
 

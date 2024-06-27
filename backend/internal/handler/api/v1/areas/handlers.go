@@ -17,16 +17,19 @@ import (
 // @router /areas/ [post]
 func (h *Router) create(c *gin.Context) {
 	var form createForm
+
 	err := c.ShouldBindWith(&form, binding.JSON)
 	if err != nil {
 		middleware.Response404(c, err)
 		return
 	}
+
 	area, err := h.service.Create(form.CreateArea)
 	if err != nil {
 		middleware.Response404(c, err)
 		return
 	}
+
 	middleware.Response200(c, createResponse{Area: area})
 }
 
@@ -40,22 +43,26 @@ func (h *Router) create(c *gin.Context) {
 // @Failure 404 {object} middleware.ErrorResponse
 // @router /areas/{id} [put]
 func (h *Router) edit(c *gin.Context) {
-	id, err := middleware.GetPathID(c)
+	areaID, err := middleware.GetPathID(c)
 	if err != nil {
 		middleware.Response404(c, err)
 		return
 	}
+
 	var form editForm
+
 	err = c.ShouldBindWith(&form, binding.JSON)
 	if err != nil {
 		middleware.Response404(c, err)
 		return
 	}
-	area, err := h.service.Edit(id, form.EditArea)
+
+	area, err := h.service.Edit(areaID, form.EditArea)
 	if err != nil {
 		middleware.Response404(c, err)
 		return
 	}
+
 	middleware.Response200(c, editResponse{Area: area})
 }
 
@@ -68,16 +75,18 @@ func (h *Router) edit(c *gin.Context) {
 // @Failure 404 {object} middleware.ErrorResponse
 // @Router /areas/{id} [delete]
 func (h *Router) delete(c *gin.Context) {
-	id, err := middleware.GetPathID(c)
+	areaID, err := middleware.GetPathID(c)
 	if err != nil {
 		middleware.Response404(c, err)
 		return
 	}
-	area, err := h.service.Delete(id)
+
+	area, err := h.service.Delete(areaID)
 	if err != nil {
 		middleware.Response404(c, err)
 		return
 	}
+
 	middleware.Response200(c, deleteResponse{Area: area})
 }
 
@@ -94,5 +103,6 @@ func (h *Router) getAll(c *gin.Context) {
 		middleware.Response404(c, err)
 		return
 	}
+
 	middleware.Response200(c, getAllResponse{Data: area, Total: total})
 }

@@ -28,28 +28,36 @@ func (s *PhotosService) Create(
 	photoRoot string,
 	format string,
 ) (*photos.PhotoPreview, error) {
-	var errMessage string
-	var err error
+	var (
+		errMessage string
+		err        error
+	)
 
 	// Создание целевой директории
 	saveDir := filepath.Join(photoRoot, strconv.Itoa(userID), strconv.Itoa(bookmarkID))
 	if err = os.MkdirAll(saveDir, os.ModePerm); err != nil {
 		errMessage = fmt.Sprintf("Ошибка при создании директории:%s", err)
 		logger.Error(errMessage)
+
 		return nil, &Error{message: errMessage}
 	}
+
 	NewFilename := time.Now().UTC().Format("20060102_150405")
 	filenameFormat := NewFilename + "." + format
 	path := filepath.Join(saveDir, filenameFormat)
+
 	var success bool
+
 	for i := 1; i < 100; i++ {
 		if _, err = os.Stat(path); os.IsNotExist(err) {
 			err = c.SaveUploadedFile(photoFile, path)
 			if err != nil {
 				errMessage = fmt.Sprintf("Ошибка при сохранении файла:%s", err)
 				logger.Error(errMessage)
+
 				return nil, &Error{message: errMessage}
 			}
+
 			success = true
 
 			break
@@ -58,28 +66,33 @@ func (s *PhotosService) Create(
 		filenameFormat = NewFilename + fmt.Sprintf("_%d", i) + "." + format
 		path = filepath.Join(saveDir, filenameFormat)
 	}
+
 	if !success {
 		return nil, ErrFileUploadOverload
 	}
+
 	createForm := photos.CreatePhoto{
 		BookmarkID: bookmarkID,
 		Name:       filenameFormat,
 	}
+
 	photo, err := s.sql.Create(&createForm)
 	if err != nil {
 		err = createPgError(err)
 		logger.Error(err.Error())
+
 		return nil, err
 	}
 
 	return photo, nil
 }
 
-func (s *PhotosService) Delete(id, userID int) (*photos.PhotoPreview, error) {
-	photo, err := s.sql.Delete(id, userID)
+func (s *PhotosService) Delete(photoID, userID int) (*photos.PhotoPreview, error) {
+	photo, err := s.sql.Delete(photoID, userID)
 	if err != nil {
 		logger.Error(err.Error())
-		err = deletePgError(err, id)
+		err = deletePgError(err, photoID)
+
 		return nil, err
 	}
 

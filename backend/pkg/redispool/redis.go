@@ -18,28 +18,36 @@ func NewRedis(pool *redis.Pool, keyPrefix string) *Redis {
 func (r *Redis) GET(key string) ([]byte, error) {
 	conn := r.pool.Get()
 	defer conn.Close()
+
 	key = r.addPrefixKey(key, r.keyPrefix)
+
 	return redis.Bytes(conn.Do("GET", key))
 }
 
 func (r *Redis) GETEX(key string, ttl int) ([]byte, error) {
 	conn := r.pool.Get()
 	defer conn.Close()
+
 	key = r.addPrefixKey(key, r.keyPrefix)
+
 	return redis.Bytes(conn.Do("GETEX", key, "EX", ttl))
 }
 
 func (r *Redis) SETNX(key string, value interface{}) (bool, error) {
 	conn := r.pool.Get()
 	defer conn.Close()
+
 	key = r.addPrefixKey(key, r.keyPrefix)
+
 	return redis.Bool(conn.Do("SETNX", key, value))
 }
 
 func (r *Redis) EXPIRE(key string, ttl int) {
 	conn := r.pool.Get()
 	defer conn.Close()
+
 	key = r.addPrefixKey(key, r.keyPrefix)
+
 	_, err := conn.Do("EXPIRE", key, ttl)
 	if err != nil {
 		panic("Ошибка подключения к Redis")
@@ -49,7 +57,9 @@ func (r *Redis) EXPIRE(key string, ttl int) {
 func (r *Redis) SETEX(key string, value interface{}, ttl int) {
 	conn := r.pool.Get()
 	defer conn.Close()
+
 	key = r.addPrefixKey(key, r.keyPrefix)
+
 	_, err := conn.Do("SETEX", key, ttl, value)
 	if err != nil {
 		panic("Ошибка подключения к Redis")
@@ -59,7 +69,9 @@ func (r *Redis) SETEX(key string, value interface{}, ttl int) {
 func (r *Redis) EVAL(key, script string, numKeys int, args ...any) (bool, error) {
 	conn := r.pool.Get()
 	defer conn.Close()
+
 	key = r.addPrefixKey(key, r.keyPrefix)
+
 	return redis.Bool(conn.Do("EVAL", script, numKeys, key, args))
 }
 

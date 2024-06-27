@@ -30,11 +30,13 @@ func JSONToStruct[T any](bytes []byte) (*T, error) {
 }
 
 func GetTags[T any](tagName string) []string {
-	var structObj T
-	structType := reflect.TypeOf(structObj)
-	var dbTagArray []string
-	var traverseFields func(reflect.Type)
+	var (
+		structObj      T
+		dbTagArray     []string
+		traverseFields func(reflect.Type)
+	)
 
+	structType := reflect.TypeOf(structObj)
 	traverseFields = func(t reflect.Type) {
 		for i := range t.NumField() {
 			field := t.Field(i)
@@ -50,7 +52,6 @@ func GetTags[T any](tagName string) []string {
 			if dbTag != "" {
 				dbTagArray = append(dbTagArray, dbTag)
 			}
-
 		}
 	}
 

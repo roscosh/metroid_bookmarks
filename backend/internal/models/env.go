@@ -17,6 +17,7 @@ type EnvConfig struct {
 
 func NewEnvConfig() (*EnvConfig, error) {
 	var conf EnvConfig
+
 	err := env.ParseEnv(&conf)
 	if err != nil {
 		return nil, err

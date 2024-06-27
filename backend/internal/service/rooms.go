@@ -17,31 +17,35 @@ func (s *RoomsService) Create(createForm *rooms.CreateRoom) (*rooms.Room, error)
 	if err != nil {
 		logger.Error(err.Error())
 		err = createPgError(err)
+
 		return nil, err
 	}
 
 	return room, nil
 }
 
-func (s *RoomsService) Edit(id int, editForm *rooms.EditRoom) (*rooms.Room, error) {
+func (s *RoomsService) Edit(roomID int, editForm *rooms.EditRoom) (*rooms.Room, error) {
 	if (editForm == &rooms.EditRoom{}) {
 		return nil, ErrEmptyStruct
 	}
-	room, err := s.sql.Edit(id, editForm)
+
+	room, err := s.sql.Edit(roomID, editForm)
 	if err != nil {
 		logger.Error(err.Error())
-		err = editPgError(err, id)
+		err = editPgError(err, roomID)
+
 		return nil, err
 	}
 
 	return room, nil
 }
 
-func (s *RoomsService) Delete(id int) (*rooms.Room, error) {
-	room, err := s.sql.Delete(id)
+func (s *RoomsService) Delete(roomID int) (*rooms.Room, error) {
+	room, err := s.sql.Delete(roomID)
 	if err != nil {
 		logger.Error(err.Error())
-		err = deletePgError(err, id)
+		err = deletePgError(err, roomID)
+
 		return nil, err
 	}
 
@@ -54,11 +58,13 @@ func (s *RoomsService) GetAll() ([]rooms.Room, int, error) {
 		logger.Error(err.Error())
 		return nil, 0, err
 	}
+
 	total, err := s.sql.Total()
 	if err != nil {
 		logger.Error(err.Error())
 		return nil, 0, err
 	}
+
 	if data == nil {
 		data = []rooms.Room{}
 	}

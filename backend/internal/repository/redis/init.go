@@ -37,9 +37,11 @@ func NewRedisPool(dns string) (*Pool, error) {
 
 	conn := pool.Get()
 	defer conn.Close()
+
 	if _, err := conn.Do("ping"); err != nil {
 		panic(err)
 	}
+
 	redisPool := Pool{pool: pool}
 
 	return &redisPool, nil
