@@ -16,7 +16,7 @@ func (e *Error) Error() string {
 }
 
 type createForm struct {
-	BookmarkID int `form:"bookmark_id" binding:"required"`
+	BookmarkID int `binding:"required" form:"bookmark_id"`
 }
 
 type createResponse struct {

@@ -6,9 +6,9 @@ type Photo struct {
 }
 
 type PhotoPreview struct {
-	ID         int    `json:"id"          db:"id"`
-	BookmarkID int    `json:"bookmark_id" db:"bookmark_id"`
-	Name       string `json:"name"        db:"name"`
+	ID         int    `db:"id"          json:"id"`
+	BookmarkID int    `db:"bookmark_id" json:"bookmark_id"`
+	Name       string `db:"name"        json:"name"`
 }
 
 type CreatePhoto struct {

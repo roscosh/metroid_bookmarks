@@ -6,8 +6,8 @@ import (
 )
 
 type loginForm struct {
-	Login    string `json:"login" binding:"required"`
-	Password string `json:"password" binding:"required,min=8,max=32"`
+	Login    string `binding:"required"              json:"login"`
+	Password string `binding:"required,min=8,max=32" json:"password"`
 }
 
 type loginResponse struct {

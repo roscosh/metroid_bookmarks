@@ -19,7 +19,7 @@ type SQL struct {
 	Photos    *photos.SQL
 }
 
-func NewSQL(dbPool *pgpool.DbPool) *SQL {
+func NewSQL(dbPool *pgpool.PgPool) *SQL {
 	return &SQL{
 		Users:     users.NewSQL(dbPool),
 		Areas:     areas.NewSQL(dbPool),

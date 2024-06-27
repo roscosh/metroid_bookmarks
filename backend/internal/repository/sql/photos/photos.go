@@ -10,7 +10,7 @@ type SQL struct {
 	sql pgpool.SQL[PhotoPreview]
 }
 
-func NewSQL(dbPool *pgpool.DbPool) *SQL {
+func NewSQL(dbPool *pgpool.PgPool) *SQL {
 	sql := pgpool.NewSQL[PhotoPreview](dbPool, photosTable)
 	return &SQL{sql: sql}
 }

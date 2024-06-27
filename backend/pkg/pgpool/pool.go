@@ -16,11 +16,11 @@ func (e *Error) Error() string {
 	return e.message
 }
 
-type DbPool struct {
+type PgPool struct {
 	pool *pgxpool.Pool
 }
 
-func NewDbPool(dsn string, minConns, maxConns int32, maxConnLifetime, maxConnIdleTime, healthCheckPeriod int64) (*DbPool, error) {
+func NewPgPool(dsn string, minConns, maxConns int32, maxConnLifetime, maxConnIdleTime, healthCheckPeriod int64) (*PgPool, error) {
 	ctx := context.Background()
 	conf, err := pgxpool.ParseConfig(dsn)
 	if err != nil {
@@ -40,10 +40,10 @@ func NewDbPool(dsn string, minConns, maxConns int32, maxConnLifetime, maxConnIdl
 		return nil, err
 	}
 
-	return &DbPool{pool: pool}, nil
+	return &PgPool{pool: pool}, nil
 }
 
-func (d *DbPool) Close() error {
+func (d *PgPool) Close() error {
 	var errMessage string
 	d.pool.Close()
 	defer func() {

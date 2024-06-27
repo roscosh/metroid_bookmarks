@@ -9,7 +9,7 @@ type changePasswordResponse struct {
 }
 
 type changePasswordForm struct {
-	Password string `json:"password" binding:"required,min=8,max=32"`
+	Password string `binding:"required,min=8,max=32" json:"password"`
 }
 
 type deleteResponse struct {

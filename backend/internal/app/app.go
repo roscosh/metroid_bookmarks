@@ -22,7 +22,7 @@ var logger = log.GetLogger()
 
 type App struct {
 	envConf   *models.EnvConfig
-	dbPool    *pgpool.DbPool
+	dbPool    *pgpool.PgPool
 	redisPool *redis.Pool
 	srv       *misc.Server
 }
@@ -54,7 +54,7 @@ func (a *App) Init() {
 func (a *App) startUp(appConf *models.AppConfig) {
 	var err error
 
-	a.dbPool, err = pgpool.NewDbPool(
+	a.dbPool, err = pgpool.NewPgPool(
 		appConf.PostgreSQL.Dsn,
 		a.envConf.MinConns,
 		a.envConf.MaxConns,
@@ -77,7 +77,7 @@ func (a *App) startUp(appConf *models.AppConfig) {
 	redisObj := redis.NewRedis(a.redisPool)
 	httpService := service.NewService(sqlObj, redisObj)
 
-	err = dbmate.DbMigrate(appConf.PostgreSQL.Dsn, appConf.DbmateMigrationsDir)
+	err = dbmate.DBMigrate(appConf.PostgreSQL.Dsn, appConf.DbmateMigrationsDir)
 	if err != nil {
 		logger.Error(err.Error())
 		return

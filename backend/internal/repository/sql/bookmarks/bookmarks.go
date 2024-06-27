@@ -16,7 +16,7 @@ type SQL struct {
 	sql pgpool.SQL[BookmarkPreview]
 }
 
-func NewSQL(dbPool *pgpool.DbPool) *SQL {
+func NewSQL(dbPool *pgpool.PgPool) *SQL {
 	sql := pgpool.NewSQL[BookmarkPreview](dbPool, bookmarksTable)
 	return &SQL{sql: sql}
 }

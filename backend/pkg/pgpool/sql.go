@@ -37,16 +37,16 @@ type SQL[T any] interface {
 	UpdateWhere(editStruct interface{}, where string, args ...any) (*T, error)
 }
 
-func NewSQL[T any](dbPool *DbPool, table string) SQL[T] {
+func NewSQL[T any](dbPool *PgPool, table string) SQL[T] {
 	return &sql[T]{
-		DbPool:  dbPool,
+		PgPool:  dbPool,
 		table:   table,
-		columns: getDbTags[T](),
+		columns: getDBTags[T](),
 	}
 }
 
 type sql[T any] struct {
-	*DbPool
+	*PgPool
 	table   string
 	columns string
 }
@@ -262,7 +262,7 @@ func (s *sql[T]) GetUpdateQuery(
 	return query, args, nil
 }
 
-func getDbTags[T any]() string {
+func getDBTags[T any]() string {
 	tags := misc.GetTags[T]("db")
 	return strings.Join(tags, ", ")
 }

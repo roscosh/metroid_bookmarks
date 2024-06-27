@@ -1,16 +1,16 @@
 package users
 
 type User struct {
-	ID      int    `json:"id"       db:"id"`
-	Name    string `json:"name"     db:"name"`
-	Login   string `json:"login"    db:"login"`
-	IsAdmin bool   `json:"is_admin" db:"is_admin"`
+	ID      int    `db:"id"       json:"id"`
+	Name    string `db:"name"     json:"name"`
+	Login   string `db:"login"    json:"login"`
+	IsAdmin bool   `db:"is_admin" json:"is_admin"`
 }
 
 type CreateUser struct {
-	Name     string `json:"name"     db:"name"     binding:"required"`
-	Login    string `json:"login"    db:"login"    binding:"required"`
-	Password string `json:"password" db:"password" binding:"required,min=8,max=32"`
+	Name     string `binding:"required"              db:"name"     json:"name"`
+	Login    string `binding:"required"              db:"login"    json:"login"`
+	Password string `binding:"required,min=8,max=32" db:"password" json:"password"`
 }
 
 type EditUser struct {

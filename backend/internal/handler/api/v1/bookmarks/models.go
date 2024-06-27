@@ -5,9 +5,9 @@ import (
 )
 
 type createForm struct {
-	AreaID  int `form:"area_id"  binding:"required"`
-	RoomID  int `form:"room_id"  binding:"required"`
-	SkillID int `form:"skill_id" binding:"required"`
+	AreaID  int `binding:"required" form:"area_id"`
+	RoomID  int `binding:"required" form:"room_id"`
+	SkillID int `binding:"required" form:"skill_id"`
 }
 type createResponse struct {
 	*bookmarks.BookmarkPreview
@@ -26,8 +26,8 @@ type editResponse struct {
 }
 
 type getAllForm struct {
-	Limit     int   `form:"limit"     binding:"required"`
-	Page      int   `form:"page"      binding:"required"`
+	Limit     int   `binding:"required" form:"limit"`
+	Page      int   `binding:"required" form:"page"`
 	OrderByID *bool `form:"order_by_id"`
 	Completed *bool `form:"completed"`
 }

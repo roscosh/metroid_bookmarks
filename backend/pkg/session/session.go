@@ -15,8 +15,8 @@ const (
 
 type Session struct {
 	users.User
-	Token   string `json:"token" db:"token"`
-	Expires int    `json:"expires" db:"expires"`
+	Token   string `db:"token"   json:"token"`
+	Expires int    `db:"expires" json:"expires"`
 }
 
 func (s *Session) IsAuthenticated() bool {

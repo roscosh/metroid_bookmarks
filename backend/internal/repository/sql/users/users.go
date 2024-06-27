@@ -10,7 +10,7 @@ type SQL struct {
 	sql pgpool.SQL[User]
 }
 
-func NewSQL(dbPool *pgpool.DbPool) *SQL {
+func NewSQL(dbPool *pgpool.PgPool) *SQL {
 	sql := pgpool.NewSQL[User](dbPool, usersTable)
 	return &SQL{sql: sql}
 }
