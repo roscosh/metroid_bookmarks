@@ -22,8 +22,8 @@ func newPhotosService(sql *photos.SQL) *PhotosService {
 
 func (s *PhotosService) Create(
 	c *gin.Context,
-	userId int,
-	bookmarkId int,
+	userID int,
+	bookmarkID int,
 	photoFile *multipart.FileHeader,
 	photoRoot string,
 	format string,
@@ -32,7 +32,7 @@ func (s *PhotosService) Create(
 	var err error
 
 	// Создание целевой директории
-	saveDir := filepath.Join(photoRoot, strconv.Itoa(userId), strconv.Itoa(bookmarkId))
+	saveDir := filepath.Join(photoRoot, strconv.Itoa(userID), strconv.Itoa(bookmarkID))
 	if err = os.MkdirAll(saveDir, os.ModePerm); err != nil {
 		errMessage = fmt.Sprintf("Ошибка при создании директории:%s", err)
 		logger.Error(errMessage)
@@ -49,21 +49,20 @@ func (s *PhotosService) Create(
 				errMessage = fmt.Sprintf("Ошибка при сохранении файла:%s", err)
 				logger.Error(errMessage)
 				return nil, &Error{message: errMessage}
-			} else {
-				success = true
-				break
 			}
+			success = true
 
-		} else {
-			filenameFormat = NewFilename + fmt.Sprintf("_%d", i) + "." + format
-			path = filepath.Join(saveDir, filenameFormat)
+			break
 		}
+
+		filenameFormat = NewFilename + fmt.Sprintf("_%d", i) + "." + format
+		path = filepath.Join(saveDir, filenameFormat)
 	}
 	if !success {
 		return nil, ErrFileUploadOverload
 	}
 	createForm := photos.CreatePhoto{
-		BookmarkId: bookmarkId,
+		BookmarkID: bookmarkID,
 		Name:       filenameFormat,
 	}
 	photo, err := s.sql.Create(&createForm)
@@ -72,15 +71,17 @@ func (s *PhotosService) Create(
 		logger.Error(err.Error())
 		return nil, err
 	}
+
 	return photo, nil
 }
 
-func (s *PhotosService) Delete(id, userId int) (*photos.PhotoPreview, error) {
-	photo, err := s.sql.Delete(id, userId)
+func (s *PhotosService) Delete(id, userID int) (*photos.PhotoPreview, error) {
+	photo, err := s.sql.Delete(id, userID)
 	if err != nil {
 		logger.Error(err.Error())
 		err = deletePgError(err, id)
 		return nil, err
 	}
+
 	return photo, nil
 }

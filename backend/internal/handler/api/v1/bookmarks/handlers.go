@@ -36,17 +36,17 @@ func (h *Router) create(c *gin.Context) {
 		return
 	}
 	sqlForm := &bookmarks.CreateBookmark{
-		UserId:  session.ID,
-		AreaId:  form.AreaId,
-		SkillId: form.SkillId,
-		RoomId:  form.RoomId,
+		UserID:  session.ID,
+		AreaID:  form.AreaID,
+		SkillID: form.SkillID,
+		RoomID:  form.RoomID,
 	}
 	bookmark, err := h.bookmarksService.Create(sqlForm)
 	if err != nil {
 		middleware.Response404(c, err)
 		return
 	}
-	_, err = h.photosService.Create(c, session.ID, bookmark.Id, file, h.AppConf.PhotosPath, format)
+	_, err = h.photosService.Create(c, session.ID, bookmark.ID, file, h.AppConf.PhotosPath, format)
 	if err != nil {
 		middleware.Response404(c, err)
 		return
@@ -123,7 +123,7 @@ func (h *Router) getAll(c *gin.Context) {
 		middleware.Response404(c, err)
 		return
 	}
-	bookmarkList, total, err := h.bookmarksService.GetAll(form.Limit, form.Page, session.ID, form.Completed, form.OrderById)
+	bookmarkList, total, err := h.bookmarksService.GetAll(form.Limit, form.Page, session.ID, form.Completed, form.OrderByID)
 	if err != nil {
 		middleware.Response404(c, err)
 		return

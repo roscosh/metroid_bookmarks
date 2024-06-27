@@ -2,11 +2,10 @@ package service
 
 import (
 	"crypto/sha512"
+	"encoding/hex"
 	"errors"
-	"fmt"
 	"metroid_bookmarks/internal/repository/sql/users"
-
-	. "metroid_bookmarks/pkg/session"
+	"metroid_bookmarks/pkg/session"
 )
 
 const (
@@ -23,17 +22,18 @@ func newAuthService(sql *users.SQL) *AuthService {
 	return &AuthService{sql: sql}
 }
 
-func (s *AuthService) Login(login, password string, session *Session) (*Session, error) {
+func (s *AuthService) Login(login, password string, session *session.Session) (*session.Session, error) {
 	token := generatePasswordHash(password)
 	user, err := s.sql.GetByCredentials(login, token)
 	if err != nil {
 		return nil, ErrUserDoesNotExist
 	}
 	session.SetUser(user)
+
 	return session, nil
 }
 
-func (s *AuthService) Logout(session *Session) *Session {
+func (s *AuthService) Logout(session *session.Session) *session.Session {
 	session.ResetUser()
 	return session
 }
@@ -46,11 +46,12 @@ func (s *AuthService) SignUp(createForm *users.CreateUser) (*users.User, error) 
 		err = createPgError(err)
 		return nil, err
 	}
+
 	return user, nil
 }
 
 func generatePasswordHash(password string) string {
 	hash := sha512.New()
 	hash.Write([]byte(password))
-	return fmt.Sprintf("%x", hash.Sum([]byte(salt)))
+	return hex.EncodeToString(hash.Sum([]byte(salt)))
 }

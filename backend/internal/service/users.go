@@ -21,6 +21,7 @@ func (s *UsersService) ChangePassword(id int, password string) (*users.User, err
 		err = editPgError(err, id)
 		return nil, err
 	}
+
 	return user, nil
 }
 
@@ -31,6 +32,7 @@ func (s *UsersService) Delete(id int) (*users.User, error) {
 		err = deletePgError(err, id)
 		return nil, err
 	}
+
 	return user, nil
 }
 
@@ -44,6 +46,7 @@ func (s *UsersService) Edit(id int, editForm *users.EditUser) (*users.User, erro
 		err = editPgError(err, id)
 		return nil, err
 	}
+
 	return user, nil
 }
 
@@ -57,5 +60,6 @@ func (s *UsersService) GetAll(search string) ([]users.User, int, error) {
 	if data == nil {
 		data = []users.User{}
 	}
+
 	return data, len(data), nil
 }

@@ -6,7 +6,7 @@ import (
 	"reflect"
 )
 
-var ErrJsonToStruct = errors.New("failing convert json to struct")
+var ErrJSONToStruct = errors.New("failing convert json to struct")
 
 func Contains[T comparable](item T, arr []T) bool {
 	for _, value := range arr {
@@ -14,16 +14,18 @@ func Contains[T comparable](item T, arr []T) bool {
 			return true
 		}
 	}
+
 	return false
 }
 
-func JsonToStruct[T any](bytes []byte) (*T, error) {
+func JSONToStruct[T any](bytes []byte) (*T, error) {
 	var config *T
 
 	err := json.Unmarshal(bytes, &config)
 	if err != nil {
-		return nil, ErrJsonToStruct
+		return nil, ErrJSONToStruct
 	}
+
 	return config, nil
 }
 

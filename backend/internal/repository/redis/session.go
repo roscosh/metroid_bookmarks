@@ -19,11 +19,11 @@ func newSessionRedis(pool *redis.Pool, keyPrefix string) *SessionRedis {
 }
 
 func (r *SessionRedis) Get(key string) (int, error) {
-	userId, err := r.redis.GETEX(key, session.AnonymousExpires)
+	userID, err := r.redis.GETEX(key, session.AnonymousExpires)
 	if err != nil {
 		return 0, err
 	}
-	return strconv.Atoi(string(userId))
+	return strconv.Atoi(string(userID))
 }
 
 func (r *SessionRedis) Create(key string, value int) (bool, error) {

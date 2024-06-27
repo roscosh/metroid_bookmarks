@@ -36,5 +36,6 @@ func NewAppConfig(appConfigPath string) (*AppConfig, error) {
 	if err != nil {
 		return nil, ErrFailingConvertFile
 	}
-	return misc.JsonToStruct[AppConfig](bytes)
+
+	return misc.JSONToStruct[AppConfig](bytes)
 }

@@ -41,6 +41,7 @@ func NewRedisPool(dns string) (*Pool, error) {
 		panic(err)
 	}
 	redisPool := Pool{pool: pool}
+
 	return &redisPool, nil
 }
 

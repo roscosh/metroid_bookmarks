@@ -70,6 +70,7 @@ func deletePgError(err error, id int) error {
 		errMessage = fmt.Sprintf(`No row with id="%v"!`, id)
 		return &Error{message: errMessage}
 	}
+
 	return err
 }
 
@@ -79,6 +80,7 @@ func selectPgError(err error, id int) error {
 		errMessage = fmt.Sprintf(`No row with id="%v"!`, id)
 		return &Error{message: errMessage}
 	}
+
 	return err
 }
 

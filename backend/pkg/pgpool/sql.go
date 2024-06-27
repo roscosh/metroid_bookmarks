@@ -78,6 +78,7 @@ func (s *sql[T]) Delete(pk int) (*T, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	return s.CollectOneRow(rows)
 }
 
@@ -87,6 +88,7 @@ func (s *sql[T]) DeleteWhere(whereStatement string, args ...any) (*T, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	return s.CollectOneRow(rows)
 }
 
@@ -99,6 +101,7 @@ func (s *sql[T]) Insert(createStruct interface{}) (*T, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	return s.CollectOneRow(rows)
 }
 
@@ -108,6 +111,7 @@ func (s *sql[T]) SelectOne(pk int) (*T, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	return s.CollectOneRow(rows)
 }
 
@@ -117,6 +121,7 @@ func (s *sql[T]) SelectManyWhere(whereStatement string, args ...any) ([]T, error
 	if err != nil {
 		return nil, err
 	}
+
 	return s.CollectRows(rows)
 }
 
@@ -126,6 +131,7 @@ func (s *sql[T]) SelectWhere(whereStatement string, args ...any) (*T, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	return s.CollectOneRow(rows)
 }
 
@@ -135,6 +141,7 @@ func (s *sql[T]) SelectMany() ([]T, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	return s.CollectRows(rows)
 }
 
@@ -153,6 +160,7 @@ func (s *sql[T]) Update(pk int, editStruct interface{}) (*T, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	return s.CollectOneRow(rows)
 }
 
@@ -176,9 +184,9 @@ func (s *sql[T]) GetInsertQuery(createInterface interface{}) (string, []interfac
 	}
 
 	elem := reflect.ValueOf(createInterface).Elem()
-	var valuesArray []interface{}
-	var fieldsArray []string
-	var indexRowArray []string
+	valuesArray := make([]interface{}, 0, elem.NumField())
+	fieldsArray := make([]string, 0, elem.NumField())
+	indexRowArray := make([]string, 0, elem.NumField())
 	placeholder := 1
 
 	for i := range elem.NumField() {
@@ -219,7 +227,7 @@ func (s *sql[T]) GetUpdateQuery(
 
 	elem := reflect.ValueOf(setInterface).Elem()
 
-	var fields []string
+	fields := make([]string, 0, elem.NumField())
 	placeholder := 1 + len(args)
 	for i := range elem.NumField() {
 		value := elem.Field(i)
@@ -244,10 +252,10 @@ func (s *sql[T]) GetUpdateQuery(
 	queryArray = append(queryArray, updateQuery)
 
 	if where != "" {
-		queryArray = append(queryArray, fmt.Sprintf("WHERE %s", where))
+		queryArray = append(queryArray, "WHERE "+where)
 	}
 
-	queryArray = append(queryArray, fmt.Sprintf("RETURNING %s", s.columns))
+	queryArray = append(queryArray, "RETURNING "+s.columns)
 
 	query := strings.Join(queryArray, " ")
 

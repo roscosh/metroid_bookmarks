@@ -133,5 +133,6 @@ func ParseEnv(envStruct interface{}) error {
 			return &Error{message: errMessage}
 		}
 	}
+
 	return nil
 }

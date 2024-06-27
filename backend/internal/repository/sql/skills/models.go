@@ -1,7 +1,7 @@
 package skills
 
 type Skill struct {
-	Id     int    `json:"id"      db:"id"`
+	ID     int    `json:"id"      db:"id"`
 	NameEn string `json:"name_en" db:"name_en"`
 	NameRu string `json:"name_ru" db:"name_ru"`
 }

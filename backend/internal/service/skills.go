@@ -19,6 +19,7 @@ func (s *SkillsService) Create(createForm *skills.CreateSkill) (*skills.Skill, e
 		err = createPgError(err)
 		return nil, err
 	}
+
 	return skill, nil
 }
 
@@ -32,6 +33,7 @@ func (s *SkillsService) Edit(id int, editForm *skills.EditSkill) (*skills.Skill,
 		err = editPgError(err, id)
 		return nil, err
 	}
+
 	return skill, nil
 }
 
@@ -42,6 +44,7 @@ func (s *SkillsService) Delete(id int) (*skills.Skill, error) {
 		err = deletePgError(err, id)
 		return nil, err
 	}
+
 	return skill, nil
 }
 
@@ -59,5 +62,6 @@ func (s *SkillsService) GetAll() ([]skills.Skill, int, error) {
 	if data == nil {
 		data = []skills.Skill{}
 	}
+
 	return data, total, nil
 }

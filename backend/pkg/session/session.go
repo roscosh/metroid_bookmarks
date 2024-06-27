@@ -20,11 +20,7 @@ type Session struct {
 }
 
 func (s *Session) IsAuthenticated() bool {
-	if s.ID != 0 {
-		return true
-	} else {
-		return false
-	}
+	return s.ID != 0
 }
 
 func (s *Session) IsAdmin() bool {

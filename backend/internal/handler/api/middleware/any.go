@@ -42,6 +42,7 @@ func GetPathID(c *gin.Context) (int, error) {
 	if err != nil {
 		return 0, ErrIDType
 	}
+
 	return id, err
 }
 
@@ -51,6 +52,7 @@ func GetPathUserID(c *gin.Context) (int, error) {
 	if err != nil {
 		return 0, ErrUserIDType
 	}
+
 	return id, err
 }
 
@@ -60,6 +62,7 @@ func GetPathBookmarkID(c *gin.Context) (int, error) {
 	if err != nil {
 		return 0, ErrBookmarkIDType
 	}
+
 	return id, err
 }
 
@@ -117,5 +120,6 @@ func ValidatePhoto(photoFile *multipart.FileHeader) (string, error) {
 			return "", err
 		}
 	}
+
 	return format, nil
 }

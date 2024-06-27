@@ -9,14 +9,14 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-type LogLevel string
+type Level string
 
 const (
-	Debug   LogLevel = "DEBUG"
-	Info    LogLevel = "INFO"
-	Warning LogLevel = "WARNING"
-	Error   LogLevel = "ERROR"
-	Fatal   LogLevel = "FATAL"
+	Debug   Level = "DEBUG"
+	Info    Level = "INFO"
+	Warning Level = "WARNING"
+	Error   Level = "ERROR"
+	Fatal   Level = "FATAL"
 )
 
 var (
@@ -39,7 +39,7 @@ func GetLogger() *Logger {
 func (l *Logger) SetParams(logLevel string) {
 	var level logrus.Level
 
-	switch LogLevel(logLevel) {
+	switch Level(logLevel) {
 	case Debug:
 		level = logrus.DebugLevel
 	case Info:

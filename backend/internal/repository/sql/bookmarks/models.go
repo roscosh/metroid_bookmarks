@@ -9,7 +9,7 @@ import (
 )
 
 type Bookmark struct {
-	Id        int            `json:"id"`
+	ID        int            `json:"id"`
 	Ctime     time.Time      `json:"ctime"`
 	Completed bool           `json:"completed"`
 	Area      areas.Area     `json:"area"`
@@ -19,25 +19,25 @@ type Bookmark struct {
 }
 
 type BookmarkPreview struct {
-	Id        int       `json:"id"        db:"id"`
-	UserId    int       `json:"user_id"   db:"user_id"`
-	AreaId    int       `json:"area_id"   db:"area_id"`
-	RoomId    int       `json:"room_id"   db:"room_id"`
-	SkillId   int       `json:"skill_id"  db:"skill_id"`
+	ID        int       `json:"id"        db:"id"`
+	UserID    int       `json:"user_id"   db:"user_id"`
+	AreaID    int       `json:"area_id"   db:"area_id"`
+	RoomID    int       `json:"room_id"   db:"room_id"`
+	SkillID   int       `json:"skill_id"  db:"skill_id"`
 	Ctime     time.Time `json:"ctime"     db:"ctime"`
 	Completed bool      `json:"completed" db:"completed"`
 }
 
 type CreateBookmark struct {
-	UserId  int `db:"user_id"`
-	AreaId  int `db:"area_id"`
-	RoomId  int `db:"room_id"`
-	SkillId int `db:"skill_id"`
+	UserID  int `db:"user_id"`
+	AreaID  int `db:"area_id"`
+	RoomID  int `db:"room_id"`
+	SkillID int `db:"skill_id"`
 }
 
 type EditBookmark struct {
-	AreaId    *int  `json:"area_id"  db:"area_id"`
-	RoomId    *int  `json:"room_id"  db:"room_id"`
-	SkillId   *int  `json:"skill_id" db:"skill_id"`
+	AreaID    *int  `json:"area_id"  db:"area_id"`
+	RoomID    *int  `json:"room_id"  db:"room_id"`
+	SkillID   *int  `json:"skill_id" db:"skill_id"`
 	Completed *bool `json:"completed" db:"completed"`
 }

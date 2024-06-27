@@ -1,7 +1,6 @@
 package photos
 
 import (
-	"fmt"
 	"metroid_bookmarks/internal/handler/api/middleware"
 	"os"
 	"path/filepath"
@@ -39,16 +38,16 @@ func (h *Router) create(c *gin.Context) {
 		middleware.Response404(c, err)
 		return
 	}
-	bookmark, err := h.bookmarksService.GetByID(form.BookmarkId)
+	bookmark, err := h.bookmarksService.GetByID(form.BookmarkID)
 	if err != nil {
 		middleware.Response404(c, err)
 		return
 	}
-	if bookmark.UserId != session.ID {
+	if bookmark.UserID != session.ID {
 		middleware.AccessDenied(c)
 		return
 	}
-	photo, err := h.photosService.Create(c, session.ID, form.BookmarkId, file, h.AppConf.PhotosPath, format)
+	photo, err := h.photosService.Create(c, session.ID, form.BookmarkID, file, h.AppConf.PhotosPath, format)
 	if err != nil {
 		middleware.Response404(c, err)
 		return
@@ -90,12 +89,12 @@ func (h *Router) delete(c *gin.Context) {
 // @Router /photos/download/{user_id}/{bookmark_id}/{name} [get]
 func (h *Router) download(c *gin.Context) {
 	session := middleware.GetSession(c)
-	userId, err := middleware.GetPathUserID(c)
+	userID, err := middleware.GetPathUserID(c)
 	if err != nil {
 		middleware.Response404(c, err)
 		return
 	}
-	if session.ID != userId {
+	if session.ID != userID {
 		middleware.AccessDenied(c)
 		return
 	}
@@ -109,18 +108,18 @@ func (h *Router) download(c *gin.Context) {
 		middleware.Response404(c, err)
 		return
 	}
-	path := filepath.Join(h.AppConf.PhotosPath, strconv.Itoa(userId), strconv.Itoa(bookmarkID), name)
+	path := filepath.Join(h.AppConf.PhotosPath, strconv.Itoa(userID), strconv.Itoa(bookmarkID), name)
 	_, err = os.Stat(path)
 	if err != nil {
 		if os.IsNotExist(err) {
 			middleware.Response404(c, ErrFileDoesNotExist)
-			return
 		} else {
-			errMessage := fmt.Sprintf("ошибка при проверке файла: %s", err.Error())
+			errMessage := "ошибка при проверке файла: " + err.Error()
 			logger.Error(errMessage)
 			middleware.Response404(c, &Error{message: errMessage})
-			return
 		}
+
+		return
 	}
 	c.Header("Content-Description", "File Transfer")
 	c.Header("Content-Transfer-Encoding", "binary")

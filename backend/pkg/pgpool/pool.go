@@ -39,6 +39,7 @@ func NewDbPool(dsn string, minConns, maxConns int32, maxConnLifetime, maxConnIdl
 	if err != nil {
 		return nil, err
 	}
+
 	return &DbPool{pool: pool}, nil
 }
 
@@ -54,5 +55,6 @@ func (d *DbPool) Close() error {
 	if errMessage != "" {
 		return &Error{message: errMessage}
 	}
+
 	return nil
 }

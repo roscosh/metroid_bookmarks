@@ -19,6 +19,7 @@ func (s *AreasService) Create(createForm *areas.CreateArea) (*areas.Area, error)
 		err = createPgError(err)
 		return nil, err
 	}
+
 	return area, nil
 }
 
@@ -32,6 +33,7 @@ func (s *AreasService) Edit(id int, editForm *areas.EditArea) (*areas.Area, erro
 		err = editPgError(err, id)
 		return nil, err
 	}
+
 	return area, nil
 }
 
@@ -42,6 +44,7 @@ func (s *AreasService) Delete(id int) (*areas.Area, error) {
 		err = deletePgError(err, id)
 		return nil, err
 	}
+
 	return area, nil
 }
 
@@ -59,5 +62,6 @@ func (s *AreasService) GetAll() ([]areas.Area, int, error) {
 	if data == nil {
 		data = []areas.Area{}
 	}
+
 	return data, total, nil
 }

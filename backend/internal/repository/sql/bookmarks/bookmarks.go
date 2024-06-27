@@ -25,15 +25,15 @@ func (s *SQL) Create(createForm *CreateBookmark) (*BookmarkPreview, error) {
 	return s.sql.Insert(createForm)
 }
 
-func (s *SQL) Delete(id, userId int) (*BookmarkPreview, error) {
-	return s.sql.DeleteWhere("id=$1 AND user_id=$2", id, userId)
+func (s *SQL) Delete(id, userID int) (*BookmarkPreview, error) {
+	return s.sql.DeleteWhere("id=$1 AND user_id=$2", id, userID)
 }
 
-func (s *SQL) Edit(id, userId int, editForm *EditBookmark) (*BookmarkPreview, error) {
-	return s.sql.UpdateWhere(editForm, "id=$1 AND user_id=$2", id, userId)
+func (s *SQL) Edit(id, userID int, editForm *EditBookmark) (*BookmarkPreview, error) {
+	return s.sql.UpdateWhere(editForm, "id=$1 AND user_id=$2", id, userID)
 }
 
-func (s *SQL) GetAll(limit, offset, userId int, completed, orderById *bool) ([]Bookmark, error) {
+func (s *SQL) GetAll(limit, offset, userID int, completed, orderByID *bool) ([]Bookmark, error) {
 	var bookmarks []Bookmark
 	var queryArray []string
 	args := make([]any, 0, 3)          //nolint:mnd
@@ -55,10 +55,10 @@ func (s *SQL) GetAll(limit, offset, userId int, completed, orderById *bool) ([]B
 	`
 	queryArray = append(queryArray, baseQuery)
 
-	if userId != 0 {
-		whereUserId := fmt.Sprintf("b.user_id=$%d", placeHolder)
-		whereArray = append(whereArray, whereUserId)
-		args = append(args, userId)
+	if userID != 0 {
+		whereUserID := fmt.Sprintf("b.user_id=$%d", placeHolder)
+		whereArray = append(whereArray, whereUserID)
+		args = append(args, userID)
 		placeHolder++
 	} else {
 		return nil, ErrZeroID
@@ -76,12 +76,12 @@ func (s *SQL) GetAll(limit, offset, userId int, completed, orderById *bool) ([]B
 	groupBy := `GROUP BY b.id, b.ctime, b.completed, a.id, a.name_ru, a.name_en, r.id, r.name_ru, r.name_en,  s.id, s.name_ru, s.name_en`
 	queryArray = append(queryArray, groupBy)
 
-	if orderById != nil {
-		var order string
-		if *orderById {
-			order = fmt.Sprintf("ORDER BY b.id %s", "ASC")
+	if orderByID != nil {
+		order := "ORDER BY b.id "
+		if *orderByID {
+			order += "ASC"
 		} else {
-			order = fmt.Sprintf("ORDER BY b.id %s", "DESC")
+			order += "DESC"
 		}
 		queryArray = append(queryArray, order)
 	}
@@ -104,22 +104,22 @@ func (s *SQL) GetAll(limit, offset, userId int, completed, orderById *bool) ([]B
 
 	for rows.Next() {
 		var bookmark Bookmark
-		var photoIds []*int32
+		var photoIDs []*int32
 		var photoNames []*string
 		err = rows.Scan(
-			&bookmark.Id, &bookmark.Ctime, &bookmark.Completed,
-			&bookmark.Area.Id, &bookmark.Area.NameRu, &bookmark.Area.NameEn,
-			&bookmark.Room.Id, &bookmark.Room.NameRu, &bookmark.Room.NameEn,
-			&bookmark.Skill.Id, &bookmark.Skill.NameRu, &bookmark.Skill.NameEn,
-			&photoIds, &photoNames,
+			&bookmark.ID, &bookmark.Ctime, &bookmark.Completed,
+			&bookmark.Area.ID, &bookmark.Area.NameRu, &bookmark.Area.NameEn,
+			&bookmark.Room.ID, &bookmark.Room.NameRu, &bookmark.Room.NameEn,
+			&bookmark.Skill.ID, &bookmark.Skill.NameRu, &bookmark.Skill.NameEn,
+			&photoIDs, &photoNames,
 		)
 		if err != nil {
 			return nil, err
 		}
-		for i, photoId := range photoIds {
-			if photoId != nil {
-				ulr := fmt.Sprintf("/%d/%d/%s", userId, bookmark.Id, *photoNames[i])
-				bookmark.Photos = append(bookmark.Photos, photos.Photo{Id: int(*photoId), Url: ulr})
+		for i, photoID := range photoIDs {
+			if photoID != nil {
+				ulr := fmt.Sprintf("/%d/%d/%s", userID, bookmark.ID, *photoNames[i])
+				bookmark.Photos = append(bookmark.Photos, photos.Photo{ID: int(*photoID), URL: ulr})
 			}
 		}
 		bookmarks = append(bookmarks, bookmark)
@@ -135,7 +135,7 @@ func (s *SQL) GetByID(id int) (*BookmarkPreview, error) {
 	return s.sql.SelectOne(id)
 }
 
-func (s *SQL) Total(userId int, completed *bool) (int, error) {
+func (s *SQL) Total(userID int, completed *bool) (int, error) {
 	var count int
 	var queryArray []string
 	args := make([]any, 0, 3)          //nolint:mnd
@@ -150,10 +150,10 @@ func (s *SQL) Total(userId int, completed *bool) (int, error) {
 	`
 	queryArray = append(queryArray, baseQuery)
 
-	if userId > 0 {
-		whereUserId := fmt.Sprintf("b.user_id=$%d", placeHolder)
-		whereArray = append(whereArray, whereUserId)
-		args = append(args, userId)
+	if userID > 0 {
+		whereUserID := fmt.Sprintf("b.user_id=$%d", placeHolder)
+		whereArray = append(whereArray, whereUserID)
+		args = append(args, userID)
 	}
 	if completed != nil {
 		whereCompleted := fmt.Sprintf("b.completed=$%d", placeHolder)
@@ -167,5 +167,6 @@ func (s *SQL) Total(userId int, completed *bool) (int, error) {
 
 	query := strings.Join(queryArray, " ")
 	err := s.sql.QueryRow(query, args...).Scan(&count)
+
 	return count, err
 }

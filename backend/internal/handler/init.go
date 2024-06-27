@@ -1,7 +1,7 @@
 package handler
 
 import (
-	_ "metroid_bookmarks/docs"
+	_ "metroid_bookmarks/docs" //revive:disable:blank-imports
 	"metroid_bookmarks/internal/handler/api"
 	"metroid_bookmarks/internal/handler/api/middleware"
 	"metroid_bookmarks/internal/models"

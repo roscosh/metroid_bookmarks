@@ -19,6 +19,7 @@ func (s *RoomsService) Create(createForm *rooms.CreateRoom) (*rooms.Room, error)
 		err = createPgError(err)
 		return nil, err
 	}
+
 	return room, nil
 }
 
@@ -32,6 +33,7 @@ func (s *RoomsService) Edit(id int, editForm *rooms.EditRoom) (*rooms.Room, erro
 		err = editPgError(err, id)
 		return nil, err
 	}
+
 	return room, nil
 }
 
@@ -42,6 +44,7 @@ func (s *RoomsService) Delete(id int) (*rooms.Room, error) {
 		err = deletePgError(err, id)
 		return nil, err
 	}
+
 	return room, nil
 }
 
@@ -59,5 +62,6 @@ func (s *RoomsService) GetAll() ([]rooms.Room, int, error) {
 	if data == nil {
 		data = []rooms.Room{}
 	}
+
 	return data, total, nil
 }

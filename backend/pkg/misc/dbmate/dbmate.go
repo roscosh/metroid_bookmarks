@@ -7,8 +7,8 @@ import (
 	"github.com/amacneil/dbmate/pkg/driver/postgres"
 )
 
-func DbMigrate(dbUrl, migrationsDir string) error {
-	URL, _ := url.Parse(dbUrl)
+func DbMigrate(dbURL, migrationsDir string) error {
+	URL, _ := url.Parse(dbURL)
 	dbmate.RegisterDriver(postgres.NewDriver, "postgres")
 	db := dbmate.New(URL)
 	db.MigrationsDir = migrationsDir

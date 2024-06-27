@@ -1,11 +1,15 @@
 run:
   timeout: 1m
+
 output:
   show-stats: true
+
 issues:
   max-issues-per-linter: 0
   max-same-issues: 0
+
 #  fix: true
+
 linters:
   enable:
     - asasalint
@@ -76,7 +80,16 @@ linters:
     - nlreturn
     - noctx
     - nolintlint
-
+    - nonamedreturns
+    - nosprintfhostport
+    - paralleltest
+    - perfsprint
+    - prealloc
+    - predeclared
+    - promlinter
+    - protogetter
+    - reassign
+    - revive
 
 linters-settings:
   unused:
@@ -94,3 +107,8 @@ linters-settings:
     # Choose whether to use the extra rules.
     # Default: false
     extra-rules: true
+  nlreturn:
+    # Size of the block (including return statement that is still "OK")
+    # so no return split required.
+    # Default: 1
+    block-size: 5
