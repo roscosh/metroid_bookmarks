@@ -79,15 +79,15 @@ func GetPathName(c *gin.Context) (string, error) {
 }
 
 func GetSession(c *gin.Context) *session.Session {
-	return c.MustGet(userCtx).(*session.Session) //nolint:forcetypeassert
+	return c.MustGet(userIDQueryKey).(*session.Session) //nolint:forcetypeassert
 }
 
 func SetCookie(c *gin.Context, sessionObj *session.Session) {
-	c.SetCookie(session.CookieSessionName, sessionObj.Token, sessionObj.Expires, "", "", false, false)
+	c.SetCookie(sessionCookieKey, sessionObj.Token, sessionObj.Expires, "", "", false, false)
 }
 
 func GetPhoto(c *gin.Context) (*multipart.FileHeader, error) {
-	return c.FormFile(photo)
+	return c.FormFile(photoQueryKey)
 }
 
 func ValidatePhoto(photoFile *multipart.FileHeader) (string, error) {

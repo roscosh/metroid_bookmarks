@@ -2,14 +2,14 @@ package middleware
 
 import (
 	"metroid_bookmarks/internal/service"
-	"metroid_bookmarks/pkg/session"
 
 	"github.com/gin-gonic/gin"
 )
 
 const (
-	userCtx = "userId"
-	photo   = "photo"
+	userIDQueryKey   = "userId"
+	photoQueryKey    = "photo"
+	sessionCookieKey = "X-Session"
 )
 
 type Middleware struct {
@@ -21,7 +21,7 @@ func NewMiddleware(service *service.MiddlewareService) *Middleware {
 }
 
 func (m *Middleware) SessionRequired(c *gin.Context) {
-	token, _ := c.Cookie(session.CookieSessionName)
+	token, _ := c.Cookie(sessionCookieKey)
 
 	sessionObj, err := m.service.GetExistSession(token)
 	if err != nil {
@@ -34,7 +34,7 @@ func (m *Middleware) SessionRequired(c *gin.Context) {
 		}
 	}
 
-	c.Set(userCtx, sessionObj)
+	c.Set(userIDQueryKey, sessionObj)
 
 	SetCookie(c, sessionObj)
 	c.Next()
