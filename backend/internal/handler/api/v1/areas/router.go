@@ -22,9 +22,9 @@ func NewRouter(
 	}
 }
 
-func (h *Router) RegisterHandlers(routerGroup *gin.RouterGroup) {
-	routerGroup.POST("/", h.Middleware.AdminRequired, h.create)
-	routerGroup.DELETE("/:id", h.Middleware.AdminRequired, h.delete)
-	routerGroup.PUT("/:id", h.Middleware.AdminRequired, h.edit)
-	routerGroup.GET("/get_all", h.getAll)
+func (r *Router) RegisterHandlers(routerGroup *gin.RouterGroup) {
+	routerGroup.POST("/", r.Middleware.AdminRequired, r.create)
+	routerGroup.DELETE("/:id", r.Middleware.AdminRequired, r.delete)
+	routerGroup.PUT("/:id", r.Middleware.AdminRequired, r.edit)
+	routerGroup.GET("/get_all", r.getAll)
 }

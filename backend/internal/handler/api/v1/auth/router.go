@@ -22,9 +22,9 @@ func NewRouter(
 	}
 }
 
-func (h *Router) RegisterHandlers(router *gin.RouterGroup) {
-	router.GET("/me", h.me)
-	router.POST("/sign_up", h.Middleware.LogoutRequired, h.signUp)
-	router.POST("/login", h.Middleware.LogoutRequired, h.login)
-	router.POST("/logout", h.Middleware.AuthRequired, h.logout)
+func (r *Router) RegisterHandlers(router *gin.RouterGroup) {
+	router.GET("/me", r.me)
+	router.POST("/sign_up", r.Middleware.LogoutRequired, r.signUp)
+	router.POST("/login", r.Middleware.LogoutRequired, r.login)
+	router.POST("/logout", r.Middleware.AuthRequired, r.logout)
 }

@@ -10,12 +10,12 @@ import (
 
 type Bookmark struct {
 	ID        int            `json:"id"`
-	Ctime     time.Time      `json:"ctime"`
-	Completed bool           `json:"completed"`
 	Area      areas.Area     `json:"area"`
 	Room      rooms.Room     `json:"room"`
 	Skill     skills.Skill   `json:"skill"`
+	Ctime     time.Time      `json:"ctime"`
 	Photos    []photos.Photo `json:"photos"`
+	Completed bool           `json:"completed"`
 }
 
 type BookmarkPreview struct {

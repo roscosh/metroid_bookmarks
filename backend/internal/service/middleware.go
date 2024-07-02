@@ -1,17 +1,17 @@
 package service
 
 import (
-	"metroid_bookmarks/internal/repository/redis"
+	session2 "metroid_bookmarks/internal/repository/redis/session"
 	"metroid_bookmarks/internal/repository/sql/users"
 	"metroid_bookmarks/pkg/session"
 )
 
 type MiddlewareService struct {
 	sql   *users.SQL
-	redis *redis.SessionRedis
+	redis *session2.Redis
 }
 
-func newMiddlewareService(sql *users.SQL, redis *redis.SessionRedis) *MiddlewareService {
+func newMiddlewareService(sql *users.SQL, redis *session2.Redis) *MiddlewareService {
 	return &MiddlewareService{sql: sql, redis: redis}
 }
 

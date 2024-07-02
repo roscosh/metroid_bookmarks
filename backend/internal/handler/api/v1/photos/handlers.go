@@ -19,7 +19,7 @@ import (
 // @Success 200 {object}  createResponse
 // @Failure 404 {object} middleware.ErrorResponse
 // @router /photos/ [post]
-func (h *Router) create(c *gin.Context) {
+func (r *Router) create(c *gin.Context) {
 	session := middleware.GetSession(c)
 
 	var form createForm
@@ -42,7 +42,7 @@ func (h *Router) create(c *gin.Context) {
 		return
 	}
 
-	bookmark, err := h.bookmarksService.GetByID(form.BookmarkID)
+	bookmark, err := r.bookmarksService.GetByID(form.BookmarkID)
 	if err != nil {
 		middleware.Response404(c, err)
 		return
@@ -53,7 +53,7 @@ func (h *Router) create(c *gin.Context) {
 		return
 	}
 
-	photo, err := h.photosService.Create(c, session.ID, form.BookmarkID, file, h.AppConf.PhotosPath, format)
+	photo, err := r.photosService.Create(c, session.ID, form.BookmarkID, file, r.AppConf.PhotosPath, format)
 	if err != nil {
 		middleware.Response404(c, err)
 		return
@@ -70,7 +70,7 @@ func (h *Router) create(c *gin.Context) {
 // @Success 200 {object} deleteResponse
 // @Failure 404 {object} middleware.ErrorResponse
 // @Router /photos/{id} [delete]
-func (h *Router) delete(c *gin.Context) {
+func (r *Router) delete(c *gin.Context) {
 	session := middleware.GetSession(c)
 
 	photoID, err := middleware.GetPathID(c)
@@ -79,7 +79,7 @@ func (h *Router) delete(c *gin.Context) {
 		return
 	}
 
-	photo, err := h.photosService.Delete(photoID, session.ID)
+	photo, err := r.photosService.Delete(photoID, session.ID)
 	if err != nil {
 		middleware.Response404(c, err)
 		return
@@ -96,7 +96,7 @@ func (h *Router) delete(c *gin.Context) {
 // @Success 200 {object} deleteResponse
 // @Failure 404 {object} middleware.ErrorResponse
 // @Router /photos/download/{user_id}/{bookmark_id}/{name} [get]
-func (h *Router) download(c *gin.Context) {
+func (r *Router) download(c *gin.Context) {
 	session := middleware.GetSession(c)
 
 	userID, err := middleware.GetPathUserID(c)
@@ -122,7 +122,7 @@ func (h *Router) download(c *gin.Context) {
 		return
 	}
 
-	path := filepath.Join(h.AppConf.PhotosPath, strconv.Itoa(userID), strconv.Itoa(bookmarkID), name)
+	path := filepath.Join(r.AppConf.PhotosPath, strconv.Itoa(userID), strconv.Itoa(bookmarkID), name)
 
 	_, err = os.Stat(path)
 	if err != nil {

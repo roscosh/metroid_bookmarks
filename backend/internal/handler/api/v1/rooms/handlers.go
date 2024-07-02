@@ -15,7 +15,7 @@ import (
 // @Success 200 {object}  createResponse
 // @Failure 404 {object} middleware.ErrorResponse
 // @router /rooms/ [post]
-func (h *Router) create(c *gin.Context) {
+func (r *Router) create(c *gin.Context) {
 	var form createForm
 
 	err := c.ShouldBindWith(&form, binding.JSON)
@@ -24,7 +24,7 @@ func (h *Router) create(c *gin.Context) {
 		return
 	}
 
-	room, err := h.service.Create(form.CreateRoom)
+	room, err := r.service.Create(form.CreateRoom)
 	if err != nil {
 		middleware.Response404(c, err)
 		return
@@ -42,7 +42,7 @@ func (h *Router) create(c *gin.Context) {
 // @Success 200 {object}  editResponse
 // @Failure 404 {object} middleware.ErrorResponse
 // @router /rooms/{id} [put]
-func (h *Router) edit(c *gin.Context) {
+func (r *Router) edit(c *gin.Context) {
 	roomID, err := middleware.GetPathID(c)
 	if err != nil {
 		middleware.Response404(c, err)
@@ -57,7 +57,7 @@ func (h *Router) edit(c *gin.Context) {
 		return
 	}
 
-	room, err := h.service.Edit(roomID, form.EditRoom)
+	room, err := r.service.Edit(roomID, form.EditRoom)
 	if err != nil {
 		middleware.Response404(c, err)
 		return
@@ -74,14 +74,14 @@ func (h *Router) edit(c *gin.Context) {
 // @Success 200 {object} deleteResponse
 // @Failure 404 {object} middleware.ErrorResponse
 // @Router /rooms/{id} [delete]
-func (h *Router) delete(c *gin.Context) {
+func (r *Router) delete(c *gin.Context) {
 	roomID, err := middleware.GetPathID(c)
 	if err != nil {
 		middleware.Response404(c, err)
 		return
 	}
 
-	room, err := h.service.Delete(roomID)
+	room, err := r.service.Delete(roomID)
 	if err != nil {
 		middleware.Response404(c, err)
 		return
@@ -97,8 +97,8 @@ func (h *Router) delete(c *gin.Context) {
 // @Success 200 {object}  getAllResponse
 // @Failure 404 {object} middleware.ErrorResponse
 // @router /rooms/get_all [get]
-func (h *Router) getAll(c *gin.Context) {
-	room, total, err := h.service.GetAll()
+func (r *Router) getAll(c *gin.Context) {
+	room, total, err := r.service.GetAll()
 	if err != nil {
 		middleware.Response404(c, err)
 		return

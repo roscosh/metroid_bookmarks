@@ -1,6 +1,7 @@
 package redis
 
 import (
+	"metroid_bookmarks/internal/repository/redis/session"
 	"time"
 
 	"github.com/gomodule/redigo/redis"
@@ -48,13 +49,13 @@ func NewRedisPool(dns string) (*Pool, error) {
 }
 
 type Redis struct {
-	Session *SessionRedis
+	Session *session.Redis
 }
 
 func NewRedis(redisPool *Pool) *Redis {
 	pool := redisPool.pool
 
 	return &Redis{
-		Session: newSessionRedis(pool, SessionKey),
+		Session: session.NewRedis(pool, session.SessionKey),
 	}
 }

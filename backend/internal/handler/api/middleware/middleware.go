@@ -20,12 +20,12 @@ func NewMiddleware(service *service.MiddlewareService) *Middleware {
 	return &Middleware{service: service}
 }
 
-func (h *Middleware) SessionRequired(c *gin.Context) {
+func (m *Middleware) SessionRequired(c *gin.Context) {
 	token, _ := c.Cookie(session.CookieSessionName)
 
-	sessionObj, err := h.service.GetExistSession(token)
+	sessionObj, err := m.service.GetExistSession(token)
 	if err != nil {
-		sessionObj, err = h.service.CreateSession()
+		sessionObj, err = m.service.CreateSession()
 		if err != nil {
 			Response404(c, err)
 			c.Abort()
@@ -39,10 +39,10 @@ func (h *Middleware) SessionRequired(c *gin.Context) {
 	SetCookie(c, sessionObj)
 	c.Next()
 
-	h.service.UpdateSession(sessionObj)
+	m.service.UpdateSession(sessionObj)
 }
 
-func (h *Middleware) AdminRequired(c *gin.Context) {
+func (m *Middleware) AdminRequired(c *gin.Context) {
 	sessionObj := GetSession(c)
 
 	if !sessionObj.IsAdmin() {
@@ -53,7 +53,7 @@ func (h *Middleware) AdminRequired(c *gin.Context) {
 	}
 }
 
-func (h *Middleware) AuthRequired(c *gin.Context) {
+func (m *Middleware) AuthRequired(c *gin.Context) {
 	sessionObj := GetSession(c)
 
 	if !sessionObj.IsAuthenticated() {
@@ -64,7 +64,7 @@ func (h *Middleware) AuthRequired(c *gin.Context) {
 	}
 }
 
-func (h *Middleware) LogoutRequired(c *gin.Context) {
+func (m *Middleware) LogoutRequired(c *gin.Context) {
 	sessionObj := GetSession(c)
 
 	if sessionObj.IsAuthenticated() {

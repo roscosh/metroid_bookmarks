@@ -23,8 +23,8 @@ func NewRouter(
 	}
 }
 
-func (h *Router) RegisterHandlers(router *gin.RouterGroup) {
-	v1Group := router.Group("/v1", h.Middleware.SessionRequired)
-	v1Router := v1.NewRouter(h.Router, h.service)
+func (r *Router) RegisterHandlers(router *gin.RouterGroup) {
+	v1Group := router.Group("/v1", r.Middleware.SessionRequired)
+	v1Router := v1.NewRouter(r.Router, r.service)
 	v1Router.RegisterHandlers(v1Group)
 }

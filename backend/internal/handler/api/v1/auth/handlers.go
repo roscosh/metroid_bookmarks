@@ -15,7 +15,7 @@ import (
 // @Success 200 {object} loginResponse
 // @Failure 401,404 {object} middleware.ErrorResponse
 // @Router /auth/login [post]
-func (h *Router) login(c *gin.Context) {
+func (r *Router) login(c *gin.Context) {
 	session := middleware.GetSession(c)
 
 	var form loginForm
@@ -26,7 +26,7 @@ func (h *Router) login(c *gin.Context) {
 		return
 	}
 
-	session, err = h.service.Login(form.Login, form.Password, session)
+	session, err = r.service.Login(form.Login, form.Password, session)
 	if err != nil {
 		middleware.Response404(c, err)
 		return
@@ -42,10 +42,10 @@ func (h *Router) login(c *gin.Context) {
 // @Success 200 {object} logoutResponse
 // @Failure 401,404 {object} middleware.ErrorResponse
 // @Router /auth/logout [post]
-func (h *Router) logout(c *gin.Context) {
+func (r *Router) logout(c *gin.Context) {
 	session := middleware.GetSession(c)
 
-	session = h.service.Logout(session)
+	session = r.service.Logout(session)
 	middleware.SetCookie(c, session)
 	middleware.Response200(c, logoutResponse{Session: session})
 }
@@ -56,7 +56,7 @@ func (h *Router) logout(c *gin.Context) {
 // @Success 200 {object} meResponse
 // @Failure 401,404 {object} middleware.ErrorResponse
 // @Router /auth/me [get]
-func (h *Router) me(c *gin.Context) {
+func (r *Router) me(c *gin.Context) {
 	session := middleware.GetSession(c)
 
 	middleware.Response200(c, meResponse{Session: session})
@@ -70,7 +70,7 @@ func (h *Router) me(c *gin.Context) {
 // @Success 200 {object}  signUpResponse
 // @Failure 404 {object} middleware.ErrorResponse
 // @Router /auth/sign_up [post]
-func (h *Router) signUp(c *gin.Context) {
+func (r *Router) signUp(c *gin.Context) {
 	var form signUpForm
 
 	err := c.ShouldBindWith(&form, binding.JSON)
@@ -79,7 +79,7 @@ func (h *Router) signUp(c *gin.Context) {
 		return
 	}
 
-	user, err := h.service.SignUp(form.CreateUser)
+	user, err := r.service.SignUp(form.CreateUser)
 	if err != nil {
 		middleware.Response404(c, err)
 		return

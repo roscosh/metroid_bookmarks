@@ -15,7 +15,7 @@ import (
 // @Success 200 {object}  createResponse
 // @Failure 404 {object} middleware.ErrorResponse
 // @router /skills/ [post]
-func (h *Router) create(c *gin.Context) {
+func (r *Router) create(c *gin.Context) {
 	var form createForm
 
 	err := c.ShouldBindWith(&form, binding.JSON)
@@ -24,7 +24,7 @@ func (h *Router) create(c *gin.Context) {
 		return
 	}
 
-	skill, err := h.service.Create(form.CreateSkill)
+	skill, err := r.service.Create(form.CreateSkill)
 	if err != nil {
 		middleware.Response404(c, err)
 		return
@@ -42,7 +42,7 @@ func (h *Router) create(c *gin.Context) {
 // @Success 200 {object}  editResponse
 // @Failure 404 {object} middleware.ErrorResponse
 // @router /skills/{id} [put]
-func (h *Router) edit(c *gin.Context) {
+func (r *Router) edit(c *gin.Context) {
 	skillID, err := middleware.GetPathID(c)
 	if err != nil {
 		middleware.Response404(c, err)
@@ -57,7 +57,7 @@ func (h *Router) edit(c *gin.Context) {
 		return
 	}
 
-	skill, err := h.service.Edit(skillID, form.EditSkill)
+	skill, err := r.service.Edit(skillID, form.EditSkill)
 	if err != nil {
 		middleware.Response404(c, err)
 		return
@@ -74,14 +74,14 @@ func (h *Router) edit(c *gin.Context) {
 // @Success 200 {object} deleteResponse
 // @Failure 404 {object} middleware.ErrorResponse
 // @Router /skills/{id} [delete]
-func (h *Router) delete(c *gin.Context) {
+func (r *Router) delete(c *gin.Context) {
 	skillID, err := middleware.GetPathID(c)
 	if err != nil {
 		middleware.Response404(c, err)
 		return
 	}
 
-	skill, err := h.service.Delete(skillID)
+	skill, err := r.service.Delete(skillID)
 	if err != nil {
 		middleware.Response404(c, err)
 		return
@@ -97,8 +97,8 @@ func (h *Router) delete(c *gin.Context) {
 // @Success 200 {object}  getAllResponse
 // @Failure 404 {object} middleware.ErrorResponse
 // @router /skills/get_all [get]
-func (h *Router) getAll(c *gin.Context) {
-	skill, total, err := h.service.GetAll()
+func (r *Router) getAll(c *gin.Context) {
+	skill, total, err := r.service.GetAll()
 	if err != nil {
 		middleware.Response404(c, err)
 		return

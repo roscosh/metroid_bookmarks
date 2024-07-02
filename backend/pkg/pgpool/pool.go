@@ -47,10 +47,10 @@ func NewPgPool(dsn string, minConns, maxConns int32, maxConnLifetime, maxConnIdl
 	return &PgPool{pool: pool}, nil
 }
 
-func (d *PgPool) Close() error {
+func (p *PgPool) Close() error {
 	var errMessage string
 
-	d.pool.Close()
+	p.pool.Close()
 
 	defer func() {
 		if r := recover(); r != nil {

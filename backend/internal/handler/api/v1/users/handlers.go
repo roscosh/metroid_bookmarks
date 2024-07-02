@@ -17,7 +17,7 @@ import (
 // @Success 200 {object} changePasswordResponse
 // @Failure 404 {object} middleware.ErrorResponse
 // @Router /users/change_password/{id} [put]
-func (h *Router) changePassword(c *gin.Context) {
+func (r *Router) changePassword(c *gin.Context) {
 	userID, err := middleware.GetPathID(c)
 	if err != nil {
 		middleware.Response404(c, err)
@@ -32,7 +32,7 @@ func (h *Router) changePassword(c *gin.Context) {
 		return
 	}
 
-	user, err := h.service.ChangePassword(userID, form.Password)
+	user, err := r.service.ChangePassword(userID, form.Password)
 	if err != nil {
 		middleware.Response404(c, err)
 		return
@@ -49,14 +49,14 @@ func (h *Router) changePassword(c *gin.Context) {
 // @Success 200 {object} deleteResponse
 // @Failure 404 {object} middleware.ErrorResponse
 // @Router /users/{id} [delete]
-func (h *Router) delete(c *gin.Context) {
+func (r *Router) delete(c *gin.Context) {
 	userID, err := middleware.GetPathID(c)
 	if err != nil {
 		middleware.Response404(c, err)
 		return
 	}
 
-	user, err := h.service.Delete(userID)
+	user, err := r.service.Delete(userID)
 	if err != nil {
 		middleware.Response404(c, err)
 		return
@@ -74,7 +74,7 @@ func (h *Router) delete(c *gin.Context) {
 // @Success 200 {object} editResponse
 // @Failure 404 {object} middleware.ErrorResponse
 // @Router /users/{id} [put]
-func (h *Router) edit(c *gin.Context) {
+func (r *Router) edit(c *gin.Context) {
 	userID, err := middleware.GetPathID(c)
 	if err != nil {
 		middleware.Response404(c, err)
@@ -95,7 +95,7 @@ func (h *Router) edit(c *gin.Context) {
 		IsAdmin: form.IsAdmin,
 	}
 
-	user, err := h.service.Edit(userID, &sqlForm)
+	user, err := r.service.Edit(userID, &sqlForm)
 	if err != nil {
 		middleware.Response404(c, err)
 		return
@@ -112,7 +112,7 @@ func (h *Router) edit(c *gin.Context) {
 // @Success 200 {object} getAllResponse
 // @Failure 404 {object} middleware.ErrorResponse
 // @Router /users/get_all [get]
-func (h *Router) getAll(c *gin.Context) {
+func (r *Router) getAll(c *gin.Context) {
 	var form getAllForm
 
 	err := c.ShouldBindWith(&form, binding.Query)
@@ -121,7 +121,7 @@ func (h *Router) getAll(c *gin.Context) {
 		return
 	}
 
-	users, total, err := h.service.GetAll(form.Search)
+	users, total, err := r.service.GetAll(form.Search)
 	if err != nil {
 		middleware.Response404(c, err)
 		return

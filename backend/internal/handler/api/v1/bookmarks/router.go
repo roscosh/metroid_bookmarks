@@ -25,9 +25,9 @@ func NewRouter(
 	}
 }
 
-func (h *Router) RegisterHandlers(router *gin.RouterGroup) {
-	router.POST("/", h.create)
-	router.DELETE("/:id", h.delete)
-	router.PUT("/:id", h.edit)
-	router.GET("/get_all", h.getAll)
+func (r *Router) RegisterHandlers(router *gin.RouterGroup) {
+	router.POST("/", r.create)
+	router.DELETE("/:id", r.delete)
+	router.PUT("/:id", r.edit)
+	router.GET("/get_all", r.getAll)
 }
