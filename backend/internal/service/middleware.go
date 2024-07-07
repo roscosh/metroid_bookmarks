@@ -32,7 +32,7 @@ func (m *MiddlewareService) CreateSession() (*session.Session, error) {
 		}
 	}
 
-	return session.NewSession(nil, token, session.AnonymousExpires), nil
+	return session.NewSession(users.User{}, token, session.AnonymousExpires), nil
 }
 
 func (m *MiddlewareService) GetExistSession(token string) (*session.Session, error) {
@@ -60,7 +60,7 @@ func (m *MiddlewareService) GetExistSession(token string) (*session.Session, err
 		}
 	}
 
-	return session.NewSession(user, token, expires), nil
+	return session.NewSession(*user, token, expires), nil
 }
 
 func (m *MiddlewareService) UpdateSession(sessionObj *session.Session) {
