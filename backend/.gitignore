@@ -16,6 +16,6 @@
 
 /tmp/*
 
-backend/.env
-backend/data
-backend/trash
+.env
+data
+trash
