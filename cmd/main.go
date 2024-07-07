@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"metroid_bookmarks/internal/app"
 	"metroid_bookmarks/internal/models"
 	"metroid_bookmarks/pkg/misc/log"
@@ -12,6 +13,8 @@ import (
 // @host localhost:3000
 // @BasePath /api/v1
 func main() {
+	flag.Parse()
+
 	envConf, err := models.NewEnvConfig()
 	if err != nil {
 		panic(err.Error())

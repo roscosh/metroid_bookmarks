@@ -9,10 +9,10 @@ else
 endif
 
 build:
-	docker compose -f $(FILE) --env-file .env --project-directory . -p $(PROJECT) build
+	DOCKER_BUILDKIT=0 docker compose -f $(FILE) --env-file .env --project-directory . -p $(PROJECT) build
 
 start:
-	docker compose -f $(FILE) --env-file .env --project-directory . -p $(PROJECT) up
+	DOCKER_BUILDKIT=0 docker compose -f $(FILE) --env-file .env --project-directory . -p $(PROJECT) up
 
 logs:
 	docker compose -p $(PROJECT) logs app -f
