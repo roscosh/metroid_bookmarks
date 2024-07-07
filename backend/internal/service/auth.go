@@ -56,7 +56,7 @@ func (s *AuthService) SignUp(createForm *users.CreateUser) (*users.User, error) 
 
 func generatePasswordHash(password string) string {
 	hash := sha512.New()
-	hash.Write([]byte(password))
+	hash.Write([]byte(password + salt))
 
-	return hex.EncodeToString(hash.Sum([]byte(salt)))
+	return hex.EncodeToString(hash.Sum(nil))
 }
