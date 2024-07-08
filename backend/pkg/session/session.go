@@ -14,14 +14,15 @@ const (
 
 type Session struct {
 	*users.User
-	Token   string `db:"token"   json:"token"`
-	Expires int    `db:"expires" json:"expires"`
+	Token   string `json:"token"`
+	Expires int    `json:"expires"`
 }
 
 func NewSession(user *users.User, token string, expires int) *Session {
 	if user == nil {
 		user = new(users.User)
 	}
+
 	return &Session{User: user, Token: token, Expires: expires}
 }
 
