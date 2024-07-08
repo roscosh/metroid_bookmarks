@@ -1,15 +1,11 @@
 package pgpool
 
 import (
-	"context"
 	"errors"
 	"fmt"
 	"metroid_bookmarks/pkg/misc"
 	"reflect"
 	"strings"
-
-	"github.com/jackc/pgx/v5"
-	"github.com/jackc/pgx/v5/pgconn"
 )
 
 var (
@@ -18,13 +14,7 @@ var (
 )
 
 type SQL[T any] interface {
-	// Query methods
-	CollectOneRow(rows pgx.Rows) (*T, error)
-	CollectRows(rows pgx.Rows) ([]T, error)
-	Exec(query string, args ...any) (pgconn.CommandTag, error)
-	Query(query string, args ...any) (pgx.Rows, error)
-	QueryRow(query string, args ...any) pgx.Row
-	// CRUD methods
+	sqlQuery[T]
 	Delete(pk int) (*T, error)
 	DeleteWhere(whereStatement string, args ...any) (*T, error)
 	Insert(createStruct interface{}) (*T, error)
@@ -39,37 +29,16 @@ type SQL[T any] interface {
 
 func NewSQL[T any](dbPool *PgPool, table string) SQL[T] {
 	return &sql[T]{
-		PgPool:  dbPool,
-		table:   table,
-		columns: getDBTags[T](),
+		sqlQuery: &baseQuery[T]{dbPool},
+		table:    table,
+		columns:  getDBTags[T](),
 	}
 }
 
 type sql[T any] struct {
-	*PgPool
+	sqlQuery[T]
 	table   string
 	columns string
-}
-
-func (s *sql[T]) CollectOneRow(rows pgx.Rows) (*T, error) {
-	structObj, err := pgx.CollectOneRow(rows, pgx.RowToStructByName[T])
-	return &structObj, err
-}
-
-func (s *sql[T]) CollectRows(rows pgx.Rows) ([]T, error) {
-	return pgx.CollectRows(rows, pgx.RowToStructByName[T])
-}
-
-func (s *sql[T]) Exec(query string, args ...any) (pgconn.CommandTag, error) {
-	return s.pool.Exec(context.Background(), query, args...)
-}
-
-func (s *sql[T]) Query(query string, args ...any) (pgx.Rows, error) {
-	return s.pool.Query(context.Background(), query, args...)
-}
-
-func (s *sql[T]) QueryRow(query string, args ...any) pgx.Row {
-	return s.pool.QueryRow(context.Background(), query, args...)
 }
 
 func (s *sql[T]) Delete(pk int) (*T, error) {
@@ -95,7 +64,7 @@ func (s *sql[T]) DeleteWhere(whereStatement string, args ...any) (*T, error) {
 }
 
 func (s *sql[T]) Insert(createStruct interface{}) (*T, error) {
-	query, args, err := s.GetInsertQuery(createStruct)
+	query, args, err := s.getInsertQuery(createStruct)
 	if err != nil {
 		return nil, err
 	}
@@ -161,7 +130,7 @@ func (s *sql[T]) Total() (int, error) {
 }
 
 func (s *sql[T]) Update(pk int, editStruct interface{}) (*T, error) {
-	query, args, err := s.GetUpdateQuery(editStruct, "id=$1", pk)
+	query, args, err := s.getUpdateQuery(editStruct, "id=$1", pk)
 	if err != nil {
 		return nil, err
 	}
@@ -175,7 +144,7 @@ func (s *sql[T]) Update(pk int, editStruct interface{}) (*T, error) {
 }
 
 func (s *sql[T]) UpdateWhere(editStruct interface{}, where string, args ...any) (*T, error) {
-	query, args, err := s.GetUpdateQuery(editStruct, where, args...)
+	query, args, err := s.getUpdateQuery(editStruct, where, args...)
 	if err != nil {
 		return nil, err
 	}
@@ -188,7 +157,7 @@ func (s *sql[T]) UpdateWhere(editStruct interface{}, where string, args ...any) 
 	return s.CollectOneRow(rows)
 }
 
-func (s *sql[T]) GetInsertQuery(createInterface interface{}) (string, []interface{}, error) {
+func (s *sql[T]) getInsertQuery(createInterface interface{}) (string, []interface{}, error) {
 	t := reflect.TypeOf(createInterface)
 	if t.Kind() != reflect.Ptr || t.Elem().Kind() != reflect.Struct {
 		return "", nil, ErrPointerStruct
@@ -224,7 +193,7 @@ func (s *sql[T]) GetInsertQuery(createInterface interface{}) (string, []interfac
 	return query, valuesArray, nil
 }
 
-func (s *sql[T]) GetUpdateQuery(
+func (s *sql[T]) getUpdateQuery(
 	setInterface interface{},
 	where string,
 	args ...any,
