@@ -1,9 +1,9 @@
 package users
 
 type User struct {
-	ID      int    `db:"id"       json:"id"`
 	Name    string `db:"name"     json:"name"`
 	Login   string `db:"login"    json:"login"`
+	ID      int    `db:"id"       json:"id"`
 	IsAdmin bool   `db:"is_admin" json:"is_admin"`
 }
 

@@ -1,17 +1,17 @@
 package photos
 
 type Photo struct {
-	ID  int    `json:"id"`
 	URL string `json:"url"`
+	ID  int    `json:"id"`
 }
 
 type PhotoPreview struct {
+	Name       string `db:"name"        json:"name"`
 	ID         int    `db:"id"          json:"id"`
 	BookmarkID int    `db:"bookmark_id" json:"bookmark_id"`
-	Name       string `db:"name"        json:"name"`
 }
 
 type CreatePhoto struct {
-	BookmarkID int    `db:"bookmark_id"`
 	Name       string `db:"name"`
+	BookmarkID int    `db:"bookmark_id"`
 }

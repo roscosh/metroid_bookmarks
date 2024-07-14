@@ -26,10 +26,10 @@ type editResponse struct {
 }
 
 type getAllForm struct {
-	Limit     int   `binding:"required" form:"limit"`
-	Page      int   `binding:"required" form:"page"`
 	OrderByID *bool `form:"order_by_id"`
 	Completed *bool `form:"completed"`
+	Limit     int   `binding:"required" form:"limit"`
+	Page      int   `binding:"required" form:"page"`
 }
 
 type getAllResponse struct {

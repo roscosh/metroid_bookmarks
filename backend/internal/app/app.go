@@ -46,7 +46,7 @@ func (a *App) Init() {
 	signal.Notify(quit, syscall.SIGTERM, syscall.SIGINT)
 	<-quit
 
-	a.shutdown()
+	a.shutDown()
 
 	logger.Info("METROID BOOKMARKS API shutting down successfully")
 }
@@ -94,9 +94,9 @@ func (a *App) startUp(appConf *models.AppConfig) {
 	}()
 }
 
-// shutdown function for graceful close. The function will not run on develop mode
-func (a *App) shutdown() {
-	if err := a.srv.Shutdown(context.Background()); err != nil {
+// shutDown function for graceful close. The function will not run in `develop` mode
+func (a *App) shutDown() {
+	if err := a.srv.ShutDown(context.Background()); err != nil {
 		logger.Errorf("error occurred on server shutting down: %s", err.Error())
 	} else {
 		logger.Info("HTTP server closed")

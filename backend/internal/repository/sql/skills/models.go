@@ -1,9 +1,9 @@
 package skills
 
 type Skill struct {
-	ID     int    `db:"id"      json:"id"`
 	NameEn string `db:"name_en" json:"name_en"`
 	NameRu string `db:"name_ru" json:"name_ru"`
+	ID     int    `db:"id"      json:"id"`
 }
 
 type CreateSkill struct {

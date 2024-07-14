@@ -1,9 +1,9 @@
 package rooms
 
 type Room struct {
-	ID     int    `db:"id"      json:"id"`
 	NameEn string `db:"name_en" json:"name_en"`
 	NameRu string `db:"name_ru" json:"name_ru"`
+	ID     int    `db:"id"      json:"id"`
 }
 
 type CreateRoom struct {
