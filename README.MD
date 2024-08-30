@@ -46,6 +46,12 @@ sudo docker compose exec web go install github.com/swaggo/swag/cmd/swag@latest
 sudo docker compose exec web swag init -g cmd/main.go
 ```
 
+3. Выравнивание структур
+
+```bash
+fieldalignment --fix ./...
+```
+
 ## PRODUCTION
 
 ### 1. Обновление Backend
