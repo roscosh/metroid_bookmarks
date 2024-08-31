@@ -1,5 +1,7 @@
 include .env
 
+export DOCKER_BUILDKIT=0
+
 ifeq ($(PRODUCTION), true)
 	FILE=./conf/docker/prod/docker-compose.yml
 	PROJECT=metroid_bookmarks_prod
@@ -9,13 +11,13 @@ else
 endif
 
 build:
-	DOCKER_BUILDKIT=0 docker compose -f $(FILE) --env-file .env --project-directory . -p $(PROJECT) build
+	docker compose -f $(FILE) --env-file .env --project-directory . -p $(PROJECT) build
 
 start:
-	DOCKER_BUILDKIT=0 docker compose -f $(FILE) --env-file .env --project-directory . -p $(PROJECT) up
+	docker compose -f $(FILE) --env-file .env --project-directory . -p $(PROJECT) up
 
 silence_start:
-	DOCKER_BUILDKIT=0 docker compose -f $(FILE) --env-file .env --project-directory . -p $(PROJECT) up -d
+	docker compose -f $(FILE) --env-file .env --project-directory . -p $(PROJECT) up -d
 
 logs:
 	docker compose -p $(PROJECT) logs app -f
