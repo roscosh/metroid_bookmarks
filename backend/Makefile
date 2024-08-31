@@ -14,6 +14,9 @@ build:
 start:
 	DOCKER_BUILDKIT=0 docker compose -f $(FILE) --env-file .env --project-directory . -p $(PROJECT) up
 
+silence_start:
+	DOCKER_BUILDKIT=0 docker compose -f $(FILE) --env-file .env --project-directory . -p $(PROJECT) up -d
+
 logs:
 	docker compose -p $(PROJECT) logs app -f
 
