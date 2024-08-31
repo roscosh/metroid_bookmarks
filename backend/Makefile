@@ -22,3 +22,6 @@ stop:
 
 clean:
 	docker compose -p $(PROJECT) down --rmi "local" -v
+
+lint:
+	golangci-lint run cmd/main.go

@@ -63,13 +63,13 @@ func (a *App) startUp(appConf *models.AppConfig) {
 		a.envConf.HealthCheckPeriod,
 	)
 	if err != nil {
-		logger.Errorf("failed to initialize postgreSQL: %s\n", err.Error())
+		logger.Fatalf("failed to initialize postgreSQL: %s\n", err.Error())
 		return
 	}
 
 	a.redisPool, err = redis.NewRedisPool(appConf.Redis.Dsn)
 	if err != nil {
-		logger.Errorf("failed to initialize redis: %s\n", err.Error())
+		logger.Fatalf("failed to initialize redis: %s\n", err.Error())
 		return
 	}
 
@@ -79,7 +79,7 @@ func (a *App) startUp(appConf *models.AppConfig) {
 
 	err = dbmate.DBMigrate(appConf.PostgreSQL.Dsn, appConf.DbmateMigrationsDir)
 	if err != nil {
-		logger.Error(err.Error())
+		logger.Fatalf(err.Error())
 		return
 	}
 
@@ -88,7 +88,7 @@ func (a *App) startUp(appConf *models.AppConfig) {
 	go func() {
 		if err = a.srv.Run(handler.InitRoutes(httpService, appConf, a.envConf.Production)); err != nil {
 			if !errors.Is(err, http.ErrServerClosed) {
-				logger.Errorf("error occurred while running http server: %s", err.Error())
+				logger.Fatalf("error occurred while running http server: %s", err.Error())
 			}
 		}
 	}()
