@@ -7,6 +7,7 @@ import (
 	"github.com/amacneil/dbmate/pkg/driver/postgres"
 )
 
+// TODO перенести в отдельный контейнер dbmate
 func DBMigrate(dbURL, migrationsDir string) error {
 	URL, _ := url.Parse(dbURL)
 

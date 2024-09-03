@@ -31,11 +31,10 @@ func NewApp(envConf *models.EnvConfig) *App {
 	return &App{envConf: envConf}
 }
 
-func (a *App) Init() {
+func (a *App) Run() {
 	appConf, err := models.NewAppConfig(a.envConf.AppConfigPath)
 	if err != nil {
-		logger.Error(err.Error())
-		return
+		logger.Fatal(err.Error())
 	}
 
 	a.startUp(appConf)
@@ -86,7 +85,8 @@ func (a *App) startUp(appConf *models.AppConfig) {
 	a.srv = new(misc.Server)
 
 	go func() {
-		if err = a.srv.Run(handler.InitRoutes(httpService, appConf, a.envConf.Production)); err != nil {
+		err = a.srv.Run(handler.InitRoutes(httpService, appConf, a.envConf.Production))
+		if err != nil {
 			if !errors.Is(err, http.ErrServerClosed) {
 				logger.Fatalf("error occurred while running http server: %s", err.Error())
 			}

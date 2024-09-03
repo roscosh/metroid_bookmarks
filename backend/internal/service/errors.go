@@ -10,13 +10,17 @@ import (
 )
 
 var (
-	ErrEmptyStruct        = errors.New("необходимо заполнить хотя бы один параметр в форме")
-	ErrNoToken            = errors.New("нету токена")
-	ErrFileUploadOverload = errors.New("file upload is overloaded, please try later")
+	ErrEmptyStruct        = newError("необходимо заполнить хотя бы один параметр в форме")
+	ErrNoToken            = newError("нету токена")
+	ErrFileUploadOverload = newError("file upload is overloaded, please try later")
 )
 
 type Error struct {
 	message string
+}
+
+func newError(message string) *Error {
+	return &Error{message: message}
 }
 
 func (e *Error) Error() string {
@@ -31,10 +35,10 @@ func createPgError(err error) error {
 		switch pgErr.Code {
 		case "23505":
 			errMessage := parsePgErr23505(pgErr)
-			return &Error{message: errMessage}
+			return newError(errMessage)
 		case "23503":
 			errMessage := parsePgErr23503(pgErr)
-			return &Error{message: errMessage}
+			return newError(errMessage)
 		default:
 			return err
 		}
@@ -48,15 +52,15 @@ func editPgError(err error, rowID int) error {
 
 	switch {
 	case errors.Is(err, pgx.ErrNoRows):
-		return &Error{message: fmt.Sprintf("no row found with id: %v", rowID)}
+		return newError(fmt.Sprintf("no row found with id: %v", rowID))
 	case errors.As(err, &pgErr):
 		switch pgErr.Code {
 		case "23505":
 			errMessage := parsePgErr23505(pgErr)
-			return &Error{message: errMessage}
+			return newError(errMessage)
 		case "23503":
 			errMessage := parsePgErr23503(pgErr)
-			return &Error{message: errMessage}
+			return newError(errMessage)
 		default:
 			return err
 		}
@@ -69,7 +73,7 @@ func deletePgError(err error, rowID int) error {
 	var errMessage string
 	if errors.Is(err, pgx.ErrNoRows) {
 		errMessage = fmt.Sprintf(`No row with id="%v"!`, rowID)
-		return &Error{message: errMessage}
+		return newError(errMessage)
 	}
 
 	return err
@@ -79,7 +83,7 @@ func selectPgError(err error, id int) error {
 	var errMessage string
 	if errors.Is(err, pgx.ErrNoRows) {
 		errMessage = fmt.Sprintf(`No row with id="%v"!`, id)
-		return &Error{message: errMessage}
+		return newError(errMessage)
 	}
 
 	return err

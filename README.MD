@@ -52,6 +52,11 @@ sudo docker compose exec web swag init -g cmd/main.go
 fieldalignment --fix ./...
 ```
 
+4. Linter
+```bash
+   golangci-lint run cmd/main.go
+```
+
 ## PRODUCTION
 
 ### 1. Обновление Backend

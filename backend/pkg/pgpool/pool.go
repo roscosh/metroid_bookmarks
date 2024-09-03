@@ -8,14 +8,6 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-type Error struct {
-	message string
-}
-
-func (e *Error) Error() string {
-	return e.message
-}
-
 type PgPool struct {
 	pool *pgxpool.Pool
 }
@@ -47,21 +39,13 @@ func NewPgPool(dsn string, minConns, maxConns int32, maxConnLifetime, maxConnIdl
 	return &PgPool{pool: pool}, nil
 }
 
-func (p *PgPool) Close() error {
-	var errMessage string
-
-	p.pool.Close()
-
+func (p *PgPool) Close() (err error) {
 	defer func() {
 		if r := recover(); r != nil {
-			errMessage = fmt.Sprintf("postgreSQL couldn't close %s", r)
-			return
+			err = fmt.Errorf("postgreSQL couldn't close %s", r)
 		}
 	}()
 
-	if errMessage != "" {
-		return &Error{message: errMessage}
-	}
-
+	p.pool.Close()
 	return nil
 }
