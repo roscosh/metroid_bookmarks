@@ -7,7 +7,9 @@ output:
 issues:
   max-issues-per-linter: 0
   max-same-issues: 0
-
+  exclude-dirs:
+    - /root/sdk
+    - /root/go
 #  fix: true
 
 linters:

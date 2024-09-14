@@ -2,22 +2,10 @@ version: '3.8'
 
 services:
   app:
-    build:
-      dockerfile: conf/docker/dev/Dockerfile
+    extends:
+      service: go
     ports:
       - "3000:3000"
-    environment:
-      - APP_CONFIG_PATH=$APP_CONFIG_PATH
-      - PRODUCTION=$PRODUCTION
-      - LOG_LEVEL=$LOG_LEVEL
-      - MIN_CONNS=$MIN_CONNS
-      - MAX_CONNS=$MAX_CONNS
-      - MAX_CONN_LIFE_TIME=$MAX_CONN_LIFE_TIME
-      - MAX_CONNIDLE_TIME=$MAX_CONNIDLE_TIME
-      - HEALTH_CHECK_PERIOD=$HEALTH_CHECK_PERIOD
-
-    volumes:
-      - .:/usr/src/app
     command: air -c ./conf/.air.toml ./cmd/main.go -b 0.0.0.0
     depends_on:
       db:
@@ -42,6 +30,35 @@ services:
       - ./data/redisdata:/data
     ports:
       - "6379:6379"
+
+  test:
+    extends:
+      service: go
+    command: go test -v ./...
+    profiles:
+      - test
+
+  linter:
+    extends:
+      service: go
+    command: golangci-lint run cmd/main.go
+    profiles:
+      - linter
+
+  go:
+    build:
+      dockerfile: conf/docker/dev/Dockerfile
+    environment:
+      - APP_CONFIG_PATH=$APP_CONFIG_PATH
+      - PRODUCTION=$PRODUCTION
+      - LOG_LEVEL=$LOG_LEVEL
+      - MIN_CONNS=$MIN_CONNS
+      - MAX_CONNS=$MAX_CONNS
+      - MAX_CONN_LIFE_TIME=$MAX_CONN_LIFE_TIME
+      - MAX_CONNIDLE_TIME=$MAX_CONNIDLE_TIME
+      - HEALTH_CHECK_PERIOD=$HEALTH_CHECK_PERIOD
+    volumes:
+      - .:/usr/src/app
 
 networks:
   default:

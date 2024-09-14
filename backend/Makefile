@@ -1,6 +1,7 @@
 include .env
 
 export DOCKER_BUILDKIT=0
+export COMPOSE_ENV_FILE=.env
 
 ifeq ($(PRODUCTION), true)
 	FILE=./conf/docker/prod/docker-compose.yml
@@ -10,23 +11,34 @@ else
 	PROJECT=metroid_bookmarks_dev
 endif
 
+# build containers
 build:
-	docker compose -f $(FILE) --env-file .env --project-directory . -p $(PROJECT) build
+	docker compose -f $(FILE) --project-directory . -p $(PROJECT) build app
 
+# Run containers
 start:
-	docker compose -f $(FILE) --env-file .env --project-directory . -p $(PROJECT) up
+	docker compose -f $(FILE) --project-directory . -p $(PROJECT) up app
 
+# Run containers in the background
 silence_start:
-	docker compose -f $(FILE) --env-file .env --project-directory . -p $(PROJECT) up -d
+	docker compose -f $(FILE) --project-directory . -p $(PROJECT) up -d app
 
+# show and follow logs of container
 logs:
 	docker compose -p $(PROJECT) logs app -f
 
+# stop container
 stop:
 	docker compose -p $(PROJECT) stop
 
+# completely remove application with container, image and volumes
 clean:
 	docker compose -p $(PROJECT) down --rmi "local" -v
 
+# run linter(only for develop mode)
 lint:
-	golangci-lint run cmd/main.go
+	docker compose -f ./conf/docker/dev/docker-compose.yml --project-directory . -p $(PROJECT) up linter
+
+# run tests(only for develop mode)
+tests:
+	docker compose -f ./conf/docker/dev/docker-compose.yml --project-directory . -p $(PROJECT) up test
