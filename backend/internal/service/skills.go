@@ -25,10 +25,6 @@ func (s *SkillsService) Create(createForm *skills.CreateSkill) (*skills.Skill, e
 }
 
 func (s *SkillsService) Edit(skillID int, editForm *skills.EditSkill) (*skills.Skill, error) {
-	if (editForm == &skills.EditSkill{}) {
-		return nil, ErrEmptyStruct
-	}
-
 	skill, err := s.sql.Edit(skillID, editForm)
 	if err != nil {
 		logger.Error(err.Error())

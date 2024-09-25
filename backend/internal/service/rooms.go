@@ -25,10 +25,6 @@ func (s *RoomsService) Create(createForm *rooms.CreateRoom) (*rooms.Room, error)
 }
 
 func (s *RoomsService) Edit(roomID int, editForm *rooms.EditRoom) (*rooms.Room, error) {
-	if (editForm == &rooms.EditRoom{}) {
-		return nil, ErrEmptyStruct
-	}
-
 	room, err := s.sql.Edit(roomID, editForm)
 	if err != nil {
 		logger.Error(err.Error())

@@ -2,6 +2,7 @@ package skills
 
 import (
 	"metroid_bookmarks/internal/handler/api/middleware"
+	"metroid_bookmarks/internal/repository/sql/skills"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
@@ -56,7 +57,10 @@ func (r *Router) edit(c *gin.Context) {
 		middleware.Response404(c, err)
 		return
 	}
-
+	if (form.EditSkill == nil) || (*form.EditSkill == skills.EditSkill{}) {
+		middleware.Response404(c, middleware.ErrEmptyForm)
+		return
+	}
 	skill, err := r.service.Edit(skillID, form.EditSkill)
 	if err != nil {
 		middleware.Response404(c, err)

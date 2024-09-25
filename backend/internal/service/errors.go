@@ -10,7 +10,6 @@ import (
 )
 
 var (
-	ErrEmptyStruct        = newError("необходимо заполнить хотя бы один параметр в форме")
 	ErrNoToken            = newError("нету токена")
 	ErrFileUploadOverload = newError("file upload is overloaded, please try later")
 )

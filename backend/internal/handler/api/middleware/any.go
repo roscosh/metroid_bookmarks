@@ -26,6 +26,7 @@ var (
 	ErrOpenFile          = errors.New("ошибка при открытии файла")
 	ErrSeekImage         = errors.New("ошибка при смещении координат")
 	ErrDecodeImage       = errors.New("ошибка при декодировании изображения")
+	ErrEmptyForm         = errors.New("необходимо заполнить хотя бы один параметр в форме")
 )
 
 type Error struct {

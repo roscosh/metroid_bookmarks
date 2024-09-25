@@ -37,10 +37,6 @@ func (s *BookmarksService) Delete(id, userID int) (*bookmarks.BookmarkPreview, e
 }
 
 func (s *BookmarksService) Edit(bookmarkID, userID int, editForm *bookmarks.EditBookmark) (*bookmarks.BookmarkPreview, error) {
-	if (editForm == &bookmarks.EditBookmark{}) {
-		return nil, ErrEmptyStruct
-	}
-
 	bookmark, err := s.sqlBookmarks.Edit(bookmarkID, userID, editForm)
 	if err != nil {
 		logger.Error(err.Error())

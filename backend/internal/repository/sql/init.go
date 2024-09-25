@@ -12,7 +12,7 @@ import (
 
 type SQL struct {
 	Users     *users.SQL
-	Areas     *areas.SQL
+	Areas     areas.SQL
 	Rooms     *rooms.SQL
 	Skills    *skills.SQL
 	Bookmarks *bookmarks.SQL

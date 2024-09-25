@@ -2,6 +2,7 @@ package rooms
 
 import (
 	"metroid_bookmarks/internal/handler/api/middleware"
+	"metroid_bookmarks/internal/repository/sql/rooms"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
@@ -56,7 +57,10 @@ func (r *Router) edit(c *gin.Context) {
 		middleware.Response404(c, err)
 		return
 	}
-
+	if (form.EditRoom == nil) || (*form.EditRoom == rooms.EditRoom{}) {
+		middleware.Response404(c, err)
+		return
+	}
 	room, err := r.service.Edit(roomID, form.EditRoom)
 	if err != nil {
 		middleware.Response404(c, err)

@@ -40,10 +40,6 @@ func (s *UsersService) Delete(userID int) (*users.User, error) {
 }
 
 func (s *UsersService) Edit(userID int, editForm *users.EditUser) (*users.User, error) {
-	if (editForm == &users.EditUser{}) {
-		return nil, ErrEmptyStruct
-	}
-
 	user, err := s.sql.Edit(userID, editForm)
 	if err != nil {
 		logger.Error(err.Error())

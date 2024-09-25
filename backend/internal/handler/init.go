@@ -21,6 +21,10 @@ func InitRoutes(service *service.Service, appConf *models.AppConfig, production 
 
 	router := gin.New()
 
+	router.GET("/ping", func(c *gin.Context) {
+		c.String(200, "pong")
+	})
+
 	if !production {
 		router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	}

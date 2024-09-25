@@ -42,3 +42,8 @@ lint:
 # run tests(only for develop mode)
 tests:
 	docker compose -f ./conf/docker/dev/docker-compose.yml --project-directory . -p $(PROJECT) up test
+
+mockgen:
+	docker compose -f ./conf/docker/dev/docker-compose.yml --project-directory . -p $(PROJECT) run app mockgen \
+	-source=./internal/repository/sql/areas/areas.go \
+	-destination=./internal/repository/sql/areas/mocks/areas.go

@@ -6,35 +6,43 @@ import (
 
 const areasTable = "areas"
 
-type SQL struct {
+type Sql struct {
 	sql pgpool.SQL[Area]
 }
-
-func NewSQL(dbPool *pgpool.PgPool) *SQL {
-	sql := pgpool.NewSQL[Area](dbPool, areasTable)
-	return &SQL{sql: sql}
+type SQL interface {
+	Create(createForm *CreateArea) (*Area, error)
+	Delete(id int) (*Area, error)
+	Edit(id int, editForm *EditArea) (*Area, error)
+	GetAll() ([]Area, error)
+	GetByID(id int) (*Area, error)
+	Total() (int, error)
 }
 
-func (s *SQL) Create(createForm *CreateArea) (*Area, error) {
+func NewSQL(dbPool *pgpool.PgPool) SQL {
+	sql := pgpool.NewSQL[Area](dbPool, areasTable)
+	return &Sql{sql: sql}
+}
+
+func (s *Sql) Create(createForm *CreateArea) (*Area, error) {
 	return s.sql.Insert(createForm)
 }
 
-func (s *SQL) Delete(id int) (*Area, error) {
+func (s *Sql) Delete(id int) (*Area, error) {
 	return s.sql.Delete(id)
 }
 
-func (s *SQL) Edit(id int, editForm *EditArea) (*Area, error) {
+func (s *Sql) Edit(id int, editForm *EditArea) (*Area, error) {
 	return s.sql.Update(id, editForm)
 }
 
-func (s *SQL) GetAll() ([]Area, error) {
+func (s *Sql) GetAll() ([]Area, error) {
 	return s.sql.SelectMany()
 }
 
-func (s *SQL) GetByID(id int) (*Area, error) {
+func (s *Sql) GetByID(id int) (*Area, error) {
 	return s.sql.SelectOne(id)
 }
 
-func (s *SQL) Total() (int, error) {
+func (s *Sql) Total() (int, error) {
 	return s.sql.Total()
 }

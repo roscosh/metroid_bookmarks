@@ -5,10 +5,10 @@ import (
 )
 
 type AreasService struct {
-	sql *areas.SQL
+	sql areas.SQL
 }
 
-func newAreasService(sql *areas.SQL) *AreasService {
+func newAreasService(sql areas.SQL) *AreasService {
 	return &AreasService{sql: sql}
 }
 
@@ -25,10 +25,6 @@ func (s *AreasService) Create(createForm *areas.CreateArea) (*areas.Area, error)
 }
 
 func (s *AreasService) Edit(areaID int, editForm *areas.EditArea) (*areas.Area, error) {
-	if (editForm == &areas.EditArea{}) {
-		return nil, ErrEmptyStruct
-	}
-
 	area, err := s.sql.Edit(areaID, editForm)
 	if err != nil {
 		logger.Error(err.Error())
