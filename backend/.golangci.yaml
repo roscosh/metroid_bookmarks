@@ -10,6 +10,8 @@ issues:
   exclude-dirs:
     - /root/sdk
     - /root/go
+    - ./data
+    - ./test
 #  fix: true
 
 linters:

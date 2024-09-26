@@ -16,8 +16,6 @@ func (s *AreasService) Create(createForm *areas.CreateArea) (*areas.Area, error)
 	area, err := s.sql.Create(createForm)
 	if err != nil {
 		logger.Error(err.Error())
-		err = createPgError(err)
-
 		return nil, err
 	}
 
@@ -28,8 +26,6 @@ func (s *AreasService) Edit(areaID int, editForm *areas.EditArea) (*areas.Area, 
 	area, err := s.sql.Edit(areaID, editForm)
 	if err != nil {
 		logger.Error(err.Error())
-		err = editPgError(err, areaID)
-
 		return nil, err
 	}
 
@@ -40,8 +36,6 @@ func (s *AreasService) Delete(areaID int) (*areas.Area, error) {
 	area, err := s.sql.Delete(areaID)
 	if err != nil {
 		logger.Error(err.Error())
-		err = deletePgError(err, areaID)
-
 		return nil, err
 	}
 

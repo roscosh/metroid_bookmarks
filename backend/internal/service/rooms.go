@@ -16,8 +16,6 @@ func (s *RoomsService) Create(createForm *rooms.CreateRoom) (*rooms.Room, error)
 	room, err := s.sql.Create(createForm)
 	if err != nil {
 		logger.Error(err.Error())
-		err = createPgError(err)
-
 		return nil, err
 	}
 
@@ -28,8 +26,6 @@ func (s *RoomsService) Edit(roomID int, editForm *rooms.EditRoom) (*rooms.Room, 
 	room, err := s.sql.Edit(roomID, editForm)
 	if err != nil {
 		logger.Error(err.Error())
-		err = editPgError(err, roomID)
-
 		return nil, err
 	}
 
@@ -40,8 +36,6 @@ func (s *RoomsService) Delete(roomID int) (*rooms.Room, error) {
 	room, err := s.sql.Delete(roomID)
 	if err != nil {
 		logger.Error(err.Error())
-		err = deletePgError(err, roomID)
-
 		return nil, err
 	}
 

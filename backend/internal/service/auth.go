@@ -46,8 +46,6 @@ func (s *AuthService) SignUp(createForm *users.CreateUser) (*users.User, error) 
 	user, err := s.sql.Create(createForm)
 	if err != nil {
 		logger.Error(err.Error())
-		err = createPgError(err)
-
 		return nil, err
 	}
 

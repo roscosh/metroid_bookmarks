@@ -88,15 +88,18 @@ func (r *Router) edit(c *gin.Context) {
 		middleware.Response404(c, err)
 		return
 	}
+
 	if (form == editForm{}) {
 		middleware.Response404(c, middleware.ErrEmptyForm)
 		return
 	}
+
 	sqlForm := users.EditUser{
 		Name:    form.Name,
 		Login:   form.Login,
 		IsAdmin: form.IsAdmin,
 	}
+
 	user, err := r.service.Edit(userID, &sqlForm)
 	if err != nil {
 		middleware.Response404(c, err)

@@ -1,6 +1,7 @@
 package users
 
 import (
+	"metroid_bookmarks/internal/repository/sql/pgerr"
 	"metroid_bookmarks/pkg/pgpool"
 )
 
@@ -16,15 +17,33 @@ func NewSQL(dbPool *pgpool.PgPool) *SQL {
 }
 
 func (s *SQL) Create(createForm *CreateUser) (*User, error) {
-	return s.sql.Insert(createForm)
+	entity, err := s.sql.Insert(createForm)
+	if err != nil {
+		err = pgerr.CreatePgError(err)
+		return nil, err
+	}
+
+	return entity, nil
 }
 
 func (s *SQL) Delete(id int) (*User, error) {
-	return s.sql.Delete(id)
+	entity, err := s.sql.Delete(id)
+	if err != nil {
+		err = pgerr.DeletePgError(err, id)
+		return nil, err
+	}
+
+	return entity, nil
 }
 
 func (s *SQL) Edit(id int, editForm *EditUser) (*User, error) {
-	return s.sql.Update(id, editForm)
+	entity, err := s.sql.Update(id, editForm)
+	if err != nil {
+		err = pgerr.EditPgError(err, id)
+		return nil, err
+	}
+
+	return entity, nil
 }
 
 func (s *SQL) GetAll(search string) ([]User, error) {

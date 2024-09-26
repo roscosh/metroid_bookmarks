@@ -112,10 +112,12 @@ func (r *Router) edit(c *gin.Context) {
 		middleware.Response404(c, err)
 		return
 	}
+
 	if (form.EditBookmark == nil) || (*form.EditBookmark == bookmarks.EditBookmark{}) {
 		middleware.Response404(c, middleware.ErrEmptyForm)
 		return
 	}
+
 	bookmark, err := r.bookmarksService.Edit(bookmarkID, session.ID, form.EditBookmark)
 	if err != nil {
 		middleware.Response404(c, err)

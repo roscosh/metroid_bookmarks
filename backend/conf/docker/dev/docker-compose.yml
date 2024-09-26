@@ -41,7 +41,7 @@ services:
   linter:
     extends:
       service: go
-    command: golangci-lint run cmd/main.go
+    command: golangci-lint run
     profiles:
       - linter
 

@@ -47,5 +47,6 @@ func (p *PgPool) Close() (err error) {
 	}()
 
 	p.pool.Close()
+
 	return nil
 }

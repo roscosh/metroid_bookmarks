@@ -57,10 +57,12 @@ func (r *Router) edit(c *gin.Context) {
 		middleware.Response404(c, err)
 		return
 	}
+
 	if (form.EditArea == nil) || (*form.EditArea == areas.EditArea{}) {
 		middleware.Response404(c, middleware.ErrEmptyForm)
 		return
 	}
+
 	area, err := r.service.Edit(areaID, form.EditArea)
 	if err != nil {
 		middleware.Response404(c, err)

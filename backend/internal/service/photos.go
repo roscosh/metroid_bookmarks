@@ -39,7 +39,7 @@ func (s *PhotosService) Create(
 		errMessage = fmt.Sprintf("Ошибка при создании директории:%s", err)
 		logger.Error(errMessage)
 
-		return nil, &Error{message: errMessage}
+		return nil, NewErr(errMessage)
 	}
 
 	NewFilename := time.Now().UTC().Format("20060102_150405")
@@ -55,7 +55,7 @@ func (s *PhotosService) Create(
 				errMessage = fmt.Sprintf("Ошибка при сохранении файла:%s", err)
 				logger.Error(errMessage)
 
-				return nil, &Error{message: errMessage}
+				return nil, NewErr(errMessage)
 			}
 
 			success = true
@@ -78,9 +78,7 @@ func (s *PhotosService) Create(
 
 	photo, err := s.sql.Create(&createForm)
 	if err != nil {
-		err = createPgError(err)
 		logger.Error(err.Error())
-
 		return nil, err
 	}
 
@@ -91,8 +89,6 @@ func (s *PhotosService) Delete(photoID, userID int) (*photos.PhotoPreview, error
 	photo, err := s.sql.Delete(photoID, userID)
 	if err != nil {
 		logger.Error(err.Error())
-		err = deletePgError(err, photoID)
-
 		return nil, err
 	}
 

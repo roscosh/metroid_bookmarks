@@ -1,6 +1,7 @@
 package photos
 
 import (
+	"metroid_bookmarks/internal/repository/sql/pgerr"
 	"metroid_bookmarks/pkg/pgpool"
 )
 
@@ -16,7 +17,13 @@ func NewSQL(dbPool *pgpool.PgPool) *SQL {
 }
 
 func (s *SQL) Create(createForm *CreatePhoto) (*PhotoPreview, error) {
-	return s.sql.Insert(createForm)
+	entity, err := s.sql.Insert(createForm)
+	if err != nil {
+		err = pgerr.CreatePgError(err)
+		return nil, err
+	}
+
+	return entity, nil
 }
 
 func (s *SQL) Delete(photoID, userID int) (*PhotoPreview, error) {
@@ -33,5 +40,11 @@ func (s *SQL) Delete(photoID, userID int) (*PhotoPreview, error) {
 		return nil, err
 	}
 
-	return s.sql.CollectOneRow(rows)
+	entity, err := s.sql.CollectOneRow(rows)
+	if err != nil {
+		err = pgerr.DeletePgError(err, photoID)
+		return nil, err
+	}
+
+	return entity, nil
 }

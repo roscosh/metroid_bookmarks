@@ -19,8 +19,6 @@ func (s *UsersService) ChangePassword(userID int, password string) (*users.User,
 	user, err := s.sql.Edit(userID, &editForm)
 	if err != nil {
 		logger.Error(err.Error())
-		err = editPgError(err, userID)
-
 		return nil, err
 	}
 
@@ -31,8 +29,6 @@ func (s *UsersService) Delete(userID int) (*users.User, error) {
 	user, err := s.sql.Delete(userID)
 	if err != nil {
 		logger.Error(err.Error())
-		err = deletePgError(err, userID)
-
 		return nil, err
 	}
 
@@ -43,8 +39,6 @@ func (s *UsersService) Edit(userID int, editForm *users.EditUser) (*users.User, 
 	user, err := s.sql.Edit(userID, editForm)
 	if err != nil {
 		logger.Error(err.Error())
-		err = editPgError(err, userID)
-
 		return nil, err
 	}
 

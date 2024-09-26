@@ -16,8 +16,6 @@ func (s *SkillsService) Create(createForm *skills.CreateSkill) (*skills.Skill, e
 	skill, err := s.sql.Create(createForm)
 	if err != nil {
 		logger.Error(err.Error())
-		err = createPgError(err)
-
 		return nil, err
 	}
 
@@ -28,8 +26,6 @@ func (s *SkillsService) Edit(skillID int, editForm *skills.EditSkill) (*skills.S
 	skill, err := s.sql.Edit(skillID, editForm)
 	if err != nil {
 		logger.Error(err.Error())
-		err = editPgError(err, skillID)
-
 		return nil, err
 	}
 
@@ -40,8 +36,6 @@ func (s *SkillsService) Delete(skillID int) (*skills.Skill, error) {
 	skill, err := s.sql.Delete(skillID)
 	if err != nil {
 		logger.Error(err.Error())
-		err = deletePgError(err, skillID)
-
 		return nil, err
 	}
 

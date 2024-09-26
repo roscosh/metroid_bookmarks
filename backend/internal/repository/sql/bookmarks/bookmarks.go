@@ -3,6 +3,7 @@ package bookmarks
 import (
 	"errors"
 	"fmt"
+	"metroid_bookmarks/internal/repository/sql/pgerr"
 	"metroid_bookmarks/internal/repository/sql/photos"
 	"metroid_bookmarks/pkg/pgpool"
 	"strings"
@@ -22,15 +23,33 @@ func NewSQL(dbPool *pgpool.PgPool) *SQL {
 }
 
 func (s *SQL) Create(createForm *CreateBookmark) (*BookmarkPreview, error) {
-	return s.sql.Insert(createForm)
+	entity, err := s.sql.Insert(createForm)
+	if err != nil {
+		err = pgerr.CreatePgError(err)
+		return nil, err
+	}
+
+	return entity, nil
 }
 
 func (s *SQL) Delete(id, userID int) (*BookmarkPreview, error) {
-	return s.sql.DeleteWhere("id=$1 AND user_id=$2", id, userID)
+	entity, err := s.sql.DeleteWhere("id=$1 AND user_id=$2", id, userID)
+	if err != nil {
+		err = pgerr.DeletePgError(err, id)
+		return nil, err
+	}
+
+	return entity, nil
 }
 
 func (s *SQL) Edit(id, userID int, editForm *EditBookmark) (*BookmarkPreview, error) {
-	return s.sql.UpdateWhere(editForm, "id=$1 AND user_id=$2", id, userID)
+	entity, err := s.sql.UpdateWhere(editForm, "id=$1 AND user_id=$2", id, userID)
+	if err != nil {
+		err = pgerr.EditPgError(err, id)
+		return nil, err
+	}
+
+	return entity, nil
 }
 
 func (s *SQL) GetAll(limit, offset, userID int, completed, orderByID *bool) ([]Bookmark, error) {
@@ -146,7 +165,13 @@ func (s *SQL) GetAll(limit, offset, userID int, completed, orderByID *bool) ([]B
 }
 
 func (s *SQL) GetByID(id int) (*BookmarkPreview, error) {
-	return s.sql.SelectOne(id)
+	entity, err := s.sql.SelectOne(id)
+	if err != nil {
+		err = pgerr.SelectPgError(err, id)
+		return nil, err
+	}
+
+	return entity, nil
 }
 
 func (s *SQL) Total(userID int, completed *bool) (int, error) {
