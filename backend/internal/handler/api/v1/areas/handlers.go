@@ -3,13 +3,10 @@ package areas
 import (
 	"metroid_bookmarks/internal/handler/api/middleware"
 	"metroid_bookmarks/internal/repository/sql/areas"
-	"metroid_bookmarks/pkg/misc/log"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 )
-
-var logger = log.GetLogger()
 
 // @Summary create
 // @Tags areas

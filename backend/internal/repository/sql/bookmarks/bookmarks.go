@@ -15,7 +15,7 @@ var ErrZeroID = errors.New("userId must be greater than zero")
 
 type SQL interface {
 	Create(createForm *CreateBookmark) (*BookmarkPreview, error)
-	Delete(id int, userID int) (*BookmarkPreview, error)
+	Delete(id, userID int) (*BookmarkPreview, error)
 	Edit(id, userID int, editForm *EditBookmark) (*BookmarkPreview, error)
 	GetAll(limit, offset, userID int, completed, orderByID *bool) ([]Bookmark, error)
 	GetByID(id int) (*BookmarkPreview, error)

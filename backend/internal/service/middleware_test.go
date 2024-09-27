@@ -179,8 +179,9 @@ func TestMiddlewareService_GetExistSession_ErrNoID(t *testing.T) {
 	usersSQL := mock_users.NewMockSQL(ctl)
 	middlewareService := newMiddlewareService(usersSQL, sessionRedis)
 
-	token := "we234f32fp3f23f32f23f3f3f"
-	userID := 1
+	const token = "we234f32fp3f23f32f23f3f3f"
+
+	const userID = 1
 	errNoID := errors.New(fmt.Sprintf(`No row with id="%v"!`, userID))
 
 	sessionRedis.EXPECT().Get(token).Return(userID, nil)
@@ -201,8 +202,9 @@ func TestMiddlewareService_GetExistSession_Authenticated(t *testing.T) {
 	usersSQL := mock_users.NewMockSQL(ctl)
 	middlewareService := newMiddlewareService(usersSQL, sessionRedis)
 
-	token := "we234f32fp3f23f32f23f3f3f"
-	userID := 1
+	const token = "we234f32fp3f23f32f23f3f3f"
+
+	const userID = 1
 	user := &users.User{
 		Name:    "roascosh",
 		Login:   "roascosh@mail.ru",
@@ -234,7 +236,7 @@ func TestMiddlewareService_UpdateSession(t *testing.T) {
 	usersSQL := mock_users.NewMockSQL(ctl)
 	middlewareService := newMiddlewareService(usersSQL, sessionRedis)
 
-	token := "we234f32fp3f23f32f23f3f3f"
+	const token = "we234f32fp3f23f32f23f3f3f"
 	expectedSession := &session.Session{
 		User:    new(users.User),
 		Token:   token,

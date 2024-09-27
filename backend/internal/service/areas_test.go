@@ -14,17 +14,13 @@ import (
 func TestAreasService_Edit(t *testing.T) {
 	t.Parallel()
 
-	ctl := gomock.NewController(t)
-	defer ctl.Finish()
-
 	nameEn := "rome"
 	nameRu := "рим"
+
 	editArea := &areas.EditArea{
 		NameEn: &nameEn,
 		NameRu: &nameRu,
 	}
-
-	sql := mock_areas.NewMockSQL(ctl)
 
 	mockResp := &areas.Area{
 		NameEn: nameEn,
@@ -32,33 +28,28 @@ func TestAreasService_Edit(t *testing.T) {
 		ID:     1,
 	}
 
-	sql.EXPECT().Edit(1, editArea).Return(mockResp, nil).Times(1)
-	sql.EXPECT().Edit(99, editArea).Return(nil, errors.New(fmt.Sprintf("no row found with id: %v", 99))).Times(1)
-	sql.EXPECT().Edit(2, editArea).Return(nil,
-		errors.New(fmt.Sprintf(`Field "%s" with value "%s" already exists!`, "name_en", *editArea.NameEn))).Times(1)
-	sql.EXPECT().Edit(2, editArea).Return(nil,
-		errors.New(fmt.Sprintf(`Field "%s" with value "%s" already exists!`, "name_ru", *editArea.NameRu))).Times(1)
-
 	type fields struct {
-		sql areas.SQL
+		sql *mock_areas.MockSQL
 	}
 
 	type args struct {
 		areaID   int
 		editForm *areas.EditArea
-		extra    int
 	}
 
 	tests := []struct {
 		name    string
 		fields  fields
+		prepare func(f *fields)
 		args    args
 		want    *areas.Area
 		wantErr error
 	}{
 		{
-			name:   "good_test",
-			fields: fields{sql: sql},
+			name: "good_test",
+			prepare: func(f *fields) {
+				f.sql.EXPECT().Edit(1, editArea).Return(mockResp, nil)
+			},
 			args: args{
 				areaID:   1,
 				editForm: editArea,
@@ -67,8 +58,10 @@ func TestAreasService_Edit(t *testing.T) {
 			wantErr: nil,
 		},
 		{
-			name:   "err_no_rows",
-			fields: fields{sql: sql},
+			name: "err_no_rows",
+			prepare: func(f *fields) {
+				f.sql.EXPECT().Edit(99, editArea).Return(nil, errors.New(fmt.Sprintf("no row found with id: %v", 99)))
+			},
 			args: args{
 				areaID:   99,
 				editForm: editArea,
@@ -77,8 +70,11 @@ func TestAreasService_Edit(t *testing.T) {
 			wantErr: errors.New(fmt.Sprintf("no row found with id: %v", 99)),
 		},
 		{
-			name:   "err_duplicate_key_name_en",
-			fields: fields{sql: sql},
+			name: "err_duplicate_key_name_en",
+			prepare: func(f *fields) {
+				f.sql.EXPECT().Edit(2, editArea).Return(nil,
+					errors.New(fmt.Sprintf(`Field "%s" with value "%s" already exists!`, "name_en", *editArea.NameEn)))
+			},
 			args: args{
 				areaID:   2,
 				editForm: editArea,
@@ -87,8 +83,11 @@ func TestAreasService_Edit(t *testing.T) {
 			wantErr: errors.New(fmt.Sprintf(`Field "%s" with value "%s" already exists!`, "name_en", *editArea.NameEn)),
 		},
 		{
-			name:   "err_duplicate_key_name_ru",
-			fields: fields{sql: sql},
+			name: "err_duplicate_key_name_ru",
+			prepare: func(f *fields) {
+				f.sql.EXPECT().Edit(2, editArea).Return(nil,
+					errors.New(fmt.Sprintf(`Field "%s" with value "%s" already exists!`, "name_ru", *editArea.NameRu)))
+			},
 			args: args{
 				areaID:   2,
 				editForm: editArea,
@@ -97,14 +96,26 @@ func TestAreasService_Edit(t *testing.T) {
 			wantErr: errors.New(fmt.Sprintf(`Field "%s" with value "%s" already exists!`, "name_ru", *editArea.NameRu)),
 		},
 	}
-	for _, tt := range tests {
+	for _, tt := range tests { //nolint:varnamelen
 		t.Run(tt.name, func(t *testing.T) {
-			// t.Parallel()
-			s := &AreasService{
-				sql: tt.fields.sql,
+			t.Parallel()
+
+			ctl := gomock.NewController(t)
+			defer ctl.Finish()
+
+			sql := mock_areas.NewMockSQL(ctl)
+
+			f := fields{
+				sql: sql,
 			}
 
-			got, err := s.Edit(tt.args.areaID, tt.args.editForm)
+			if tt.prepare != nil {
+				tt.prepare(&f)
+			}
+
+			areasService := AreasService{sql: sql}
+
+			got, err := areasService.Edit(tt.args.areaID, tt.args.editForm)
 			if tt.wantErr != nil {
 				require.Nil(t, got)
 				require.EqualError(t, err, tt.wantErr.Error())

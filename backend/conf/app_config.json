@@ -1,10 +1,6 @@
 {
-  "postgresql": {
-    "dsn": "postgres://postgres:postgres@db:5432/postgres?sslmode=disable"
-  },
   "redis": {
     "dsn": "redis://redis"
   },
-  "dbmate_migrations_dir": "./schema",
   "photos_path": "./data/app_files/photos"
 }

@@ -13,6 +13,7 @@ type EnvConfig struct {
 	MaxConns          int32  `env:"MAX_CONNS"`
 	MinConns          int32  `env:"MIN_CONNS"`
 	Production        bool   `env:"PRODUCTION"`
+	DatabaseURL       string `env:"DATABASE_URL"`
 }
 
 func NewEnvConfig() (*EnvConfig, error) {

@@ -35,6 +35,10 @@ stop:
 clean:
 	docker compose -p $(PROJECT) down --rmi "local" -v
 
+# run pending postgreSQL migrations
+migrate:
+	docker compose -f $(FILE) --project-directory . -p $(PROJECT) up dbmate
+
 # run linter(only for develop mode)
 lint:
 	docker compose -f ./conf/docker/dev/docker-compose.yml --project-directory . -p $(PROJECT) up linter

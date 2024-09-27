@@ -9,7 +9,6 @@ import (
 	"metroid_bookmarks/internal/repository/sql"
 	"metroid_bookmarks/internal/service"
 	"metroid_bookmarks/pkg/misc"
-	"metroid_bookmarks/pkg/misc/dbmate"
 	"metroid_bookmarks/pkg/misc/log"
 	"metroid_bookmarks/pkg/pgpool"
 	"net/http"
@@ -54,7 +53,7 @@ func (a *App) startUp(appConf *models.AppConfig) {
 	var err error
 
 	a.dbPool, err = pgpool.NewPgPool(
-		appConf.PostgreSQL.Dsn,
+		a.envConf.DatabaseURL,
 		a.envConf.MinConns,
 		a.envConf.MaxConns,
 		a.envConf.MaxConnLifetime,
@@ -75,12 +74,6 @@ func (a *App) startUp(appConf *models.AppConfig) {
 	sqlObj := sql.NewSQL(a.dbPool)
 	redisObj := redis.NewRedis(a.redisPool)
 	httpService := service.NewService(sqlObj, redisObj)
-
-	err = dbmate.DBMigrate(appConf.PostgreSQL.Dsn, appConf.DbmateMigrationsDir)
-	if err != nil {
-		logger.Fatalf(err.Error())
-		return
-	}
 
 	a.srv = new(misc.Server)
 

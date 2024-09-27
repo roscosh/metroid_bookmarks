@@ -6,6 +6,7 @@ import (
 	"metroid_bookmarks/internal/handler/api/middleware"
 	"metroid_bookmarks/internal/models"
 	"metroid_bookmarks/internal/service"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"     // swagger embed files
@@ -22,7 +23,7 @@ func InitRoutes(service *service.Service, appConf *models.AppConfig, production 
 	router := gin.New()
 
 	router.GET("/ping", func(c *gin.Context) {
-		c.String(200, "pong")
+		c.String(http.StatusOK, "pong")
 	})
 
 	if !production {

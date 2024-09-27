@@ -12,17 +12,12 @@ var (
 	ErrFailingConvertFile = errors.New("failing convert file to bytes")
 )
 
-type PostgreSQL struct {
-	Dsn string `json:"dsn"`
-}
 type Redis struct {
 	Dsn string `json:"dsn"`
 }
 type AppConfig struct {
-	PostgreSQL          PostgreSQL `json:"postgresql"`
-	Redis               Redis      `json:"redis"`
-	DbmateMigrationsDir string     `json:"dbmate_migrations_dir"`
-	PhotosPath          string     `json:"photos_path"`
+	Redis      Redis  `json:"redis"`
+	PhotosPath string `json:"photos_path"`
 }
 
 func NewAppConfig(appConfigPath string) (*AppConfig, error) {
