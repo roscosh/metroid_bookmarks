@@ -27,14 +27,13 @@ func TestAreasSQL_Edit(t *testing.T) {
 		NameRu: &nameRu,
 	}
 
-	sql := 	mock_pgpool.NewMockSQL[Area](ctl)
+	sql := mock_pgpool.NewMockSQL[Area](ctl)
 
 	mockResp := &Area{
 		NameEn: nameEn,
 		NameRu: nameRu,
 		ID:     1,
 	}
-
 	sql.EXPECT().Update(1, editArea).Return(mockResp, nil).Times(1)
 	sql.EXPECT().Update(99, editArea).Return(nil, pgx.ErrNoRows).Times(1)
 	sql.EXPECT().Update(2, editArea).Return(nil,
@@ -110,7 +109,7 @@ func TestAreasSQL_Edit(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			//t.Parallel()
+			// t.Parallel()
 			s := areasSQL{
 				sql: tt.fields.sql,
 			}
@@ -125,5 +124,4 @@ func TestAreasSQL_Edit(t *testing.T) {
 			}
 		})
 	}
-
 }

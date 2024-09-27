@@ -7,16 +7,21 @@ import (
 
 const photosTable = "photos"
 
-type SQL struct {
+type SQL interface {
+	Create(createForm *CreatePhoto) (*PhotoPreview, error)
+	Delete(photoID, userID int) (*PhotoPreview, error)
+}
+
+type photoSQL struct {
 	sql pgpool.SQL[PhotoPreview]
 }
 
-func NewSQL(dbPool *pgpool.PgPool) *SQL {
+func NewSQL(dbPool *pgpool.PgPool) SQL {
 	sql := pgpool.NewSQL[PhotoPreview](dbPool, photosTable)
-	return &SQL{sql: sql}
+	return &photoSQL{sql: sql}
 }
 
-func (s *SQL) Create(createForm *CreatePhoto) (*PhotoPreview, error) {
+func (s *photoSQL) Create(createForm *CreatePhoto) (*PhotoPreview, error) {
 	entity, err := s.sql.Insert(createForm)
 	if err != nil {
 		err = pgerr.CreatePgError(err)
@@ -26,7 +31,7 @@ func (s *SQL) Create(createForm *CreatePhoto) (*PhotoPreview, error) {
 	return entity, nil
 }
 
-func (s *SQL) Delete(photoID, userID int) (*PhotoPreview, error) {
+func (s *photoSQL) Delete(photoID, userID int) (*PhotoPreview, error) {
 	query := `
 	   DELETE
 	   FROM photos p

@@ -15,10 +15,10 @@ const (
 var ErrUserDoesNotExist = errors.New("нет пользователя с таки логином/паролем")
 
 type AuthService struct {
-	sql *users.SQL
+	sql users.SQL
 }
 
-func newAuthService(sql *users.SQL) *AuthService {
+func newAuthService(sql users.SQL) *AuthService {
 	return &AuthService{sql: sql}
 }
 

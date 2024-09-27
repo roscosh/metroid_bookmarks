@@ -10,6 +10,7 @@ const areasTable = "areas"
 type areasSQL struct {
 	sql pgpool.SQL[Area]
 }
+
 type SQL interface {
 	Create(createForm *CreateArea) (*Area, error)
 	Delete(id int) (*Area, error)

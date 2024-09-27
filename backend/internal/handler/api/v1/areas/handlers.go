@@ -3,10 +3,13 @@ package areas
 import (
 	"metroid_bookmarks/internal/handler/api/middleware"
 	"metroid_bookmarks/internal/repository/sql/areas"
+	"metroid_bookmarks/pkg/misc/log"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 )
+
+var logger = log.GetLogger()
 
 // @Summary create
 // @Tags areas
@@ -39,7 +42,7 @@ func (r *Router) create(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param id path int true "ID"
-// @Param input body editForm true "edit"
+// @Param input body EditForm true "edit"
 // @Success 200 {object}  editResponse
 // @Failure 404 {object} middleware.ErrorResponse
 // @router /areas/{id} [put]
@@ -50,7 +53,7 @@ func (r *Router) edit(c *gin.Context) {
 		return
 	}
 
-	var form editForm
+	var form EditForm
 
 	err = c.ShouldBindWith(&form, binding.JSON)
 	if err != nil {

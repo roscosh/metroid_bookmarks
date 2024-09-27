@@ -13,16 +13,25 @@ const bookmarksTable = "bookmarks"
 
 var ErrZeroID = errors.New("userId must be greater than zero")
 
-type SQL struct {
+type SQL interface {
+	Create(createForm *CreateBookmark) (*BookmarkPreview, error)
+	Delete(id int, userID int) (*BookmarkPreview, error)
+	Edit(id, userID int, editForm *EditBookmark) (*BookmarkPreview, error)
+	GetAll(limit, offset, userID int, completed, orderByID *bool) ([]Bookmark, error)
+	GetByID(id int) (*BookmarkPreview, error)
+	Total(userID int, completed *bool) (int, error)
+}
+
+type bookmarksSQL struct {
 	sql pgpool.SQL[BookmarkPreview]
 }
 
-func NewSQL(dbPool *pgpool.PgPool) *SQL {
+func NewSQL(dbPool *pgpool.PgPool) SQL {
 	sql := pgpool.NewSQL[BookmarkPreview](dbPool, bookmarksTable)
-	return &SQL{sql: sql}
+	return &bookmarksSQL{sql: sql}
 }
 
-func (s *SQL) Create(createForm *CreateBookmark) (*BookmarkPreview, error) {
+func (s *bookmarksSQL) Create(createForm *CreateBookmark) (*BookmarkPreview, error) {
 	entity, err := s.sql.Insert(createForm)
 	if err != nil {
 		err = pgerr.CreatePgError(err)
@@ -32,7 +41,7 @@ func (s *SQL) Create(createForm *CreateBookmark) (*BookmarkPreview, error) {
 	return entity, nil
 }
 
-func (s *SQL) Delete(id, userID int) (*BookmarkPreview, error) {
+func (s *bookmarksSQL) Delete(id, userID int) (*BookmarkPreview, error) {
 	entity, err := s.sql.DeleteWhere("id=$1 AND user_id=$2", id, userID)
 	if err != nil {
 		err = pgerr.DeletePgError(err, id)
@@ -42,7 +51,7 @@ func (s *SQL) Delete(id, userID int) (*BookmarkPreview, error) {
 	return entity, nil
 }
 
-func (s *SQL) Edit(id, userID int, editForm *EditBookmark) (*BookmarkPreview, error) {
+func (s *bookmarksSQL) Edit(id, userID int, editForm *EditBookmark) (*BookmarkPreview, error) {
 	entity, err := s.sql.UpdateWhere(editForm, "id=$1 AND user_id=$2", id, userID)
 	if err != nil {
 		err = pgerr.EditPgError(err, id)
@@ -52,7 +61,7 @@ func (s *SQL) Edit(id, userID int, editForm *EditBookmark) (*BookmarkPreview, er
 	return entity, nil
 }
 
-func (s *SQL) GetAll(limit, offset, userID int, completed, orderByID *bool) ([]Bookmark, error) {
+func (s *bookmarksSQL) GetAll(limit, offset, userID int, completed, orderByID *bool) ([]Bookmark, error) {
 	var (
 		bookmarks  []Bookmark
 		queryArray []string
@@ -164,7 +173,7 @@ func (s *SQL) GetAll(limit, offset, userID int, completed, orderByID *bool) ([]B
 	return bookmarks, nil
 }
 
-func (s *SQL) GetByID(id int) (*BookmarkPreview, error) {
+func (s *bookmarksSQL) GetByID(id int) (*BookmarkPreview, error) {
 	entity, err := s.sql.SelectOne(id)
 	if err != nil {
 		err = pgerr.SelectPgError(err, id)
@@ -174,7 +183,7 @@ func (s *SQL) GetByID(id int) (*BookmarkPreview, error) {
 	return entity, nil
 }
 
-func (s *SQL) Total(userID int, completed *bool) (int, error) {
+func (s *bookmarksSQL) Total(userID int, completed *bool) (int, error) {
 	var (
 		count      int
 		queryArray []string

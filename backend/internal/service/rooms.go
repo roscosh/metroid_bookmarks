@@ -5,10 +5,10 @@ import (
 )
 
 type RoomsService struct {
-	sql *rooms.SQL
+	sql rooms.SQL
 }
 
-func newRoomsService(sql *rooms.SQL) *RoomsService {
+func newRoomsService(sql rooms.SQL) *RoomsService {
 	return &RoomsService{sql: sql}
 }
 

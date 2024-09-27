@@ -13,10 +13,10 @@ import (
 )
 
 type PhotosService struct {
-	sql *photos.SQL
+	sql photos.SQL
 }
 
-func newPhotosService(sql *photos.SQL) *PhotosService {
+func newPhotosService(sql photos.SQL) *PhotosService {
 	return &PhotosService{sql: sql}
 }
 

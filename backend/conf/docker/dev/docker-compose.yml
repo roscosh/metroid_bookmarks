@@ -34,7 +34,7 @@ services:
   test:
     extends:
       service: go
-    command: go test -v ./...
+    command: go test ./...
     profiles:
       - test
 

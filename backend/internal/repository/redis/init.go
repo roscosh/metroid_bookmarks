@@ -49,13 +49,11 @@ func NewRedisPool(dns string) (*Pool, error) {
 }
 
 type Redis struct {
-	Session *session.Redis
+	Session session.Redis
 }
 
 func NewRedis(redisPool *Pool) *Redis {
-	pool := redisPool.pool
-
 	return &Redis{
-		Session: session.NewRedis(pool, session.SessionKey),
+		Session: session.NewRedis(redisPool.pool, session.SessionKey),
 	}
 }

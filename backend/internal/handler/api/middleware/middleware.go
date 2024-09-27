@@ -9,7 +9,7 @@ import (
 const (
 	userIDQueryKey   = "userId"
 	photoQueryKey    = "photo"
-	sessionCookieKey = "X-Session"
+	SessionCookieKey = "X-Session"
 )
 
 type Middleware struct {
@@ -21,7 +21,7 @@ func NewMiddleware(service *service.MiddlewareService) *Middleware {
 }
 
 func (m *Middleware) SessionRequired(c *gin.Context) {
-	token, _ := c.Cookie(sessionCookieKey)
+	token, _ := c.Cookie(SessionCookieKey)
 
 	sessionObj, err := m.service.GetExistSession(token)
 	if err != nil {

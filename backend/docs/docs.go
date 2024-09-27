@@ -108,7 +108,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/areas.editForm"
+                            "$ref": "#/definitions/areas.EditForm"
                         }
                     }
                 ],
@@ -1096,6 +1096,17 @@ const docTemplate = `{
                 }
             }
         },
+        "areas.EditForm": {
+            "type": "object",
+            "properties": {
+                "name_en": {
+                    "type": "string"
+                },
+                "name_ru": {
+                    "type": "string"
+                }
+            }
+        },
         "areas.createForm": {
             "type": "object",
             "required": [
@@ -1131,17 +1142,6 @@ const docTemplate = `{
                 "id": {
                     "type": "integer"
                 },
-                "name_en": {
-                    "type": "string"
-                },
-                "name_ru": {
-                    "type": "string"
-                }
-            }
-        },
-        "areas.editForm": {
-            "type": "object",
-            "properties": {
                 "name_en": {
                     "type": "string"
                 },

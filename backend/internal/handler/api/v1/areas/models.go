@@ -11,7 +11,7 @@ type createForm struct {
 type createResponse struct {
 	*areas.Area
 }
-type editForm struct {
+type EditForm struct {
 	*areas.EditArea
 }
 type editResponse struct {

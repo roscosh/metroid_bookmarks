@@ -11,15 +11,26 @@ import (
 )
 
 type SQL struct {
-	Users     *users.SQL
+	Users     users.SQL
 	Areas     areas.SQL
-	Rooms     *rooms.SQL
-	Skills    *skills.SQL
-	Bookmarks *bookmarks.SQL
-	Photos    *photos.SQL
+	Rooms     rooms.SQL
+	Skills    skills.SQL
+	Bookmarks bookmarks.SQL
+	Photos    photos.SQL
 }
 
 func NewSQL(dbPool *pgpool.PgPool) *SQL {
+	return &SQL{
+		Users:     users.NewSQL(dbPool),
+		Areas:     areas.NewSQL(dbPool),
+		Rooms:     rooms.NewSQL(dbPool),
+		Skills:    skills.NewSQL(dbPool),
+		Bookmarks: bookmarks.NewSQL(dbPool),
+		Photos:    photos.NewSQL(dbPool),
+	}
+}
+
+func NewMockSQL(dbPool *pgpool.PgPool) *SQL {
 	return &SQL{
 		Users:     users.NewSQL(dbPool),
 		Areas:     areas.NewSQL(dbPool),

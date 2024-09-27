@@ -45,5 +45,5 @@ tests:
 
 mockgen:
 	docker compose -f ./conf/docker/dev/docker-compose.yml --project-directory . -p $(PROJECT) run --rm app mockgen \
-	-source=./pkg/pgpool/sql.go \
-	-destination=./pkg/pgpool/mocks/sql.go
+	-source=./internal/repository/sql/users/users.go \
+	-destination=./internal/repository/sql/users/mocks/users.go

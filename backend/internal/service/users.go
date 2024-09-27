@@ -5,10 +5,10 @@ import (
 )
 
 type UsersService struct {
-	sql *users.SQL
+	sql users.SQL
 }
 
-func newUsersService(sql *users.SQL) *UsersService {
+func newUsersService(sql users.SQL) *UsersService {
 	return &UsersService{sql: sql}
 }
 

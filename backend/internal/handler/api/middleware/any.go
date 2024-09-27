@@ -84,7 +84,7 @@ func GetSession(c *gin.Context) *session.Session {
 }
 
 func SetCookie(c *gin.Context, sessionObj *session.Session) {
-	c.SetCookie(sessionCookieKey, sessionObj.Token, sessionObj.Expires, "", "", false, false)
+	c.SetCookie(SessionCookieKey, sessionObj.Token, sessionObj.Expires, "", "", false, false)
 }
 
 func GetPhoto(c *gin.Context) (*multipart.FileHeader, error) {

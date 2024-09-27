@@ -7,16 +7,26 @@ import (
 
 const usersTable = "users"
 
-type SQL struct {
+type usersSQL struct {
 	sql pgpool.SQL[User]
 }
 
-func NewSQL(dbPool *pgpool.PgPool) *SQL {
-	sql := pgpool.NewSQL[User](dbPool, usersTable)
-	return &SQL{sql: sql}
+type SQL interface {
+	Create(createForm *CreateUser) (*User, error)
+	Delete(id int) (*User, error)
+	Edit(id int, editForm *EditUser) (*User, error)
+	GetAll(search string) ([]User, error)
+	GetByCredentials(login, password string) (*User, error)
+	GetByID(id int) (*User, error)
+	Total() (int, error)
 }
 
-func (s *SQL) Create(createForm *CreateUser) (*User, error) {
+func NewSQL(dbPool *pgpool.PgPool) SQL {
+	sql := pgpool.NewSQL[User](dbPool, usersTable)
+	return &usersSQL{sql: sql}
+}
+
+func (s *usersSQL) Create(createForm *CreateUser) (*User, error) {
 	entity, err := s.sql.Insert(createForm)
 	if err != nil {
 		err = pgerr.CreatePgError(err)
@@ -26,7 +36,7 @@ func (s *SQL) Create(createForm *CreateUser) (*User, error) {
 	return entity, nil
 }
 
-func (s *SQL) Delete(id int) (*User, error) {
+func (s *usersSQL) Delete(id int) (*User, error) {
 	entity, err := s.sql.Delete(id)
 	if err != nil {
 		err = pgerr.DeletePgError(err, id)
@@ -36,7 +46,7 @@ func (s *SQL) Delete(id int) (*User, error) {
 	return entity, nil
 }
 
-func (s *SQL) Edit(id int, editForm *EditUser) (*User, error) {
+func (s *usersSQL) Edit(id int, editForm *EditUser) (*User, error) {
 	entity, err := s.sql.Update(id, editForm)
 	if err != nil {
 		err = pgerr.EditPgError(err, id)
@@ -46,7 +56,7 @@ func (s *SQL) Edit(id int, editForm *EditUser) (*User, error) {
 	return entity, nil
 }
 
-func (s *SQL) GetAll(search string) ([]User, error) {
+func (s *usersSQL) GetAll(search string) ([]User, error) {
 	if search != "" {
 		return s.sql.SelectManyWhere("LOWER(name) LIKE $1 OR LOWER(login) LIKE $2", search, search)
 	}
@@ -54,14 +64,20 @@ func (s *SQL) GetAll(search string) ([]User, error) {
 	return s.sql.SelectMany()
 }
 
-func (s *SQL) GetByCredentials(login, password string) (*User, error) {
+func (s *usersSQL) GetByCredentials(login, password string) (*User, error) {
 	return s.sql.SelectWhere("login = $1 AND password = $2", login, password)
 }
 
-func (s *SQL) Get(id int) (*User, error) {
-	return s.sql.SelectOne(id)
+func (s *usersSQL) GetByID(id int) (*User, error) {
+	entity, err := s.sql.SelectOne(id)
+	if err != nil {
+		err = pgerr.SelectPgError(err, id)
+		return nil, err
+	}
+
+	return entity, nil
 }
 
-func (s *SQL) Total() (int, error) {
+func (s *usersSQL) Total() (int, error) {
 	return s.sql.Total()
 }

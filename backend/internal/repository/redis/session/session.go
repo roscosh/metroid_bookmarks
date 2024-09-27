@@ -10,15 +10,21 @@ import (
 
 const SessionKey = "session"
 
-type Redis struct {
+type Redis interface {
+	Get(key string) (int, error)
+	Create(key string, value int) (bool, error)
+	Update(key string, value, ttl int)
+}
+
+type sessionRedis struct {
 	redis *redispool.Redis
 }
 
-func NewRedis(pool *redis.Pool, keyPrefix string) *Redis {
-	return &Redis{redis: redispool.NewRedis(pool, keyPrefix)}
+func NewRedis(pool *redis.Pool, keyPrefix string) Redis {
+	return &sessionRedis{redis: redispool.NewRedis(pool, keyPrefix)}
 }
 
-func (r *Redis) Get(key string) (int, error) {
+func (r *sessionRedis) Get(key string) (int, error) {
 	userID, err := r.redis.GETEX(key, session.AnonymousExpires)
 	if err != nil {
 		return 0, err
@@ -27,7 +33,7 @@ func (r *Redis) Get(key string) (int, error) {
 	return strconv.Atoi(string(userID))
 }
 
-func (r *Redis) Create(key string, value int) (bool, error) {
+func (r *sessionRedis) Create(key string, value int) (bool, error) {
 	script := `
 	if redis.call('exists', KEYS[1]) == 0 then
 	redis.call('setex', KEYS[1], 3600, ARGV[1])
@@ -40,6 +46,6 @@ func (r *Redis) Create(key string, value int) (bool, error) {
 	return r.redis.EVAL(key, script, 1, value)
 }
 
-func (r *Redis) Update(key string, value, ttl int) {
+func (r *sessionRedis) Update(key string, value, ttl int) {
 	r.redis.SETEX(key, value, ttl)
 }

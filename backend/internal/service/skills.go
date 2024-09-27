@@ -5,10 +5,10 @@ import (
 )
 
 type SkillsService struct {
-	sql *skills.SQL
+	sql skills.SQL
 }
 
-func newSkillsService(sql *skills.SQL) *SkillsService {
+func newSkillsService(sql skills.SQL) *SkillsService {
 	return &SkillsService{sql: sql}
 }
 

@@ -2,7 +2,7 @@ tmp_dir = "tmp"
 
 [build]
 # Just plain old shell command. You could use `make` as well.
-cmd = "golangci-lint run --no-config --disable-all -E gofumpt --fix && wsl --fix ./... && swag init -g cmd/main.go && go build -o ./tmp/main ./cmd"
+cmd = "bash ./conf/run.sh"
 # Binary file yields from `cmd`.
 bin = "tmp/main"
 # Customize binary, can setup environment variables when run your app.

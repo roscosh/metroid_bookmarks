@@ -1,17 +1,17 @@
 package service
 
 import (
-	session2 "metroid_bookmarks/internal/repository/redis/session"
+	redisSession "metroid_bookmarks/internal/repository/redis/session"
 	"metroid_bookmarks/internal/repository/sql/users"
 	"metroid_bookmarks/pkg/session"
 )
 
 type MiddlewareService struct {
-	sql   *users.SQL
-	redis *session2.Redis
+	sql   users.SQL
+	redis redisSession.Redis
 }
 
-func newMiddlewareService(sql *users.SQL, redis *session2.Redis) *MiddlewareService {
+func newMiddlewareService(sql users.SQL, redis redisSession.Redis) *MiddlewareService {
 	return &MiddlewareService{sql: sql, redis: redis}
 }
 
@@ -54,7 +54,7 @@ func (m *MiddlewareService) GetExistSession(token string) (*session.Session, err
 	} else {
 		expires = session.AuthenticatedExpires
 
-		user, err = m.sql.Get(userID)
+		user, err = m.sql.GetByID(userID)
 		if err != nil {
 			return nil, err
 		}

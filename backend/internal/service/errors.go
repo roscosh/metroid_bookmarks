@@ -5,14 +5,14 @@ var (
 	ErrFileUploadOverload = NewErr("file upload is overloaded, please try later")
 )
 
-type Err struct {
+type Error struct {
 	massage string
 }
 
-func NewErr(massage string) *Err {
-	return &Err{massage: massage}
+func NewErr(massage string) *Error {
+	return &Error{massage: massage}
 }
 
-func (e *Err) Error() string {
+func (e *Error) Error() string {
 	return e.massage
 }
