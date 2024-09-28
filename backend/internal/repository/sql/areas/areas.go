@@ -57,7 +57,7 @@ func (s *areasSQL) Edit(id int, editForm *EditArea) (*Area, error) {
 }
 
 func (s *areasSQL) GetAll() ([]Area, error) {
-	return s.sql.SelectMany(context.Background())
+	return s.sql.SelectAll(context.Background())
 }
 
 func (s *areasSQL) GetByID(id int) (*Area, error) {

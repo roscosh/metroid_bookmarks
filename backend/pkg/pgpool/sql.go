@@ -57,17 +57,17 @@ type SQL[T any] interface {
 	// Returns a pointer to the object or an error.
 	SelectWhere(ctx context.Context, whereStatement string, args ...any) (*T, error)
 
-	// SelectMany retrieves all records from the database.
+	// SelectAll retrieves all records from the database.
 	// ctx — context for managing the request.
 	// Returns a slice of objects or an error.
-	SelectMany(ctx context.Context) ([]T, error)
+	SelectAll(ctx context.Context) ([]T, error)
 
-	// SelectManyWhere retrieves records that match the provided condition (whereStatement).
+	// SelectAllWhere retrieves records that match the provided condition (whereStatement).
 	// ctx — context for managing the request.
 	// whereStatement — the condition used to filter the records.
 	// args — arguments for the filtering condition.
 	// Returns a slice of objects or an error.
-	SelectManyWhere(ctx context.Context, whereStatement string, args ...any) ([]T, error)
+	SelectAllWhere(ctx context.Context, whereStatement string, args ...any) ([]T, error)
 
 	// Total returns the total number of records in the database.
 	// ctx — context for managing the request.
@@ -156,7 +156,7 @@ func (s *sql[T]) Select(ctx context.Context, pk int) (*T, error) {
 	return s.CollectOneRow(rows)
 }
 
-func (s *sql[T]) SelectManyWhere(ctx context.Context, whereStatement string, args ...any) ([]T, error) {
+func (s *sql[T]) SelectAllWhere(ctx context.Context, whereStatement string, args ...any) ([]T, error) {
 	query := fmt.Sprintf("SELECT %s FROM %s WHERE %s", s.columns, s.table, whereStatement)
 
 	rows, err := s.Query(ctx, query, args...)
@@ -178,7 +178,7 @@ func (s *sql[T]) SelectWhere(ctx context.Context, whereStatement string, args ..
 	return s.CollectOneRow(rows)
 }
 
-func (s *sql[T]) SelectMany(ctx context.Context) ([]T, error) {
+func (s *sql[T]) SelectAll(ctx context.Context) ([]T, error) {
 	query := fmt.Sprintf("SELECT %s FROM %s", s.columns, s.table)
 
 	rows, err := s.Query(ctx, query)

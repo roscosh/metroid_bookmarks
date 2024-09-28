@@ -21,6 +21,7 @@ issues:
       - err113
       - gosimple
       - gosec
+      - goconst
 
 #  fix: true
 

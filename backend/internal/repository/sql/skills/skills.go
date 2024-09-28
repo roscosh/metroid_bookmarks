@@ -57,7 +57,7 @@ func (s *skillsSQL) Edit(id int, editForm *EditSkill) (*Skill, error) {
 }
 
 func (s *skillsSQL) GetAll() ([]Skill, error) {
-	return s.sql.SelectMany(context.Background())
+	return s.sql.SelectAll(context.Background())
 }
 
 func (s *skillsSQL) GetByID(id int) (*Skill, error) {

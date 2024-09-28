@@ -28,10 +28,10 @@ func CreatePgError(err error) error {
 	case errors.As(err, &pgErr):
 		switch pgErr.Code {
 		case "23505":
-			errMessage := ParsePgErr23505(pgErr)
+			errMessage := parsePgErr23505(pgErr)
 			return newError(errMessage)
 		case "23503":
-			errMessage := ParsePgErr23503(pgErr)
+			errMessage := parsePgErr23503(pgErr)
 			return newError(errMessage)
 		default:
 			return err
@@ -46,14 +46,14 @@ func EditPgError(err error, rowID int) error {
 
 	switch {
 	case errors.Is(err, pgx.ErrNoRows):
-		return newError(fmt.Sprintf("no row found with id: %v", rowID))
+		return newErrNoRows(rowID)
 	case errors.As(err, &pgErr):
 		switch pgErr.Code {
 		case "23505":
-			errMessage := ParsePgErr23505(pgErr)
+			errMessage := parsePgErr23505(pgErr)
 			return newError(errMessage)
 		case "23503":
-			errMessage := ParsePgErr23503(pgErr)
+			errMessage := parsePgErr23503(pgErr)
 			return newError(errMessage)
 		default:
 			return err
@@ -64,26 +64,26 @@ func EditPgError(err error, rowID int) error {
 }
 
 func DeletePgError(err error, rowID int) error {
-	var errMessage string
 	if errors.Is(err, pgx.ErrNoRows) {
-		errMessage = fmt.Sprintf(`No row with id="%v"!`, rowID)
-		return newError(errMessage)
+		return newErrNoRows(rowID)
 	}
 
 	return err
 }
 
-func SelectPgError(err error, id int) error {
-	var errMessage string
+func SelectPgError(err error, rowID int) error {
 	if errors.Is(err, pgx.ErrNoRows) {
-		errMessage = fmt.Sprintf(`No row with id="%v"!`, id)
-		return newError(errMessage)
+		return newErrNoRows(rowID)
 	}
 
 	return err
 }
 
-func ParsePgErr23505(pgErr *pgconn.PgError) string {
+func newErrNoRows(rowID int) error {
+	return newError(fmt.Sprintf("no row found with id: %v", rowID))
+}
+
+func parsePgErr23505(pgErr *pgconn.PgError) string {
 	re := regexp.MustCompile(`Key \((\w+)\)=\(([^)]+)\)`)
 
 	match := re.FindStringSubmatch(pgErr.Detail)
@@ -94,7 +94,7 @@ func ParsePgErr23505(pgErr *pgconn.PgError) string {
 	return fmt.Sprintf(`Field "%s" with value "%s" already exists!`, match[1], match[2])
 }
 
-func ParsePgErr23503(pgErr *pgconn.PgError) string {
+func parsePgErr23503(pgErr *pgconn.PgError) string {
 	re := regexp.MustCompile(`Key \((\w+)\)=\(([^)]+)\)`)
 
 	match := re.FindStringSubmatch(pgErr.Detail)

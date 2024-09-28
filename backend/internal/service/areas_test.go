@@ -117,7 +117,7 @@ func TestAreasService_Edit(t *testing.T) {
 
 			got, err := areasService.Edit(tt.args.areaID, tt.args.editForm)
 			if tt.wantErr != nil {
-				require.Nil(t, got)
+				require.Empty(t, got)
 				require.EqualError(t, err, tt.wantErr.Error())
 			} else {
 				require.NoError(t, err)

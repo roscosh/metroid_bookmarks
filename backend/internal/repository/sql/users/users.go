@@ -59,10 +59,10 @@ func (s *usersSQL) Edit(id int, editForm *EditUser) (*User, error) {
 
 func (s *usersSQL) GetAll(search string) ([]User, error) {
 	if search != "" {
-		return s.sql.SelectManyWhere(context.Background(), "LOWER(name) LIKE $1 OR LOWER(login) LIKE $2", search, search)
+		return s.sql.SelectAllWhere(context.Background(), "LOWER(name) LIKE $1 OR LOWER(login) LIKE $2", search, search)
 	}
 
-	return s.sql.SelectMany(context.Background())
+	return s.sql.SelectAll(context.Background())
 }
 
 func (s *usersSQL) GetByCredentials(login, password string) (*User, error) {

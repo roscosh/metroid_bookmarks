@@ -57,7 +57,7 @@ func (s *roomsSQL) Edit(id int, editForm *EditRoom) (*Room, error) {
 }
 
 func (s *roomsSQL) GetAll() ([]Room, error) {
-	return s.sql.SelectMany(context.Background())
+	return s.sql.SelectAll(context.Background())
 }
 
 func (s *roomsSQL) GetByID(id int) (*Room, error) {

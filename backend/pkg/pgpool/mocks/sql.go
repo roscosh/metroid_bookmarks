@@ -195,39 +195,39 @@ func (mr *MockSQLMockRecorder[T]) Select(ctx, pk any) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Select", reflect.TypeOf((*MockSQL[T])(nil).Select), ctx, pk)
 }
 
-// SelectMany mocks base method.
-func (m *MockSQL[T]) SelectMany(ctx context.Context) ([]T, error) {
+// SelectAll mocks base method.
+func (m *MockSQL[T]) SelectAll(ctx context.Context) ([]T, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "SelectMany", ctx)
+	ret := m.ctrl.Call(m, "SelectAll", ctx)
 	ret0, _ := ret[0].([]T)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// SelectMany indicates an expected call of SelectMany.
-func (mr *MockSQLMockRecorder[T]) SelectMany(ctx any) *gomock.Call {
+// SelectAll indicates an expected call of SelectAll.
+func (mr *MockSQLMockRecorder[T]) SelectAll(ctx any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SelectMany", reflect.TypeOf((*MockSQL[T])(nil).SelectMany), ctx)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SelectAll", reflect.TypeOf((*MockSQL[T])(nil).SelectAll), ctx)
 }
 
-// SelectManyWhere mocks base method.
-func (m *MockSQL[T]) SelectManyWhere(ctx context.Context, whereStatement string, args ...any) ([]T, error) {
+// SelectAllWhere mocks base method.
+func (m *MockSQL[T]) SelectAllWhere(ctx context.Context, whereStatement string, args ...any) ([]T, error) {
 	m.ctrl.T.Helper()
 	varargs := []any{ctx, whereStatement}
 	for _, a := range args {
 		varargs = append(varargs, a)
 	}
-	ret := m.ctrl.Call(m, "SelectManyWhere", varargs...)
+	ret := m.ctrl.Call(m, "SelectAllWhere", varargs...)
 	ret0, _ := ret[0].([]T)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// SelectManyWhere indicates an expected call of SelectManyWhere.
-func (mr *MockSQLMockRecorder[T]) SelectManyWhere(ctx, whereStatement any, args ...any) *gomock.Call {
+// SelectAllWhere indicates an expected call of SelectAllWhere.
+func (mr *MockSQLMockRecorder[T]) SelectAllWhere(ctx, whereStatement any, args ...any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	varargs := append([]any{ctx, whereStatement}, args...)
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SelectManyWhere", reflect.TypeOf((*MockSQL[T])(nil).SelectManyWhere), varargs...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SelectAllWhere", reflect.TypeOf((*MockSQL[T])(nil).SelectAllWhere), varargs...)
 }
 
 // SelectWhere mocks base method.

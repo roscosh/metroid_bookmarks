@@ -49,15 +49,9 @@ func (s *AreasService) GetAll() ([]areas.Area, int, error) {
 		return nil, 0, err
 	}
 
-	total, err := s.sql.Total()
-	if err != nil {
-		logger.Error(err.Error())
-		return nil, 0, err
-	}
-
 	if data == nil {
 		data = []areas.Area{}
 	}
 
-	return data, total, nil
+	return data, len(data), nil
 }

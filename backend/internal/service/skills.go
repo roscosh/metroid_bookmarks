@@ -49,15 +49,9 @@ func (s *SkillsService) GetAll() ([]skills.Skill, int, error) {
 		return nil, 0, err
 	}
 
-	total, err := s.sql.Total()
-	if err != nil {
-		logger.Error(err.Error())
-		return nil, 0, err
-	}
-
 	if data == nil {
 		data = []skills.Skill{}
 	}
 
-	return data, total, nil
+	return data, len(data), nil
 }
