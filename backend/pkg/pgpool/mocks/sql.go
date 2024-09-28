@@ -10,6 +10,7 @@
 package mock_pgpool
 
 import (
+	context "context"
 	reflect "reflect"
 
 	pgx "github.com/jackc/pgx/v5"
@@ -71,24 +72,24 @@ func (mr *MockSQLMockRecorder[T]) CollectRows(rows any) *gomock.Call {
 }
 
 // Delete mocks base method.
-func (m *MockSQL[T]) Delete(pk int) (*T, error) {
+func (m *MockSQL[T]) Delete(ctx context.Context, pk int) (*T, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Delete", pk)
+	ret := m.ctrl.Call(m, "Delete", ctx, pk)
 	ret0, _ := ret[0].(*T)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // Delete indicates an expected call of Delete.
-func (mr *MockSQLMockRecorder[T]) Delete(pk any) *gomock.Call {
+func (mr *MockSQLMockRecorder[T]) Delete(ctx, pk any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockSQL[T])(nil).Delete), pk)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockSQL[T])(nil).Delete), ctx, pk)
 }
 
 // DeleteWhere mocks base method.
-func (m *MockSQL[T]) DeleteWhere(whereStatement string, args ...any) (*T, error) {
+func (m *MockSQL[T]) DeleteWhere(ctx context.Context, whereStatement string, args ...any) (*T, error) {
 	m.ctrl.T.Helper()
-	varargs := []any{whereStatement}
+	varargs := []any{ctx, whereStatement}
 	for _, a := range args {
 		varargs = append(varargs, a)
 	}
@@ -99,16 +100,16 @@ func (m *MockSQL[T]) DeleteWhere(whereStatement string, args ...any) (*T, error)
 }
 
 // DeleteWhere indicates an expected call of DeleteWhere.
-func (mr *MockSQLMockRecorder[T]) DeleteWhere(whereStatement any, args ...any) *gomock.Call {
+func (mr *MockSQLMockRecorder[T]) DeleteWhere(ctx, whereStatement any, args ...any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	varargs := append([]any{whereStatement}, args...)
+	varargs := append([]any{ctx, whereStatement}, args...)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteWhere", reflect.TypeOf((*MockSQL[T])(nil).DeleteWhere), varargs...)
 }
 
 // Exec mocks base method.
-func (m *MockSQL[T]) Exec(query string, args ...any) (pgconn.CommandTag, error) {
+func (m *MockSQL[T]) Exec(ctx context.Context, query string, args ...any) (pgconn.CommandTag, error) {
 	m.ctrl.T.Helper()
-	varargs := []any{query}
+	varargs := []any{ctx, query}
 	for _, a := range args {
 		varargs = append(varargs, a)
 	}
@@ -119,31 +120,31 @@ func (m *MockSQL[T]) Exec(query string, args ...any) (pgconn.CommandTag, error) 
 }
 
 // Exec indicates an expected call of Exec.
-func (mr *MockSQLMockRecorder[T]) Exec(query any, args ...any) *gomock.Call {
+func (mr *MockSQLMockRecorder[T]) Exec(ctx, query any, args ...any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	varargs := append([]any{query}, args...)
+	varargs := append([]any{ctx, query}, args...)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Exec", reflect.TypeOf((*MockSQL[T])(nil).Exec), varargs...)
 }
 
 // Insert mocks base method.
-func (m *MockSQL[T]) Insert(createStruct any) (*T, error) {
+func (m *MockSQL[T]) Insert(ctx context.Context, createStruct any) (*T, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Insert", createStruct)
+	ret := m.ctrl.Call(m, "Insert", ctx, createStruct)
 	ret0, _ := ret[0].(*T)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // Insert indicates an expected call of Insert.
-func (mr *MockSQLMockRecorder[T]) Insert(createStruct any) *gomock.Call {
+func (mr *MockSQLMockRecorder[T]) Insert(ctx, createStruct any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Insert", reflect.TypeOf((*MockSQL[T])(nil).Insert), createStruct)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Insert", reflect.TypeOf((*MockSQL[T])(nil).Insert), ctx, createStruct)
 }
 
 // Query mocks base method.
-func (m *MockSQL[T]) Query(query string, args ...any) (pgx.Rows, error) {
+func (m *MockSQL[T]) Query(ctx context.Context, query string, args ...any) (pgx.Rows, error) {
 	m.ctrl.T.Helper()
-	varargs := []any{query}
+	varargs := []any{ctx, query}
 	for _, a := range args {
 		varargs = append(varargs, a)
 	}
@@ -154,16 +155,16 @@ func (m *MockSQL[T]) Query(query string, args ...any) (pgx.Rows, error) {
 }
 
 // Query indicates an expected call of Query.
-func (mr *MockSQLMockRecorder[T]) Query(query any, args ...any) *gomock.Call {
+func (mr *MockSQLMockRecorder[T]) Query(ctx, query any, args ...any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	varargs := append([]any{query}, args...)
+	varargs := append([]any{ctx, query}, args...)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Query", reflect.TypeOf((*MockSQL[T])(nil).Query), varargs...)
 }
 
 // QueryRow mocks base method.
-func (m *MockSQL[T]) QueryRow(query string, args ...any) pgx.Row {
+func (m *MockSQL[T]) QueryRow(ctx context.Context, query string, args ...any) pgx.Row {
 	m.ctrl.T.Helper()
-	varargs := []any{query}
+	varargs := []any{ctx, query}
 	for _, a := range args {
 		varargs = append(varargs, a)
 	}
@@ -173,31 +174,31 @@ func (m *MockSQL[T]) QueryRow(query string, args ...any) pgx.Row {
 }
 
 // QueryRow indicates an expected call of QueryRow.
-func (mr *MockSQLMockRecorder[T]) QueryRow(query any, args ...any) *gomock.Call {
+func (mr *MockSQLMockRecorder[T]) QueryRow(ctx, query any, args ...any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	varargs := append([]any{query}, args...)
+	varargs := append([]any{ctx, query}, args...)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "QueryRow", reflect.TypeOf((*MockSQL[T])(nil).QueryRow), varargs...)
 }
 
 // SelectMany mocks base method.
-func (m *MockSQL[T]) SelectMany() ([]T, error) {
+func (m *MockSQL[T]) SelectMany(ctx context.Context) ([]T, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "SelectMany")
+	ret := m.ctrl.Call(m, "SelectMany", ctx)
 	ret0, _ := ret[0].([]T)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // SelectMany indicates an expected call of SelectMany.
-func (mr *MockSQLMockRecorder[T]) SelectMany() *gomock.Call {
+func (mr *MockSQLMockRecorder[T]) SelectMany(ctx any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SelectMany", reflect.TypeOf((*MockSQL[T])(nil).SelectMany))
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SelectMany", reflect.TypeOf((*MockSQL[T])(nil).SelectMany), ctx)
 }
 
 // SelectManyWhere mocks base method.
-func (m *MockSQL[T]) SelectManyWhere(whereStatement string, args ...any) ([]T, error) {
+func (m *MockSQL[T]) SelectManyWhere(ctx context.Context, whereStatement string, args ...any) ([]T, error) {
 	m.ctrl.T.Helper()
-	varargs := []any{whereStatement}
+	varargs := []any{ctx, whereStatement}
 	for _, a := range args {
 		varargs = append(varargs, a)
 	}
@@ -208,31 +209,31 @@ func (m *MockSQL[T]) SelectManyWhere(whereStatement string, args ...any) ([]T, e
 }
 
 // SelectManyWhere indicates an expected call of SelectManyWhere.
-func (mr *MockSQLMockRecorder[T]) SelectManyWhere(whereStatement any, args ...any) *gomock.Call {
+func (mr *MockSQLMockRecorder[T]) SelectManyWhere(ctx, whereStatement any, args ...any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	varargs := append([]any{whereStatement}, args...)
+	varargs := append([]any{ctx, whereStatement}, args...)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SelectManyWhere", reflect.TypeOf((*MockSQL[T])(nil).SelectManyWhere), varargs...)
 }
 
 // SelectOne mocks base method.
-func (m *MockSQL[T]) SelectOne(pk int) (*T, error) {
+func (m *MockSQL[T]) SelectOne(ctx context.Context, pk int) (*T, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "SelectOne", pk)
+	ret := m.ctrl.Call(m, "SelectOne", ctx, pk)
 	ret0, _ := ret[0].(*T)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // SelectOne indicates an expected call of SelectOne.
-func (mr *MockSQLMockRecorder[T]) SelectOne(pk any) *gomock.Call {
+func (mr *MockSQLMockRecorder[T]) SelectOne(ctx, pk any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SelectOne", reflect.TypeOf((*MockSQL[T])(nil).SelectOne), pk)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SelectOne", reflect.TypeOf((*MockSQL[T])(nil).SelectOne), ctx, pk)
 }
 
 // SelectWhere mocks base method.
-func (m *MockSQL[T]) SelectWhere(whereStatement string, args ...any) (*T, error) {
+func (m *MockSQL[T]) SelectWhere(ctx context.Context, whereStatement string, args ...any) (*T, error) {
 	m.ctrl.T.Helper()
-	varargs := []any{whereStatement}
+	varargs := []any{ctx, whereStatement}
 	for _, a := range args {
 		varargs = append(varargs, a)
 	}
@@ -243,46 +244,46 @@ func (m *MockSQL[T]) SelectWhere(whereStatement string, args ...any) (*T, error)
 }
 
 // SelectWhere indicates an expected call of SelectWhere.
-func (mr *MockSQLMockRecorder[T]) SelectWhere(whereStatement any, args ...any) *gomock.Call {
+func (mr *MockSQLMockRecorder[T]) SelectWhere(ctx, whereStatement any, args ...any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	varargs := append([]any{whereStatement}, args...)
+	varargs := append([]any{ctx, whereStatement}, args...)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SelectWhere", reflect.TypeOf((*MockSQL[T])(nil).SelectWhere), varargs...)
 }
 
 // Total mocks base method.
-func (m *MockSQL[T]) Total() (int, error) {
+func (m *MockSQL[T]) Total(ctx context.Context) (int, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Total")
+	ret := m.ctrl.Call(m, "Total", ctx)
 	ret0, _ := ret[0].(int)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // Total indicates an expected call of Total.
-func (mr *MockSQLMockRecorder[T]) Total() *gomock.Call {
+func (mr *MockSQLMockRecorder[T]) Total(ctx any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Total", reflect.TypeOf((*MockSQL[T])(nil).Total))
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Total", reflect.TypeOf((*MockSQL[T])(nil).Total), ctx)
 }
 
 // Update mocks base method.
-func (m *MockSQL[T]) Update(pk int, editStruct any) (*T, error) {
+func (m *MockSQL[T]) Update(ctx context.Context, pk int, editStruct any) (*T, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Update", pk, editStruct)
+	ret := m.ctrl.Call(m, "Update", ctx, pk, editStruct)
 	ret0, _ := ret[0].(*T)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // Update indicates an expected call of Update.
-func (mr *MockSQLMockRecorder[T]) Update(pk, editStruct any) *gomock.Call {
+func (mr *MockSQLMockRecorder[T]) Update(ctx, pk, editStruct any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockSQL[T])(nil).Update), pk, editStruct)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockSQL[T])(nil).Update), ctx, pk, editStruct)
 }
 
 // UpdateWhere mocks base method.
-func (m *MockSQL[T]) UpdateWhere(editStruct any, where string, args ...any) (*T, error) {
+func (m *MockSQL[T]) UpdateWhere(ctx context.Context, editStruct any, where string, args ...any) (*T, error) {
 	m.ctrl.T.Helper()
-	varargs := []any{editStruct, where}
+	varargs := []any{ctx, editStruct, where}
 	for _, a := range args {
 		varargs = append(varargs, a)
 	}
@@ -293,8 +294,8 @@ func (m *MockSQL[T]) UpdateWhere(editStruct any, where string, args ...any) (*T,
 }
 
 // UpdateWhere indicates an expected call of UpdateWhere.
-func (mr *MockSQLMockRecorder[T]) UpdateWhere(editStruct, where any, args ...any) *gomock.Call {
+func (mr *MockSQLMockRecorder[T]) UpdateWhere(ctx, editStruct, where any, args ...any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	varargs := append([]any{editStruct, where}, args...)
+	varargs := append([]any{ctx, editStruct, where}, args...)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateWhere", reflect.TypeOf((*MockSQL[T])(nil).UpdateWhere), varargs...)
 }

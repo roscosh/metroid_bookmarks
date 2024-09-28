@@ -10,9 +10,9 @@ import (
 type sqlQuery[T any] interface {
 	CollectOneRow(rows pgx.Rows) (*T, error)
 	CollectRows(rows pgx.Rows) ([]T, error)
-	Exec(query string, args ...any) (pgconn.CommandTag, error)
-	Query(query string, args ...any) (pgx.Rows, error)
-	QueryRow(query string, args ...any) pgx.Row
+	Exec(ctx context.Context, query string, args ...any) (pgconn.CommandTag, error)
+	Query(ctx context.Context, query string, args ...any) (pgx.Rows, error)
+	QueryRow(ctx context.Context, query string, args ...any) pgx.Row
 }
 
 type baseQuery[T any] struct {
@@ -28,14 +28,14 @@ func (q *baseQuery[T]) CollectRows(rows pgx.Rows) ([]T, error) {
 	return pgx.CollectRows(rows, pgx.RowToStructByName[T])
 }
 
-func (q *baseQuery[T]) Exec(query string, args ...any) (pgconn.CommandTag, error) {
-	return q.pool.Exec(context.Background(), query, args...)
+func (q *baseQuery[T]) Exec(ctx context.Context, query string, args ...any) (pgconn.CommandTag, error) {
+	return q.pool.Exec(ctx, query, args...)
 }
 
-func (q *baseQuery[T]) Query(query string, args ...any) (pgx.Rows, error) {
-	return q.pool.Query(context.Background(), query, args...)
+func (q *baseQuery[T]) Query(ctx context.Context, query string, args ...any) (pgx.Rows, error) {
+	return q.pool.Query(ctx, query, args...)
 }
 
-func (q *baseQuery[T]) QueryRow(query string, args ...any) pgx.Row {
-	return q.pool.QueryRow(context.Background(), query, args...)
+func (q *baseQuery[T]) QueryRow(ctx context.Context, query string, args ...any) pgx.Row {
+	return q.pool.QueryRow(ctx, query, args...)
 }

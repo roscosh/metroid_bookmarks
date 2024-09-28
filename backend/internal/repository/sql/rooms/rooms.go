@@ -1,6 +1,7 @@
 package rooms
 
 import (
+	"context"
 	"metroid_bookmarks/internal/repository/sql/pgerr"
 	"metroid_bookmarks/pkg/pgpool"
 )
@@ -26,7 +27,7 @@ func NewSQL(dbPool *pgpool.PgPool) SQL {
 }
 
 func (s *roomsSQL) Create(createForm *CreateRoom) (*Room, error) {
-	entity, err := s.sql.Insert(createForm)
+	entity, err := s.sql.Insert(context.Background(), createForm)
 	if err != nil {
 		err = pgerr.CreatePgError(err)
 		return nil, err
@@ -36,7 +37,7 @@ func (s *roomsSQL) Create(createForm *CreateRoom) (*Room, error) {
 }
 
 func (s *roomsSQL) Delete(id int) (*Room, error) {
-	entity, err := s.sql.Delete(id)
+	entity, err := s.sql.Delete(context.Background(), id)
 	if err != nil {
 		err = pgerr.DeletePgError(err, id)
 		return nil, err
@@ -46,7 +47,7 @@ func (s *roomsSQL) Delete(id int) (*Room, error) {
 }
 
 func (s *roomsSQL) Edit(id int, editForm *EditRoom) (*Room, error) {
-	entity, err := s.sql.Update(id, editForm)
+	entity, err := s.sql.Update(context.Background(), id, editForm)
 	if err != nil {
 		err = pgerr.EditPgError(err, id)
 		return nil, err
@@ -56,11 +57,11 @@ func (s *roomsSQL) Edit(id int, editForm *EditRoom) (*Room, error) {
 }
 
 func (s *roomsSQL) GetAll() ([]Room, error) {
-	return s.sql.SelectMany()
+	return s.sql.SelectMany(context.Background())
 }
 
 func (s *roomsSQL) GetByID(id int) (*Room, error) {
-	entity, err := s.sql.SelectOne(id)
+	entity, err := s.sql.SelectOne(context.Background(), id)
 	if err != nil {
 		err = pgerr.SelectPgError(err, id)
 		return nil, err
@@ -70,5 +71,5 @@ func (s *roomsSQL) GetByID(id int) (*Room, error) {
 }
 
 func (s *roomsSQL) Total() (int, error) {
-	return s.sql.Total()
+	return s.sql.Total(context.Background())
 }

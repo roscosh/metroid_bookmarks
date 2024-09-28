@@ -1,6 +1,7 @@
 package skills
 
 import (
+	"context"
 	"metroid_bookmarks/internal/repository/sql/pgerr"
 	"metroid_bookmarks/pkg/pgpool"
 )
@@ -26,7 +27,7 @@ func NewSQL(dbPool *pgpool.PgPool) SQL {
 }
 
 func (s *skillsSQL) Create(createForm *CreateSkill) (*Skill, error) {
-	entity, err := s.sql.Insert(createForm)
+	entity, err := s.sql.Insert(context.Background(), createForm)
 	if err != nil {
 		err = pgerr.CreatePgError(err)
 		return nil, err
@@ -36,7 +37,7 @@ func (s *skillsSQL) Create(createForm *CreateSkill) (*Skill, error) {
 }
 
 func (s *skillsSQL) Delete(id int) (*Skill, error) {
-	entity, err := s.sql.Delete(id)
+	entity, err := s.sql.Delete(context.Background(), id)
 	if err != nil {
 		err = pgerr.DeletePgError(err, id)
 		return nil, err
@@ -46,7 +47,7 @@ func (s *skillsSQL) Delete(id int) (*Skill, error) {
 }
 
 func (s *skillsSQL) Edit(id int, editForm *EditSkill) (*Skill, error) {
-	entity, err := s.sql.Update(id, editForm)
+	entity, err := s.sql.Update(context.Background(), id, editForm)
 	if err != nil {
 		err = pgerr.EditPgError(err, id)
 		return nil, err
@@ -56,11 +57,11 @@ func (s *skillsSQL) Edit(id int, editForm *EditSkill) (*Skill, error) {
 }
 
 func (s *skillsSQL) GetAll() ([]Skill, error) {
-	return s.sql.SelectMany()
+	return s.sql.SelectMany(context.Background())
 }
 
 func (s *skillsSQL) GetByID(id int) (*Skill, error) {
-	entity, err := s.sql.SelectOne(id)
+	entity, err := s.sql.SelectOne(context.Background(), id)
 	if err != nil {
 		err = pgerr.SelectPgError(err, id)
 		return nil, err
@@ -70,5 +71,5 @@ func (s *skillsSQL) GetByID(id int) (*Skill, error) {
 }
 
 func (s *skillsSQL) Total() (int, error) {
-	return s.sql.Total()
+	return s.sql.Total(context.Background())
 }

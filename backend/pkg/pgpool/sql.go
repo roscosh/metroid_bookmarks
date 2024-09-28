@@ -1,6 +1,7 @@
 package pgpool
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"metroid_bookmarks/pkg/misc"
@@ -15,16 +16,16 @@ var (
 
 type SQL[T any] interface {
 	sqlQuery[T]
-	Delete(pk int) (*T, error)
-	DeleteWhere(whereStatement string, args ...any) (*T, error)
-	Insert(createStruct interface{}) (*T, error)
-	SelectMany() ([]T, error)
-	SelectManyWhere(whereStatement string, args ...any) ([]T, error)
-	SelectOne(pk int) (*T, error)
-	SelectWhere(whereStatement string, args ...any) (*T, error)
-	Total() (int, error)
-	Update(pk int, editStruct interface{}) (*T, error)
-	UpdateWhere(editStruct interface{}, where string, args ...any) (*T, error)
+	Delete(ctx context.Context, pk int) (*T, error)
+	DeleteWhere(ctx context.Context, whereStatement string, args ...any) (*T, error)
+	Insert(ctx context.Context, createStruct interface{}) (*T, error)
+	SelectMany(ctx context.Context) ([]T, error)
+	SelectManyWhere(ctx context.Context, whereStatement string, args ...any) ([]T, error)
+	SelectOne(ctx context.Context, pk int) (*T, error)
+	SelectWhere(ctx context.Context, whereStatement string, args ...any) (*T, error)
+	Total(ctx context.Context) (int, error)
+	Update(ctx context.Context, pk int, editStruct interface{}) (*T, error)
+	UpdateWhere(ctx context.Context, editStruct interface{}, where string, args ...any) (*T, error)
 }
 
 func NewSQL[T any](dbPool *PgPool, table string) SQL[T] {
@@ -41,10 +42,10 @@ type sql[T any] struct {
 	columns string
 }
 
-func (s *sql[T]) Delete(pk int) (*T, error) {
+func (s *sql[T]) Delete(ctx context.Context, pk int) (*T, error) {
 	query := fmt.Sprintf(`DELETE FROM %s WHERE id = $1 RETURNING %s`, s.table, s.columns)
 
-	rows, err := s.Query(query, pk)
+	rows, err := s.Query(ctx, query, pk)
 	if err != nil {
 		return nil, err
 	}
@@ -52,10 +53,10 @@ func (s *sql[T]) Delete(pk int) (*T, error) {
 	return s.CollectOneRow(rows)
 }
 
-func (s *sql[T]) DeleteWhere(whereStatement string, args ...any) (*T, error) {
+func (s *sql[T]) DeleteWhere(ctx context.Context, whereStatement string, args ...any) (*T, error) {
 	query := fmt.Sprintf(`DELETE FROM %s WHERE %s RETURNING %s`, s.table, whereStatement, s.columns)
 
-	rows, err := s.Query(query, args...)
+	rows, err := s.Query(ctx, query, args...)
 	if err != nil {
 		return nil, err
 	}
@@ -63,13 +64,13 @@ func (s *sql[T]) DeleteWhere(whereStatement string, args ...any) (*T, error) {
 	return s.CollectOneRow(rows)
 }
 
-func (s *sql[T]) Insert(createStruct interface{}) (*T, error) {
+func (s *sql[T]) Insert(ctx context.Context, createStruct interface{}) (*T, error) {
 	query, args, err := s.getInsertQuery(createStruct)
 	if err != nil {
 		return nil, err
 	}
 
-	rows, err := s.Query(query, args...)
+	rows, err := s.Query(ctx, query, args...)
 	if err != nil {
 		return nil, err
 	}
@@ -77,10 +78,10 @@ func (s *sql[T]) Insert(createStruct interface{}) (*T, error) {
 	return s.CollectOneRow(rows)
 }
 
-func (s *sql[T]) SelectOne(pk int) (*T, error) {
+func (s *sql[T]) SelectOne(ctx context.Context, pk int) (*T, error) {
 	query := fmt.Sprintf("SELECT %s FROM %s WHERE id = $1", s.columns, s.table)
 
-	rows, err := s.Query(query, pk)
+	rows, err := s.Query(ctx, query, pk)
 	if err != nil {
 		return nil, err
 	}
@@ -88,10 +89,10 @@ func (s *sql[T]) SelectOne(pk int) (*T, error) {
 	return s.CollectOneRow(rows)
 }
 
-func (s *sql[T]) SelectManyWhere(whereStatement string, args ...any) ([]T, error) {
+func (s *sql[T]) SelectManyWhere(ctx context.Context, whereStatement string, args ...any) ([]T, error) {
 	query := fmt.Sprintf("SELECT %s FROM %s WHERE %s", s.columns, s.table, whereStatement)
 
-	rows, err := s.Query(query, args...)
+	rows, err := s.Query(ctx, query, args...)
 	if err != nil {
 		return nil, err
 	}
@@ -99,10 +100,10 @@ func (s *sql[T]) SelectManyWhere(whereStatement string, args ...any) ([]T, error
 	return s.CollectRows(rows)
 }
 
-func (s *sql[T]) SelectWhere(whereStatement string, args ...any) (*T, error) {
+func (s *sql[T]) SelectWhere(ctx context.Context, whereStatement string, args ...any) (*T, error) {
 	query := fmt.Sprintf("SELECT %s FROM %s WHERE %s", s.columns, s.table, whereStatement)
 
-	rows, err := s.Query(query, args...)
+	rows, err := s.Query(ctx, query, args...)
 	if err != nil {
 		return nil, err
 	}
@@ -110,10 +111,10 @@ func (s *sql[T]) SelectWhere(whereStatement string, args ...any) (*T, error) {
 	return s.CollectOneRow(rows)
 }
 
-func (s *sql[T]) SelectMany() ([]T, error) {
+func (s *sql[T]) SelectMany(ctx context.Context) ([]T, error) {
 	query := fmt.Sprintf("SELECT %s FROM %s", s.columns, s.table)
 
-	rows, err := s.Query(query)
+	rows, err := s.Query(ctx, query)
 	if err != nil {
 		return nil, err
 	}
@@ -121,21 +122,21 @@ func (s *sql[T]) SelectMany() ([]T, error) {
 	return s.CollectRows(rows)
 }
 
-func (s *sql[T]) Total() (int, error) {
+func (s *sql[T]) Total(ctx context.Context) (int, error) {
 	var count int
 
 	query := "SELECT COUNT(*) FROM " + s.table
 
-	return count, s.QueryRow(query).Scan(&count)
+	return count, s.QueryRow(ctx, query).Scan(&count)
 }
 
-func (s *sql[T]) Update(pk int, editStruct interface{}) (*T, error) {
+func (s *sql[T]) Update(ctx context.Context, pk int, editStruct interface{}) (*T, error) {
 	query, args, err := s.getUpdateQuery(editStruct, "id=$1", pk)
 	if err != nil {
 		return nil, err
 	}
 
-	rows, err := s.Query(query, args...)
+	rows, err := s.Query(ctx, query, args...)
 	if err != nil {
 		return nil, err
 	}
@@ -143,13 +144,13 @@ func (s *sql[T]) Update(pk int, editStruct interface{}) (*T, error) {
 	return s.CollectOneRow(rows)
 }
 
-func (s *sql[T]) UpdateWhere(editStruct interface{}, where string, args ...any) (*T, error) {
+func (s *sql[T]) UpdateWhere(ctx context.Context, editStruct interface{}, where string, args ...any) (*T, error) {
 	query, args, err := s.getUpdateQuery(editStruct, where, args...)
 	if err != nil {
 		return nil, err
 	}
 
-	rows, err := s.Query(query, args...)
+	rows, err := s.Query(ctx, query, args...)
 	if err != nil {
 		return nil, err
 	}

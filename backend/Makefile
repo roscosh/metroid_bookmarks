@@ -48,6 +48,10 @@ tests:
 	docker compose -f ./conf/docker/dev/docker-compose.yml --project-directory . -p $(PROJECT) up test
 
 mockgen:
-	docker compose -f ./conf/docker/dev/docker-compose.yml --project-directory . -p $(PROJECT) run --rm app mockgen \
-	-source=./internal/repository/sql/users/users.go \
-	-destination=./internal/repository/sql/users/mocks/users.go
+	docker compose -f ./conf/docker/dev/docker-compose.yml --project-directory . -p $(PROJECT) run --rm linter bash ./conf/mockgen.sh
+
+.PHONY: cover
+cover:
+	go test -short -coverprofile=coverage.out ./...
+	go tool cover -html=coverage.out
+	rm coverage.out

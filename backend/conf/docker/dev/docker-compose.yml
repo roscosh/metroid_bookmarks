@@ -45,7 +45,7 @@ services:
   test:
     extends:
       service: go
-    command: go test ./...
+    command: bash ./conf/test_cover.sh
     profiles:
       - test
 

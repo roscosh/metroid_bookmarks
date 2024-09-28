@@ -1,6 +1,7 @@
 package areas
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	mock_pgpool "metroid_bookmarks/pkg/pgpool/mocks"
@@ -50,7 +51,7 @@ func TestAreasSQL_Edit(t *testing.T) {
 		{
 			name: "good_test",
 			prepare: func(f *fields) {
-				f.sql.EXPECT().Update(1, editArea).Return(mockResp, nil)
+				f.sql.EXPECT().Update(context.Background(), 1, editArea).Return(mockResp, nil)
 			},
 			args: args{
 				areaID:   1,
@@ -62,7 +63,7 @@ func TestAreasSQL_Edit(t *testing.T) {
 		{
 			name: "err_no_rows",
 			prepare: func(f *fields) {
-				f.sql.EXPECT().Update(99, editArea).Return(nil, pgx.ErrNoRows).Times(1)
+				f.sql.EXPECT().Update(context.Background(), 99, editArea).Return(nil, pgx.ErrNoRows).Times(1)
 			},
 			args: args{
 				areaID:   99,
@@ -74,7 +75,7 @@ func TestAreasSQL_Edit(t *testing.T) {
 		{
 			name: "err_duplicate_key_name_en",
 			prepare: func(f *fields) {
-				f.sql.EXPECT().Update(2, editArea).Return(nil,
+				f.sql.EXPECT().Update(context.Background(), 2, editArea).Return(nil,
 					&pgconn.PgError{
 						Code:    "23505",
 						Detail:  "Key (name_en)=(rome) already exists.",
@@ -91,7 +92,7 @@ func TestAreasSQL_Edit(t *testing.T) {
 		{
 			name: "err_duplicate_key_name_ru",
 			prepare: func(f *fields) {
-				f.sql.EXPECT().Update(2, editArea).Return(nil,
+				f.sql.EXPECT().Update(context.Background(), 2, editArea).Return(nil,
 					&pgconn.PgError{
 						Code:    "23505",
 						Detail:  "Key (name_ru)=(рим) already exists.",

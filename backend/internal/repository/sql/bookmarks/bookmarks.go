@@ -1,6 +1,7 @@
 package bookmarks
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"metroid_bookmarks/internal/repository/sql/pgerr"
@@ -32,7 +33,7 @@ func NewSQL(dbPool *pgpool.PgPool) SQL {
 }
 
 func (s *bookmarksSQL) Create(createForm *CreateBookmark) (*BookmarkPreview, error) {
-	entity, err := s.sql.Insert(createForm)
+	entity, err := s.sql.Insert(context.Background(), createForm)
 	if err != nil {
 		err = pgerr.CreatePgError(err)
 		return nil, err
@@ -42,7 +43,7 @@ func (s *bookmarksSQL) Create(createForm *CreateBookmark) (*BookmarkPreview, err
 }
 
 func (s *bookmarksSQL) Delete(id, userID int) (*BookmarkPreview, error) {
-	entity, err := s.sql.DeleteWhere("id=$1 AND user_id=$2", id, userID)
+	entity, err := s.sql.DeleteWhere(context.Background(), "id=$1 AND user_id=$2", id, userID)
 	if err != nil {
 		err = pgerr.DeletePgError(err, id)
 		return nil, err
@@ -52,7 +53,7 @@ func (s *bookmarksSQL) Delete(id, userID int) (*BookmarkPreview, error) {
 }
 
 func (s *bookmarksSQL) Edit(id, userID int, editForm *EditBookmark) (*BookmarkPreview, error) {
-	entity, err := s.sql.UpdateWhere(editForm, "id=$1 AND user_id=$2", id, userID)
+	entity, err := s.sql.UpdateWhere(context.Background(), editForm, "id=$1 AND user_id=$2", id, userID)
 	if err != nil {
 		err = pgerr.EditPgError(err, id)
 		return nil, err
@@ -132,7 +133,7 @@ func (s *bookmarksSQL) GetAll(limit, offset, userID int, completed, orderByID *b
 
 	query := strings.Join(queryArray, " ")
 
-	rows, err := s.sql.Query(query, args...)
+	rows, err := s.sql.Query(context.Background(), query, args...)
 	if err != nil {
 		return nil, err
 	}
@@ -174,7 +175,7 @@ func (s *bookmarksSQL) GetAll(limit, offset, userID int, completed, orderByID *b
 }
 
 func (s *bookmarksSQL) GetByID(id int) (*BookmarkPreview, error) {
-	entity, err := s.sql.SelectOne(id)
+	entity, err := s.sql.SelectOne(context.Background(), id)
 	if err != nil {
 		err = pgerr.SelectPgError(err, id)
 		return nil, err
@@ -219,7 +220,7 @@ func (s *bookmarksSQL) Total(userID int, completed *bool) (int, error) {
 	}
 
 	query := strings.Join(queryArray, " ")
-	err := s.sql.QueryRow(query, args...).Scan(&count)
+	err := s.sql.QueryRow(context.Background(), query, args...).Scan(&count)
 
 	return count, err
 }
