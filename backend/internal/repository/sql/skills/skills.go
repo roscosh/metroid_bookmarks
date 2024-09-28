@@ -61,7 +61,7 @@ func (s *skillsSQL) GetAll() ([]Skill, error) {
 }
 
 func (s *skillsSQL) GetByID(id int) (*Skill, error) {
-	entity, err := s.sql.SelectOne(context.Background(), id)
+	entity, err := s.sql.Select(context.Background(), id)
 	if err != nil {
 		err = pgerr.SelectPgError(err, id)
 		return nil, err

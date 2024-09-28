@@ -46,7 +46,7 @@ func TestAreasService_Edit(t *testing.T) {
 		wantErr error
 	}{
 		{
-			name: "good_test",
+			name: "success",
 			prepare: func(f *fields) {
 				f.sql.EXPECT().Edit(1, editArea).Return(mockResp, nil)
 			},

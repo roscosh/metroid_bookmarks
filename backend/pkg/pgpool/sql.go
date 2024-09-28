@@ -10,21 +10,88 @@ import (
 )
 
 var (
-	ErrPointerStruct = errors.New("object must be a pointer of structure")
-	ErrEmptyStruct   = errors.New("empty struct")
+	ErrNotPointerStruct = errors.New("object must be a pointer of structure")
+	ErrEmptyStruct      = errors.New("empty struct")
 )
 
+// SQL provides a generic interface for performing basic CRUD operations (Create, Read, Update, Delete)
+// with a database, supporting various methods of selection and filtering.
+// T — the type of the entity the interface works with (e.g., a database model).
 type SQL[T any] interface {
+	// sqlQuery[T] provides a generic interface for executing SQL queries and collecting results.
+	// It includes methods for executing queries, querying data, and collecting rows into Go structures.
+	// T — the type of the entity (e.g., a database model) that the interface works with.
 	sqlQuery[T]
+
+	// Delete removes a record by primary key (pk) and returns the deleted object.
+	// ctx — context for managing the request.
+	// pk — the primary key of the record to delete.
+	// Returns a pointer to the deleted object or an error.
 	Delete(ctx context.Context, pk int) (*T, error)
+
+	// DeleteWhere removes records that match the provided condition (whereStatement).
+	// ctx — context for managing the request.
+	// whereStatement — the condition used to filter the records to delete.
+	// args — arguments for the filtering condition.
+	// Returns a pointer to the deleted object or an error.
 	DeleteWhere(ctx context.Context, whereStatement string, args ...any) (*T, error)
+
+	// Insert adds a new record to the database.
+	// ctx — context for managing the request.
+	// createStruct — a pointer to the structure containing the data for the new record.
+	// If a non-pointer is provided, it returns an ErrNotPointerStruct error.
+	// If a pointer to an empty structure is provided, it returns an ErrEmptyStruct error.
+	// Returns a pointer to the created object or an error.
 	Insert(ctx context.Context, createStruct interface{}) (*T, error)
-	SelectMany(ctx context.Context) ([]T, error)
-	SelectManyWhere(ctx context.Context, whereStatement string, args ...any) ([]T, error)
-	SelectOne(ctx context.Context, pk int) (*T, error)
+
+	// Select retrieves a single record by primary key (pk).
+	// ctx — context for managing the request.
+	// pk — the primary key of the record to retrieve.
+	// Returns a pointer to the object or an error.
+	Select(ctx context.Context, pk int) (*T, error)
+
+	// SelectWhere retrieves a single record that matches the provided condition (whereStatement).
+	// ctx — context for managing the request.
+	// whereStatement — the condition used to filter the records.
+	// args — arguments for the filtering condition.
+	// Returns a pointer to the object or an error.
 	SelectWhere(ctx context.Context, whereStatement string, args ...any) (*T, error)
+
+	// SelectMany retrieves all records from the database.
+	// ctx — context for managing the request.
+	// Returns a slice of objects or an error.
+	SelectMany(ctx context.Context) ([]T, error)
+
+	// SelectManyWhere retrieves records that match the provided condition (whereStatement).
+	// ctx — context for managing the request.
+	// whereStatement — the condition used to filter the records.
+	// args — arguments for the filtering condition.
+	// Returns a slice of objects or an error.
+	SelectManyWhere(ctx context.Context, whereStatement string, args ...any) ([]T, error)
+
+	// Total returns the total number of records in the database.
+	// ctx — context for managing the request.
+	// Returns the number of records or an error.
 	Total(ctx context.Context) (int, error)
+
+	// Update modifies a record by primary key (pk) with the data provided in editStruct.
+	// ctx — context for managing the request.
+	// pk — the primary key of the record to update.
+	// editStruct — a pointer to the structure containing the updated data.
+	// If a non-pointer is provided, it returns an ErrNotPointerStruct error.
+	// If a pointer to an empty structure is provided, it returns an ErrEmptyStruct error.
+	// Returns a pointer to the updated object or an error.
 	Update(ctx context.Context, pk int, editStruct interface{}) (*T, error)
+
+	// UpdateWhere modifies records that match the provided condition (whereStatement)
+	// using the data provided in editStruct.
+	// ctx — context for managing the request.
+	// editStruct — a pointer to the structure containing the updated data.
+	// If a non-pointer is provided, it returns an ErrNotPointerStruct error.
+	// If a pointer to an empty structure is provided, it returns an ErrEmptyStruct error.
+	// where — the condition used to filter the records to update.
+	// args — arguments for the filtering condition.
+	// Returns a pointer to the updated object or an error.
 	UpdateWhere(ctx context.Context, editStruct interface{}, where string, args ...any) (*T, error)
 }
 
@@ -78,7 +145,7 @@ func (s *sql[T]) Insert(ctx context.Context, createStruct interface{}) (*T, erro
 	return s.CollectOneRow(rows)
 }
 
-func (s *sql[T]) SelectOne(ctx context.Context, pk int) (*T, error) {
+func (s *sql[T]) Select(ctx context.Context, pk int) (*T, error) {
 	query := fmt.Sprintf("SELECT %s FROM %s WHERE id = $1", s.columns, s.table)
 
 	rows, err := s.Query(ctx, query, pk)
@@ -161,7 +228,7 @@ func (s *sql[T]) UpdateWhere(ctx context.Context, editStruct interface{}, where 
 func (s *sql[T]) getInsertQuery(createInterface interface{}) (string, []interface{}, error) {
 	t := reflect.TypeOf(createInterface)
 	if t.Kind() != reflect.Ptr || t.Elem().Kind() != reflect.Struct {
-		return "", nil, ErrPointerStruct
+		return "", nil, ErrNotPointerStruct
 	}
 
 	elem := reflect.ValueOf(createInterface).Elem()
@@ -203,7 +270,7 @@ func (s *sql[T]) getUpdateQuery(
 
 	t := reflect.TypeOf(setInterface)
 	if t.Kind() != reflect.Ptr || t.Elem().Kind() != reflect.Struct {
-		return "", nil, ErrPointerStruct
+		return "", nil, ErrNotPointerStruct
 	}
 
 	elem := reflect.ValueOf(setInterface).Elem()

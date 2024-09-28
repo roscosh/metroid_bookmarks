@@ -61,7 +61,7 @@ func (s *roomsSQL) GetAll() ([]Room, error) {
 }
 
 func (s *roomsSQL) GetByID(id int) (*Room, error) {
-	entity, err := s.sql.SelectOne(context.Background(), id)
+	entity, err := s.sql.Select(context.Background(), id)
 	if err != nil {
 		err = pgerr.SelectPgError(err, id)
 		return nil, err

@@ -49,7 +49,7 @@ func TestAreasSQL_Edit(t *testing.T) {
 		wantErr error
 	}{
 		{
-			name: "good_test",
+			name: "success",
 			prepare: func(f *fields) {
 				f.sql.EXPECT().Update(context.Background(), 1, editArea).Return(mockResp, nil)
 			},
@@ -63,7 +63,7 @@ func TestAreasSQL_Edit(t *testing.T) {
 		{
 			name: "err_no_rows",
 			prepare: func(f *fields) {
-				f.sql.EXPECT().Update(context.Background(), 99, editArea).Return(nil, pgx.ErrNoRows).Times(1)
+				f.sql.EXPECT().Update(context.Background(), 99, editArea).Return(nil, pgx.ErrNoRows)
 			},
 			args: args{
 				areaID:   99,
@@ -127,6 +127,114 @@ func TestAreasSQL_Edit(t *testing.T) {
 			areaSQL := areasSQL{sql: sql}
 
 			got, err := areaSQL.Edit(tt.args.areaID, tt.args.editForm)
+			if tt.wantErr != nil {
+				require.Nil(t, got)
+				require.EqualError(t, err, tt.wantErr.Error())
+			} else {
+				require.NoError(t, err)
+				require.Equal(t, tt.want, got)
+			}
+		})
+	}
+}
+
+func TestAreasSQL_Create(t *testing.T) {
+	t.Parallel()
+
+	nameEn := "rome"
+	nameRu := "рим"
+
+	createArea := &CreateArea{
+		NameEn: nameEn,
+		NameRu: nameRu,
+	}
+
+	mockResp := &Area{
+		NameEn: nameEn,
+		NameRu: nameRu,
+		ID:     1,
+	}
+
+	type fields struct {
+		sql *mock_pgpool.MockSQL[Area]
+	}
+
+	type args struct {
+		createForm *CreateArea
+	}
+
+	tests := []struct {
+		name    string
+		fields  fields
+		prepare func(f *fields)
+		args    args
+		want    *Area
+		wantErr error
+	}{
+		{
+			name: "success",
+			prepare: func(f *fields) {
+				f.sql.EXPECT().Insert(context.Background(), createArea).Return(mockResp, nil)
+			},
+			args: args{
+				createForm: createArea,
+			},
+			want:    mockResp,
+			wantErr: nil,
+		},
+		{
+			name: "err_duplicate_key_name_en",
+			prepare: func(f *fields) {
+				f.sql.EXPECT().Insert(context.Background(), createArea).Return(nil,
+					&pgconn.PgError{
+						Code:    "23505",
+						Detail:  "Key (name_en)=(rome) already exists.",
+						Message: `duplicate key value violates unique constraint "areas_name_en_key"`,
+					})
+			},
+			args: args{
+				createForm: createArea,
+			},
+			want:    nil,
+			wantErr: errors.New(fmt.Sprintf(`Field "%s" with value "%s" already exists!`, "name_en", createArea.NameEn)),
+		},
+		{
+			name: "err_duplicate_key_name_ru",
+			prepare: func(f *fields) {
+				f.sql.EXPECT().Insert(context.Background(), createArea).Return(nil,
+					&pgconn.PgError{
+						Code:    "23505",
+						Detail:  "Key (name_ru)=(рим) already exists.",
+						Message: `duplicate key value violates unique constraint "areas_name_ru_key"`,
+					})
+			},
+			args: args{
+				createForm: createArea,
+			},
+			want:    nil,
+			wantErr: errors.New(fmt.Sprintf(`Field "%s" with value "%s" already exists!`, "name_ru", createArea.NameRu)),
+		},
+	}
+	for _, tt := range tests { //nolint:varnamelen
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			ctl := gomock.NewController(t)
+			defer ctl.Finish()
+
+			sql := mock_pgpool.NewMockSQL[Area](ctl)
+
+			f := fields{
+				sql: sql,
+			}
+
+			if tt.prepare != nil {
+				tt.prepare(&f)
+			}
+
+			areaSQL := areasSQL{sql: sql}
+
+			got, err := areaSQL.Create(tt.args.createForm)
 			if tt.wantErr != nil {
 				require.Nil(t, got)
 				require.EqualError(t, err, tt.wantErr.Error())
