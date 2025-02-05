@@ -19,11 +19,12 @@ func ParseEnv(envStruct interface{}) error {
 	var errMessage string
 
 	t := reflect.TypeOf(envStruct)
-	if t.Kind() != reflect.Ptr || t.Elem().Kind() != reflect.Struct {
+	if t.Kind() != reflect.Pointer || t.Elem().Kind() != reflect.Struct {
 		return &Error{message: "object must be a pointer of structure"}
 	}
 
 	elem := reflect.ValueOf(envStruct).Elem()
+
 	for i := range elem.NumField() {
 		structField := elem.Type().Field(i)
 		envTag, exist := structField.Tag.Lookup("env")
@@ -40,12 +41,13 @@ func ParseEnv(envStruct interface{}) error {
 		}
 
 		fieldValue := elem.Field(i)
+
 		if !fieldValue.CanSet() {
 			errMessage = fmt.Sprintf("'%s' can not set", structField.Name)
 			return &Error{message: errMessage}
 		}
 
-		switch fieldValue.Type().Kind() {
+		switch structField.Type.Kind() {
 		case reflect.Bool:
 			val, err := strconv.ParseBool(envValue)
 			if err != nil {

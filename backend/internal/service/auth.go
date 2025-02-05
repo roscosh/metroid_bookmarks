@@ -27,6 +27,8 @@ func (s *AuthService) Login(login, password string, session *session.Session) (*
 
 	user, err := s.sql.GetByCredentials(login, token)
 	if err != nil {
+		logger.Errorf("такого пользователя нет| login=%s | password=%s", login, password)
+
 		return nil, ErrUserDoesNotExist
 	}
 

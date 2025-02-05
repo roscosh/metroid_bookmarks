@@ -91,7 +91,7 @@ func TestAreasSQL_Create(t *testing.T) {
 			wantErr: errors.New(fmt.Sprintf(`Field "%s" with value "%s" already exists!`, "name_ru", createArea.NameRu)),
 		},
 	}
-	for _, tt := range tests { //nolint:varnamelen
+	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
@@ -173,7 +173,7 @@ func TestAreasSQL_Delete(t *testing.T) {
 			wantErr: errors.New(fmt.Sprintf("no row found with id: %v", 99)),
 		},
 	}
-	for _, tt := range tests { //nolint:varnamelen
+	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
@@ -297,7 +297,7 @@ func TestAreasSQL_Edit(t *testing.T) {
 			wantErr: errors.New(fmt.Sprintf(`Field "%s" with value "%s" already exists!`, "name_ru", *editArea.NameRu)),
 		},
 	}
-	for _, tt := range tests { //nolint:varnamelen
+	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
@@ -370,7 +370,7 @@ func TestAreasSQL_SelectMany(t *testing.T) {
 			wantErr: nil,
 		},
 	}
-	for _, tt := range tests { //nolint:varnamelen
+	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
@@ -450,7 +450,7 @@ func TestAreasSQL_GetByID(t *testing.T) {
 			wantErr: errors.New(fmt.Sprintf("no row found with id: %v", 99)),
 		},
 	}
-	for _, tt := range tests { //nolint:varnamelen
+	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
@@ -515,7 +515,7 @@ func TestAreasSQL_Total(t *testing.T) {
 			wantErr: errors.New("unknown db error"),
 		},
 	}
-	for _, tt := range tests { //nolint:varnamelen
+	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 

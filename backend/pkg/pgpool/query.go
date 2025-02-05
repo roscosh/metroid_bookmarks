@@ -12,6 +12,12 @@ import (
 //
 // T — the type of the entity (e.g., a database model) that the interface works with.
 type sqlQuery[T any] interface {
+	// Begin starts a new database transaction. The transaction can be committed or rolled back depending on the outcome of the operations performed within the transaction.
+	// ctx — context for managing the request, useful for controlling timeouts and cancellations.
+	// Returns a pgx.Tx transaction object, which provides methods for executing queries within the transaction,
+	// or an error if the transaction cannot be started.
+	Begin(ctx context.Context) (pgx.Tx, error)
+
 	// CollectOneRow collects a single row from the result set and maps it to a Go structure of type T.
 	// rows — the pgx.Rows result set to collect the data from.
 	// Returns a pointer to the structure or an error if something goes wrong.
@@ -48,23 +54,27 @@ type baseQuery[T any] struct {
 	*PgPool // PgPool is a connection pool for PostgreSQL.
 }
 
-func (q *baseQuery[T]) CollectOneRow(rows pgx.Rows) (*T, error) {
+func (b *baseQuery[T]) Begin(ctx context.Context) (pgx.Tx, error) {
+	return b.pool.Begin(ctx)
+}
+
+func (b *baseQuery[T]) CollectOneRow(rows pgx.Rows) (*T, error) {
 	structObj, err := pgx.CollectOneRow(rows, pgx.RowToStructByName[T])
 	return &structObj, err
 }
 
-func (q *baseQuery[T]) CollectRows(rows pgx.Rows) ([]T, error) {
+func (b *baseQuery[T]) CollectRows(rows pgx.Rows) ([]T, error) {
 	return pgx.CollectRows(rows, pgx.RowToStructByName[T])
 }
 
-func (q *baseQuery[T]) Exec(ctx context.Context, query string, args ...any) (pgconn.CommandTag, error) {
-	return q.pool.Exec(ctx, query, args...)
+func (b *baseQuery[T]) Exec(ctx context.Context, query string, args ...any) (pgconn.CommandTag, error) {
+	return b.pool.Exec(ctx, query, args...)
 }
 
-func (q *baseQuery[T]) Query(ctx context.Context, query string, args ...any) (pgx.Rows, error) {
-	return q.pool.Query(ctx, query, args...)
+func (b *baseQuery[T]) Query(ctx context.Context, query string, args ...any) (pgx.Rows, error) {
+	return b.pool.Query(ctx, query, args...)
 }
 
-func (q *baseQuery[T]) QueryRow(ctx context.Context, query string, args ...any) pgx.Row {
-	return q.pool.QueryRow(ctx, query, args...)
+func (b *baseQuery[T]) QueryRow(ctx context.Context, query string, args ...any) pgx.Row {
+	return b.pool.QueryRow(ctx, query, args...)
 }

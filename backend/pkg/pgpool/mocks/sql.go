@@ -41,6 +41,21 @@ func (m *MockSQL[T]) EXPECT() *MockSQLMockRecorder[T] {
 	return m.recorder
 }
 
+// Begin mocks base method.
+func (m *MockSQL[T]) Begin(ctx context.Context) (pgx.Tx, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Begin", ctx)
+	ret0, _ := ret[0].(pgx.Tx)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Begin indicates an expected call of Begin.
+func (mr *MockSQLMockRecorder[T]) Begin(ctx any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Begin", reflect.TypeOf((*MockSQL[T])(nil).Begin), ctx)
+}
+
 // CollectOneRow mocks base method.
 func (m *MockSQL[T]) CollectOneRow(rows pgx.Rows) (*T, error) {
 	m.ctrl.T.Helper()

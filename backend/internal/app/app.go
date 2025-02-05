@@ -53,6 +53,7 @@ func (a *App) startUp(appConf *models.AppConfig) {
 	var err error
 
 	a.dbPool, err = pgpool.NewPgPool(
+		context.Background(),
 		a.envConf.DatabaseURL,
 		a.envConf.MinConns,
 		a.envConf.MaxConns,

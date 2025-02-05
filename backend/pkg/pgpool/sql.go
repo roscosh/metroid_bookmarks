@@ -11,7 +11,12 @@ import (
 
 var (
 	ErrNotPointerStruct = errors.New("object must be a pointer of structure")
+	ErrAnonymousField   = errors.New("anonymous fields are not allowed")
+	ErrUnexportedField  = errors.New("unexported fields are not allowed")
+	ErrMissingDBTag     = errors.New("field must have a 'db' tag")
 	ErrEmptyStruct      = errors.New("empty struct")
+	ErrEmptyWhereClause = errors.New("WHERE clause is required for UPDATE query")
+	ErrNotPointerField  = errors.New("field must be a pointer")
 )
 
 // SQL provides a generic interface for performing basic CRUD operations (Create, Read, Update, Delete)
@@ -42,7 +47,7 @@ type SQL[T any] interface {
 	// If a non-pointer is provided, it returns an ErrNotPointerStruct error.
 	// If a pointer to an empty structure is provided, it returns an ErrEmptyStruct error.
 	// Returns a pointer to the created object or an error.
-	Insert(ctx context.Context, createStruct interface{}) (*T, error)
+	Insert(ctx context.Context, createStruct any) (*T, error)
 
 	// Select retrieves a single record by primary key (pk).
 	// ctx — context for managing the request.
@@ -77,22 +82,24 @@ type SQL[T any] interface {
 	// Update modifies a record by primary key (pk) with the data provided in editStruct.
 	// ctx — context for managing the request.
 	// pk — the primary key of the record to update.
-	// editStruct — a pointer to the structure containing the updated data.
+	// editStruct — a pointer to the structure containing the updated data, where every field must be a pointer too.
 	// If a non-pointer is provided, it returns an ErrNotPointerStruct error.
-	// If a pointer to an empty structure is provided, it returns an ErrEmptyStruct error.
+	// If a non-pointer field of structure is provided, it returns an ErrNotPointerField error.
+	// If a pointer to an empty structure or zero value of structure is provided, it returns an ErrEmptyStruct error.
 	// Returns a pointer to the updated object or an error.
-	Update(ctx context.Context, pk int, editStruct interface{}) (*T, error)
+	Update(ctx context.Context, pk int, editStruct any) (*T, error)
 
 	// UpdateWhere modifies records that match the provided condition (whereStatement)
 	// using the data provided in editStruct.
 	// ctx — context for managing the request.
-	// editStruct — a pointer to the structure containing the updated data.
+	// editStruct — a pointer to the structure containing the updated data, where every field must be a pointer too.
 	// If a non-pointer is provided, it returns an ErrNotPointerStruct error.
-	// If a pointer to an empty structure is provided, it returns an ErrEmptyStruct error.
+	// If a non-pointer field of structure is provided, it returns an ErrNotPointerField error.
+	// If a pointer to an empty structure or zero value of structure is provided, it returns an ErrEmptyStruct error.
 	// where — the condition used to filter the records to update.
 	// args — arguments for the filtering condition.
 	// Returns a pointer to the updated object or an error.
-	UpdateWhere(ctx context.Context, editStruct interface{}, where string, args ...any) (*T, error)
+	UpdateWhere(ctx context.Context, editStruct any, where string, args ...any) (*T, error)
 }
 
 func NewSQL[T any](dbPool *PgPool, table string) SQL[T] {
@@ -131,7 +138,7 @@ func (s *sql[T]) DeleteWhere(ctx context.Context, whereStatement string, args ..
 	return s.CollectOneRow(rows)
 }
 
-func (s *sql[T]) Insert(ctx context.Context, createStruct interface{}) (*T, error) {
+func (s *sql[T]) Insert(ctx context.Context, createStruct any) (*T, error) {
 	query, args, err := s.getInsertQuery(createStruct)
 	if err != nil {
 		return nil, err
@@ -197,7 +204,7 @@ func (s *sql[T]) Total(ctx context.Context) (int, error) {
 	return count, s.QueryRow(ctx, query).Scan(&count)
 }
 
-func (s *sql[T]) Update(ctx context.Context, pk int, editStruct interface{}) (*T, error) {
+func (s *sql[T]) Update(ctx context.Context, pk int, editStruct any) (*T, error) {
 	query, args, err := s.getUpdateQuery(editStruct, "id=$1", pk)
 	if err != nil {
 		return nil, err
@@ -211,7 +218,7 @@ func (s *sql[T]) Update(ctx context.Context, pk int, editStruct interface{}) (*T
 	return s.CollectOneRow(rows)
 }
 
-func (s *sql[T]) UpdateWhere(ctx context.Context, editStruct interface{}, where string, args ...any) (*T, error) {
+func (s *sql[T]) UpdateWhere(ctx context.Context, editStruct any, where string, args ...any) (*T, error) {
 	query, args, err := s.getUpdateQuery(editStruct, where, args...)
 	if err != nil {
 		return nil, err
@@ -225,35 +232,56 @@ func (s *sql[T]) UpdateWhere(ctx context.Context, editStruct interface{}, where 
 	return s.CollectOneRow(rows)
 }
 
-func (s *sql[T]) getInsertQuery(createInterface interface{}) (string, []interface{}, error) {
+func (s *sql[T]) getInsertQuery(createInterface any) (string, []any, error) {
 	t := reflect.TypeOf(createInterface)
-	if t.Kind() != reflect.Ptr || t.Elem().Kind() != reflect.Struct {
+	if t.Kind() != reflect.Pointer || t.Elem().Kind() != reflect.Struct {
 		return "", nil, ErrNotPointerStruct
 	}
 
 	elem := reflect.ValueOf(createInterface).Elem()
-	valuesArray := make([]interface{}, 0, elem.NumField())
-	fieldsArray := make([]string, 0, elem.NumField())
-	indexRowArray := make([]string, 0, elem.NumField())
+	fieldsAmount := elem.NumField()
+	valuesArray := make([]any, 0, fieldsAmount)
+	fieldNamesArray := make([]string, 0, fieldsAmount)
+	indexRowArray := make([]string, 0, fieldsAmount)
 	placeholder := 1
 
-	for i := range elem.NumField() {
-		value := elem.Field(i)
-		valuesArray = append(valuesArray, value.Interface())
-		// Получаем название поля
-		fieldName := elem.Type().Field(i).Tag.Get("db")
-		// Добавляем позиционный индекс
-		placeholderStr := fmt.Sprintf("$%d", placeholder)
-		indexRowArray = append(indexRowArray, placeholderStr)
-		fieldsArray = append(fieldsArray, fieldName)
-		placeholder++
-	}
-
-	if len(fieldsArray) == 0 {
+	if fieldsAmount == 0 {
 		return "", nil, ErrEmptyStruct
 	}
 
-	fields := strings.Join(fieldsArray, ", ")
+	for i := range fieldsAmount {
+		// Получаем название поля
+		structField := elem.Type().Field(i)
+		fieldName := structField.Tag.Get("db")
+
+		// Проверяем на анонимные поля
+		if structField.Anonymous {
+			return "", nil, fmt.Errorf("field '%s' is invalid: %w", structField.Name, ErrAnonymousField)
+		}
+
+		// Проверяем на неэкспортируемые поля
+		if !structField.IsExported() {
+			return "", nil, fmt.Errorf("field '%s' is invalid: %w", structField.Name, ErrUnexportedField)
+		}
+
+		// Проверяем на наличие тега `db`
+		if fieldName == "" {
+			return "", nil, fmt.Errorf("field '%s' is invalid: %w", structField.Name, ErrMissingDBTag)
+		}
+
+		fieldNamesArray = append(fieldNamesArray, fieldName)
+
+		// Получаем значение поля
+		value := elem.Field(i)
+		valuesArray = append(valuesArray, value.Interface())
+
+		// Добавляем позиционный индекс
+		placeholderStr := fmt.Sprintf("$%d", placeholder)
+		indexRowArray = append(indexRowArray, placeholderStr)
+		placeholder++
+	}
+
+	fields := strings.Join(fieldNamesArray, ", ")
 	placeholders := strings.Join(indexRowArray, ", ")
 
 	query := fmt.Sprintf("INSERT INTO %s (%s) VALUES (%s) RETURNING %s", s.table, fields, placeholders, s.columns)
@@ -262,31 +290,59 @@ func (s *sql[T]) getInsertQuery(createInterface interface{}) (string, []interfac
 }
 
 func (s *sql[T]) getUpdateQuery(
-	setInterface interface{},
+	setInterface any,
 	where string,
 	args ...any,
-) (string, []interface{}, error) {
+) (string, []any, error) {
 	queryArray := make([]string, 0, 3) //nolint:mnd
 
 	t := reflect.TypeOf(setInterface)
-	if t.Kind() != reflect.Ptr || t.Elem().Kind() != reflect.Struct {
+	if t.Kind() != reflect.Pointer || t.Elem().Kind() != reflect.Struct {
 		return "", nil, ErrNotPointerStruct
 	}
 
-	elem := reflect.ValueOf(setInterface).Elem()
+	if where == "" {
+		return "", nil, ErrEmptyWhereClause
+	}
 
-	fields := make([]string, 0, elem.NumField())
+	elem := reflect.ValueOf(setInterface).Elem()
+	fieldsAmount := elem.NumField()
+	fields := make([]string, 0, fieldsAmount)
 	placeholder := 1 + len(args)
 
-	for i := range elem.NumField() {
+	for i := range fieldsAmount {
+		// Получаем название поля
+		structField := elem.Type().Field(i)
+		fieldName := structField.Tag.Get("db")
+
+		// Проверяем на анонимные поля
+		if structField.Anonymous {
+			return "", nil, fmt.Errorf("field '%s' is invalid: %w", structField.Name, ErrAnonymousField)
+		}
+
+		// Проверяем на неэкспортируемые поля
+		if !structField.IsExported() {
+			return "", nil, fmt.Errorf("field '%s' is invalid: %w", structField.Name, ErrUnexportedField)
+		}
+
+		// Проверяем на наличие тега `db`
+		if fieldName == "" {
+			return "", nil, fmt.Errorf("field '%s' is invalid: %w", structField.Name, ErrMissingDBTag)
+		}
+
+		// Проверяем поле является ли оно указателем
+		if structField.Type.Kind() != reflect.Pointer {
+			return "", nil, fmt.Errorf("field '%s' is invalid: %w", structField.Name, ErrNotPointerField)
+		}
+
+		// Получаем значение поля
 		value := elem.Field(i)
 		if value.IsNil() {
 			continue
 		}
 
 		args = append(args, value.Interface())
-		// Получаем название поля
-		fieldName := elem.Type().Field(i).Tag.Get("db")
+
 		// Добавляем позиционный индекс
 		fieldStr := fmt.Sprintf("%s = $%v", fieldName, placeholder)
 		fields = append(fields, fieldStr)
@@ -302,9 +358,7 @@ func (s *sql[T]) getUpdateQuery(
 	updateQuery := fmt.Sprintf("UPDATE %s SET %s", s.table, set)
 	queryArray = append(queryArray, updateQuery)
 
-	if where != "" {
-		queryArray = append(queryArray, "WHERE "+where)
-	}
+	queryArray = append(queryArray, "WHERE "+where)
 
 	queryArray = append(queryArray, "RETURNING "+s.columns)
 

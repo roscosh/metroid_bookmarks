@@ -21,7 +21,7 @@ func main() {
 	}
 
 	logger := log.GetLogger()
-	logger.SetParams(envConf.LogLevel)
+	logger.SetParams("DEBUG")
 
 	appObj := app.NewApp(envConf)
 	appObj.Run()

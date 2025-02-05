@@ -24,9 +24,7 @@ type PgPool struct {
 	pool *pgxpool.Pool
 }
 
-func NewPgPool(dsn string, minConns, maxConns int32, maxConnLifetime, maxConnIdleTime, healthCheckPeriod int64) (*PgPool, error) {
-	ctx := context.Background()
-
+func NewPgPool(ctx context.Context, dsn string, minConns, maxConns int32, maxConnLifetime, maxConnIdleTime, healthCheckPeriod int64) (*PgPool, error) {
 	conf, err := pgxpool.ParseConfig(dsn)
 	if err != nil {
 		return nil, err

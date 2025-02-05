@@ -96,7 +96,7 @@ func TestAreasService_Edit(t *testing.T) {
 			wantErr: errors.New(fmt.Sprintf(`Field "%s" with value "%s" already exists!`, "name_ru", *editArea.NameRu)),
 		},
 	}
-	for _, tt := range tests { //nolint:varnamelen
+	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
